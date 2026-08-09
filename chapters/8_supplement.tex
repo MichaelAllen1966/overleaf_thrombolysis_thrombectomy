@@ -168,9 +168,9 @@ Onset to thrombectomy & count & NA & NA & NA & 1,207 & 526 & 2,570
 
 \section{Feature selection}
 
-\subsection{Feature selection}
+Figures \ref{fig:feature_selection_1} and \ref{fig:feature_selection_2} show feature selection results across a range of outcomes (mRS outcomes at discharge, mRS 0-2 at discharge, survival, length of stay, use of thrombolysis, and use of thrombectomy). Outcomes that were not about treatment selection were modelled for all patients and for untreated patients. 
 
-Figures \ref{fig:feature_selection_1} and \ref{fig:feature_selection_2} show feature selection results. These results should not be interpreted as causal strength of these features, and the full feature set combines features with overlapping information (e.g. onset-to-arrival time implies that the time of stroke onset is known). Given these caveats, we can observe the following.
+These results should not be interpreted as causal strength of these features, and the full feature set combines features with overlapping information (e.g. onset-to-arrival time implies that the time of stroke onset is known). Given these caveats, we can observe the following.
 
 Clinical outcome is predicted well (ROC-AUC 0.8-0.9 for disability and survival outcomes), and was best predicted by the following features:
 
@@ -235,7 +235,7 @@ Use of thrombectomy is predicted well (ROC-AUC $\sim$0.94) from known features. 
 
 \section{SHAP analysis}
 
-Figures \ref{fig:shap_mrs0-2_no_all} to \ref{fig:shap_thrombectomy_all} show SHAP analysis for the different models. SHAP values quantify how each feature, given its specific value for an individual patient, contributed to that patient's model prediction. Each prediction is composed of two parts: a base value, common to all predictions from that model, and the sum of the SHAP values for every feature in that individual's case. Because the model allows for interactions between features, two patients with identical values for a given feature may still receive different SHAP values for that feature, depending on their other characteristics.
+Figures \ref{fig:shap_mrs0-2_all} to \ref{fig:shap_thrombectomy_all} show SHAP analysis for the different models. SHAP values quantify how each feature, given its specific value for an individual patient, contributed to that patient's model prediction. Each prediction is composed of two parts: a base value, common to all predictions from that model, and the sum of the SHAP values for every feature in that individual's case. Because the model allows for interactions between features, two patients with identical values for a given feature may still receive different SHAP values for that feature, depending on their other characteristics.
 
 The units of the SHAP values depend on the type of model output. For binary outcomes (survival, discharge mRS 0-2, use of thrombolysis or thrombectomy, and thrombolysis-induced haemorrhage), SHAP values are expressed in log-odds; summing them with the base value yields the final log-odds prediction. For the continuous regression outcome (length of stay), SHAP values are expressed in the same units as the outcome itself (days).
 
@@ -535,8 +535,9 @@ Some observations may be made:
 
 \section{Treatment effects}
 
-
 \subsection{Target trial emulation}
+
+Figures \ref{fig:target_trial_mrs_1} to \ref{fig:target_trial_mrs_5} show treatment effect estimates, estimated using matching-based target trial emulation, for achieving each possible mRS threshold. Treatment effects are shown as a change in average discharge mRS (this is the same in all charts) and the change in probability in being discharged at, or below, each mRS threshold.
 
 \begin{figure}
     \centering
@@ -579,6 +580,8 @@ Some observations may be made:
 \newpage
 
 \subsection{S-Learner}
+
+Figure \ref{fig:s_learner_benefit} shows treatment effect estimates, estimated using an XG-Boost S-Learner and counterfactual modelling, for achieving each possible mRS threshold. Treatment effects are shown as log odds ratio (treated vs. untreated) in obtaining a favourable outcome. Treatment type and speed (early vs late, using a 270 min onset-to-treatment threshold) were coded as a categorical value for this model.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -632,6 +635,8 @@ Some observations may be made:
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+Figure \ref{fig:s_learner_heatmap_log odds} shows a heatmap of the estimated benefit of thrombolysis and thrombectomy by use and speed in achieving each mRS threshold. This model used actual onset-to-treatment times for each of thrombolysis and thrombectomy. Resulting benefit, estimated using counterfactual modelling, was binned by time (in hours) of treatment after stroke onset.
+
 \begin{figure}[htbp]
     \centering
     
@@ -682,6 +687,8 @@ Some observations may be made:
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+Figure \ref{fig:s_learner_time_thrombolysis} shows a scatter plot, with regression line, of of the estimated benefit of thrombolysis (log odds ratio, treated vs untreated), by time after onset, in achieving each mRS threshold. This model used actual onset-to-treatment times for thrombolysis, and is for patients receiving thrombolysis only.
+
 \begin{figure}[htbp]
     \centering
     
@@ -730,6 +737,9 @@ Some observations may be made:
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Figure \ref{fig:s_learner_time_thrombectomy} shows a scatter plot, with regression line, of of the estimated benefit of thrombectomy (log odds ratio, treated vs untreated), by time after onset, in achieving each mRS threshold. This model used actual onset-to-treatment times for thrombectomy, and is for patients receiving thrombectomy only.
+
 
 \begin{figure}[htbp]
     \centering
@@ -783,6 +793,8 @@ Some observations may be made:
 \newpage
 
 \subsection{Causal Forest}
+
+Figure \ref{fig:causal_forest_benefit} shows treatment effect estimates, estimated using an orthogonal Causal Forest, for achieving each possible mRS threshold. Treatment effects are shown as Conditional Average Treatment effects (CATE), which is the change in absolute percentage probability of achieving the desired outcome. Treatment type and speed (early vs late, using a 270 min onset-to-treatment threshold) were coded as a categorical value for this model.
 
 \begin{figure}
     \centering

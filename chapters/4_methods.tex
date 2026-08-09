@@ -1,12 +1,16 @@
 \section{Methods}
 
+\subsection{Code}
+
+All code, and results, may be found at \url{https://github.com/samuel-book/samuel-3}
+
 \subsection{Data}
 
 Anonymised patient data were retrieved for stroke admissions to hospitals in England and Wales for six calendar years, 2020–2025 inclusive, obtained from the national stroke registry, SSNAP. For this study, data was limited to patients arriving at hospital within 6 hours of known stroke onset, who had an ischaemic stroke, had a stroke severity (NIHSS) of more than 5 (or were registered as having a large vessel occlusion), arrived at a hospital that had at least 10 thrombectomy procedures in the data set, and did not receive either thrombolysis after 6 hours or thrombectomy after 12 hours after stroke onset. The size of the final data set was 59,570 patients. Of these 26,923 had received thrombolysis (24,047 receiving thrombolysis alone, and 2,876 with thrombectomy), and 4,609 had received thrombectomy (1,733 receiving thrombectomy alone and 2,876 with thrombolysis). Data access was managed through HQIP (\url{https://www.hqip.org.uk/}, Data Request HQIP515).
 
 \subsection{Treatment groups}
 
-Across all methods, patients were grouped by what reperfusion treatment they received and when. Strategies were defined by early ($<$ 270 mins from onset) or late ($\geq$ 270 mins from onset) intravenous thrombolysis, mechanical thrombectomy, or their combination.
+Across all methods, patients were grouped by what reperfusion treatment they received and when. Strategies were defined by early ($leq$ 270 mins from onset) or late ($>$ 270 mins from onset) intravenous thrombolysis, mechanical thrombectomy, or their combination.
 
 Descriptive statistics for each treatment group are given in the Supplementary Material.
 
@@ -24,6 +28,10 @@ Each treatment group had its own untreated control matched group. Discharge disa
 
 An S-Learner is a single model that combines treated and untreated patients to predict outcome, by including all features that significantly affect outcome alone, or affect likelihood of receiving treatment. \cite{kunzel2019metalearners}. Model prediction are repeated with counter-factual treatment options to predict outcomes under different treatment strategies. We used Extreme Gradient Boosting (XGBoost \cite{chen_xgboost_2016} as a flexible machine learning model that allows for interactions between features, and for non-linearity of the affects of feature values. As XGBoost is hard to interpret on an individual or global layer, we added an explainability model using Shapley Additive Values \cite{shap_documentation}. We limited our counterfactual analysis to predicting the effect of treatment only in those patients who actually received each treatment (Average Treatment Effect on the Treated, ATT).
 
+Following feature selection (see Supplementary Material for details), the following features were included in the model: prior disability, stroke severity, age, congestive heart failure, hypertension, diabetes, afib anticoagulant, any afib diagnosis, onset to thrombolysis time, onset to thrombectomy time, stroke team, ethnicity. Onset to thrombolysis time, onset to thrombectomy time were modelled as either continuous variables, or according to early/late grousp as above.
+
 \subsubsection{Causal Forest}
 
 We used an orthogonal causal forest \cite{oprescu2019orthogonal} to estimate conditional average treatment effects—that is, the expected effect of treatment for patients with particular combinations of baseline characteristics. First, flexible prediction models estimated each patient’s expected outcome and likelihood of receiving treatment from the measured baseline features. We then used the remaining variation in treatment and outcome, after accounting for these features, to estimate treatment effects. This approach allows for complex and non-linear relationships among covariates without requiring these relationships or treatment–covariate interactions to be specified in advance. This estimator is considered \textit{doubly robust} because it combined two complementary models: an outcome model, which estimated expected outcomes given patients’ baseline characteristics and treatment status, and a treatment-assignment model, which estimated each patient’s probability of receiving treatment given those characteristics. Under the usual causal assumptions, the estimated treatment effect remains consistent if \textit{either} the outcome model or the treatment-assignment model is correctly specified. This property provides some protection against misspecification of one of these models.
+
+The features used in the model were as the Explainable S-Learner, with onset-tp-treatment times being grouped by early/late.

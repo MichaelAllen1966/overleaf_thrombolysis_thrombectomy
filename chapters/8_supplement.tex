@@ -7,15 +7,24 @@
 {
 \footnotesize
 \begin{longtable}[]{@{}llllllllll@{}}
-\caption{Caption}
-\toprule\
+% Header on first page
+\caption{Descriptive statistics for each reperfusion treatment group. Strategies are defined by early ($<$ 270 mins from onset) or late ($\geq$ 270 mins from onset) intravenous thrombolysis, mechanical thrombectomy, or their combination.}
+\label{tab:your-label}\\
+\toprule
 Feature & Statistic & No treatment & Early IVT only & Late IVT only &
-Early MT only & Late MT only & Early Both & Early IVT + Late
-MT & Late Both\\
+Early MT only & Late MT only & Early IVT/MT & Early IVT + Late
+MT & Late IVT/MT \\
 \midrule
 \endfirsthead
-\multicolumn{10}{@{}l}{\textit{Table \thetable\ continued}}\
+% Headers on subsequent pages
+\caption[]{\tablename~\thetable{} continued}\\
+\toprule
+Feature & Statistic & No treatment & Early IVT only & Late IVT only &
+Early MT only & Late MT only & Early IVT/MT & Early IVT + Late
+MT & Late IVT/MT \\
+\midrule
 \endhead
+
 \bottomrule
 \endlastfoot
 Prior disability & count & 30,914 & 23,074 & 973 & 1,207 & 526 & 2,570 &
@@ -27,6 +36,7 @@ Prior disability & count & 30,914 & 23,074 & 973 & 1,207 & 526 & 2,570 &
 & 50\% & 2.00 & 0.00 & 0.00 & 0.00 & 0.00 & 0.00 & 0.00 & 0.00 \\
 & 75\% & 3.00 & 2.00 & 2.00 & 1.00 & 1.00 & 1.00 & 1.00 & 1.00 \\
 & max & 5.00 & 5.00 & 5.00 & 4.00 & 5.00 & 5.00 & 4.00 & 3.00 \\
+\midrule
 Stroke severity & count & 30,877 & 23,058 & 973 & 1,206 & 526 & 2,570 &
 226 & 80 \\
 & mean & 12.87 & 12.73 & 12.00 & 16.61 & 14.93 & 16.29 & 14.70 &
@@ -39,6 +49,7 @@ Stroke severity & count & 30,877 & 23,058 & 973 & 1,206 & 526 & 2,570 &
 & 75\% & 17.00 & 17.00 & 16.00 & 21.00 & 20.00 & 21.00 & 19.00 &
 18.25 \\
 & max & 42.00 & 42.00 & 35.00 & 40.00 & 37.00 & 37.00 & 35.00 & 28.00 \\
+\midrule
 Age & count & 30,914 & 23,074 & 973 & 1,207 & 526 & 2,570 & 226 & 80 \\
 & mean & 78.51 & 74.23 & 74.05 & 74.00 & 71.83 & 71.08 & 67.61 &
 71.62 \\
@@ -51,6 +62,7 @@ Age & count & 30,914 & 23,074 & 973 & 1,207 & 526 & 2,570 & 226 & 80 \\
 & 75\% & 87.50 & 82.50 & 82.50 & 82.50 & 82.50 & 82.50 & 77.50 &
 82.50 \\
 & max & 92.50 & 92.50 & 92.50 & 92.50 & 92.50 & 92.50 & 92.50 & 92.50 \\
+\midrule
 Congestive heart failure & count & 30,914 & 23,074 & 973 & 1,207 & 526 &
 2,570 & 226 & 80 \\
 & mean & 0.09 & 0.05 & 0.05 & 0.09 & 0.06 & 0.04 & 0.05 & 0.09 \\
@@ -60,6 +72,7 @@ Congestive heart failure & count & 30,914 & 23,074 & 973 & 1,207 & 526 &
 & 50\% & 0.00 & 0.00 & 0.00 & 0.00 & 0.00 & 0.00 & 0.00 & 0.00 \\
 & 75\% & 0.00 & 0.00 & 0.00 & 0.00 & 0.00 & 0.00 & 0.00 & 0.00 \\
 & max & 1.00 & 1.00 & 1.00 & 1.00 & 1.00 & 1.00 & 1.00 & 1.00 \\
+\midrule
 Hypertension & count & 30,914 & 23,074 & 973 & 1,207 & 526 & 2,570 & 226
 & 80 \\
 & mean & 0.59 & 0.55 & 0.57 & 0.56 & 0.52 & 0.51 & 0.43 & 0.48 \\
@@ -69,6 +82,7 @@ Hypertension & count & 30,914 & 23,074 & 973 & 1,207 & 526 & 2,570 & 226
 & 50\% & 1.00 & 1.00 & 1.00 & 1.00 & 1.00 & 1.00 & 0.00 & 0.00 \\
 & 75\% & 1.00 & 1.00 & 1.00 & 1.00 & 1.00 & 1.00 & 1.00 & 1.00 \\
 & max & 1.00 & 1.00 & 1.00 & 1.00 & 1.00 & 1.00 & 1.00 & 1.00 \\
+\midrule
 Diabetes & count & 30,914 & 23,074 & 973 & 1,207 & 526 & 2,570 & 226 &
 80 \\
 & mean & 0.26 & 0.21 & 0.24 & 0.19 & 0.17 & 0.15 & 0.18 & 0.24 \\
@@ -78,6 +92,7 @@ Diabetes & count & 30,914 & 23,074 & 973 & 1,207 & 526 & 2,570 & 226 &
 & 50\% & 0.00 & 0.00 & 0.00 & 0.00 & 0.00 & 0.00 & 0.00 & 0.00 \\
 & 75\% & 1.00 & 0.00 & 0.00 & 0.00 & 0.00 & 0.00 & 0.00 & 0.00 \\
 & max & 1.00 & 1.00 & 1.00 & 1.00 & 1.00 & 1.00 & 1.00 & 1.00 \\
+\midrule
 Afib anticoagulant & count & 30,914 & 23,074 & 973 & 1,207 & 526 & 2,570
 & 226 & 80 \\
 & mean & 0.29 & 0.03 & 0.03 & 0.56 & 0.24 & 0.03 & 0.04 & 0.05 \\
@@ -87,6 +102,7 @@ Afib anticoagulant & count & 30,914 & 23,074 & 973 & 1,207 & 526 & 2,570
 & 50\% & 0.00 & 0.00 & 0.00 & 1.00 & 0.00 & 0.00 & 0.00 & 0.00 \\
 & 75\% & 1.00 & 0.00 & 0.00 & 1.00 & 0.00 & 0.00 & 0.00 & 0.00 \\
 & max & 1.00 & 1.00 & 1.00 & 1.00 & 1.00 & 1.00 & 1.00 & 1.00 \\
+\midrule
 Afib diagnosis & count & 30,914 & 23,074 & 973 & 1,207 & 526 & 2,570 &
 226 & 80 \\
 & mean & 0.39 & 0.21 & 0.20 & 0.58 & 0.37 & 0.25 & 0.21 & 0.25 \\
@@ -96,6 +112,7 @@ Afib diagnosis & count & 30,914 & 23,074 & 973 & 1,207 & 526 & 2,570 &
 & 50\% & 0.00 & 0.00 & 0.00 & 1.00 & 0.00 & 0.00 & 0.00 & 0.00 \\
 & 75\% & 1.00 & 0.00 & 0.00 & 1.00 & 1.00 & 0.00 & 0.00 & 0.25 \\
 & max & 1.00 & 1.00 & 1.00 & 1.00 & 1.00 & 1.00 & 1.00 & 1.00 \\
+\midrule
 Onset to thrombolysis & count & NA & 23,074 & 973 & NA & NA & 2,570
 & 226 & 80 \\
 & mean & NA & 163.81 & 298.36 & NA & NA & 142.54 & 209.79 & 305.81 \\
@@ -105,6 +122,7 @@ Onset to thrombolysis & count & NA & 23,074 & 973 & NA & NA & 2,570
 & 50\% & NA & 160.00 & 291.00 & NA & NA & 136.00 & 224.00 & 301.00 \\
 & 75\% & NA & 200.00 & 314.00 & NA & NA & 175.00 & 254.75 & 327.00 \\
 & max & NA & 270.00 & 359.00 & NA & NA & 265.00 & 270.00 & 358.00 \\
+\midrule
 Onset to thrombectomy & count & NA & NA & NA & 1,207 & 526 & 2,570
 & 226 & 80 \\
 & mean & NA & NA & NA & 163.20 & 385.55 & 163.43 & 365.01 & 333.44 \\
@@ -114,7 +132,7 @@ Onset to thrombectomy & count & NA & NA & NA & 1,207 & 526 & 2,570
 & 50\% & NA & NA & NA & 160.00 & 357.00 & 160.00 & 310.00 & 327.50 \\
 & 75\% & NA & NA & NA & 201.50 & 425.75 & 200.00 & 380.00 & 350.00 \\
 & max & NA & NA & NA & 269.00 & 707.00 & 269.00 & 715.00 & 626.00 \\
-\label{tab:full_group_stats}
+
 \end{longtable}
 }
 \end{landscape}

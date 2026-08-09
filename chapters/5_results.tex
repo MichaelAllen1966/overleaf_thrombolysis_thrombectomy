@@ -91,13 +91,18 @@ n=967& Stroke severity & 11.93(5.88) & 11.9(6.06) \\
 \subsection{S-Learner}
 
 
-
-
 \begin{figure}
     \centering
     \includegraphics[width=1\linewidth]{images/treatment_effects/xgboost_counterfactual_cate_log_odds_estimates_2.png}
     \caption{Estimated counterfactual treatment benefit across reperfusion-treatment timing strategies, derived from the XGBoost S-learner model, comparing the odds of being discharged mRS 0-2 with and without treatment. Points represent the mean estimated individual treatment effect for each treatment-timing group, expressed as the counterfactual log odds ratio for being discharged mRS 0-2 relative to no reperfusion treatment; horizontal error bars show 95\% confidence intervals. Treatment groups are defined by receipt of intravenous thrombolysis and/or mechanical thrombectomy, with early treatment defined as onset-to-treatment time $<$270 minutes and late treatment as $\geq$270 minutes. Sample sizes are shown alongside group labels. Values above zero indicate a model-predicted increase in the odds of being discharged mRS 0-2 under the observed treatment strategy compared with no treatment.}
     \label{fig:main_s_learner_benefit}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=1\linewidth]{images/treatment_effects/thrombolysis_thrombectomy_heatmap_mrs_2.png}
+    \caption{Predicted treatment benefit by thrombolysis and thrombectomy timing from the S-learner XGBoost model The heatmap shows the estimated effect of treatment on the log-odds of discharge with functional independence (mRS 0–2), comparing treated and untreated patients across combinations of onset-to-thrombolysis and onset-to-thrombectomy intervals. Each cell displays the mean predicted treatment benefit ± standard deviation, with the number of patients shown in parentheses. Blue shading indicates a positive predicted treatment effect (higher log-odds of discharge with mRS 0–2), whereas red shading indicates a negative effect. The final row represents patients who received thrombectomy without thrombolysis, and the final column represents patients who received thrombolysis without thrombectomy. Blank cells indicate timing combinations with fewer than 10 observations.}
+    \label{fig:main_s_learner_matrix}
 \end{figure}
 
 \subsection{Causal Forest}

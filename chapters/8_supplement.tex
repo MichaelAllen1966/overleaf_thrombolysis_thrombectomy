@@ -788,6 +788,62 @@ Figure \ref{fig:s_learner_time_thrombectomy} shows a scatter plot, with regressi
 \end{figure}
 
 
+
+
+
+% S-Learner SHAP benefit
+
+\subsubsection{SHAP for S-Learner predicted benefit}
+
+Figures \ref{s_learner_benefit_shap_mrs_1} to \ref{s_learner_benefit_shap_mrs_5} show SHAP values for predicted benefit of treatment, at each mRS discharge level.
+
+
+\begin{figure}
+    \centering
+    \includegraphics[width=1\linewidth]
+{images/treatment_effects/s_learner_shap_box_plots_1.png}
+    \caption{Effect of patient feature values on the predicted benefit of treatment. Subplots (top to bottom, left to right) are ordered by their average effect on benefit of treatment. Each subplot shows the feature value, and a boxplot of SHAP values for that feature value. The SHAP value is the contribution to the log-odds ratio treatment effect (treated vs untreated) for being discharged mRS 0-1.}
+    \label{fig:s_learner_benefit_shap_mrs_1}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=1\linewidth]
+{images/treatment_effects/s_learner_shap_box_plots_2.png}
+    \caption{Effect of patient feature values on the predicted benefit of treatment. Subplots (top to bottom, left to right) are ordered by their average effect on benefit of treatment. Each subplot shows the feature value, and a boxplot of SHAP values for that feature value. The SHAP value is the contribution to the log-odds ratio treatment effect (treated vs untreated) for being discharged mRS 0-2}
+    \label{fig:s_learner_benefit_shap_mrs_2}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=1\linewidth]
+{images/treatment_effects/s_learner_shap_box_plots_3.png}
+    \caption{Effect of patient feature values on the predicted benefit of treatment. Subplots (top to bottom, left to right) are ordered by their average effect on benefit of treatment. Each subplot shows the feature value, and a boxplot of SHAP values for that feature value. The SHAP value is the contribution to the log-odds ratio treatment effect (treated vs untreated) for being discharged mRS 0-3.}
+    \label{fig:s_learner_benefit_shap_mrs_3}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=1\linewidth]
+{images/treatment_effects/s_learner_shap_box_plots_4.png}
+    \caption{Effect of patient feature values on the predicted benefit of treatment. Subplots (top to bottom, left to right) are ordered by their average effect on benefit of treatment. Each subplot shows the feature value, and a boxplot of SHAP values for that feature value. The SHAP value is the contribution to the log-odds ratio treatment effect (treated vs untreated) for being discharged mRS 0-4.}
+    \label{fig:s_learner_benefit_shap_mrs_4}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=1\linewidth]
+{images/treatment_effects/s_learner_shap_box_plots_5.png}
+    \caption{Effect of patient feature values on the predicted benefit of treatment. Subplots (top to bottom, left to right) are ordered by their average effect on benefit of treatment. Each subplot shows the feature value, and a boxplot of SHAP values for that feature value. The SHAP value is the contribution to the log-odds ratio treatment effect (treated vs untreated) for being discharged mRS 0-5.}
+    \label{fig:s_learner_benefit_shap_mrs_5}
+\end{figure}
+
+
+
+
+
+
+
 % ################### CASUAL FOREST ###########################
 
 \newpage

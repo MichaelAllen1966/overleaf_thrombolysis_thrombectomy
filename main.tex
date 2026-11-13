@@ -68,8 +68,8 @@
 \include{chapters/3_intro}
 \include{chapters/4_methods}
 \include{chapters/5_results}
-\include{chapters/6_discussion}
-
+%\include{chapters/6_discussion}
+\include{chapters/6a_discussion_long}
 %\section{References}
 \bibliographystyle{naturemag}
 %\bibliographystyle{plainnat}
@@ -92,9 +92,21 @@
 
 \clearpage
 
-\centerline{{\huge Supplementary Material}}
-\input{chapters/8_supplement}
 
+
+%%%%%%%% Add supllemt (with if statement)
+
+% 1. Define the variable (usually placed in the preamble before \begin{document})
+\newif\ifaddsupplement
+
+% 2. Set it to true or false
+\addsupplementtrue   % Use \addsupplementfalse to turn it off
+
+% 3. Wrap your code
+\ifaddsupplement
+  \centerline{{\huge Supplementary Material}}
+  \input{chapters/8_supplement}
+\fi
 
 
 % Word counts - Don't count these!

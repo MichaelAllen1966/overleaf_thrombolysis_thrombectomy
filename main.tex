@@ -54,36 +54,27 @@
 %TC:group table 0 1
 %TC:group tabular 1 
 
-\begin{document}
+%%%%%%%% Compile mode %%%%%%%%
+% Choose what to compile by setting \compilemode:
+%   1 = main paper only (no supplement)
+%   2 = supplement only
+%   3 = everything (main paper + supplement)
+\newcommand{\compilemode}{3}
 
-% Ignore title and abstract in word count
-%TC:ignore
-\include{chapters/1_header}
-\maketitle
+\newif\ifincludemain
+\newif\ifincludesupplement
+\ifcase\compilemode
+  \or \includemaintrue  \includesupplementfalse % 1: main only
+  \or \includemainfalse \includesupplementtrue  % 2: supplement only
+  \or \includemaintrue  \includesupplementtrue  % 3: everything
+  \else \errmessage{compilemode must be 1, 2 or 3}
+\fi
 
 % Abstract: choose length
 % Use \shortabstracttrue for the ~300-word abstract,
 % or \shortabstractfalse for the ~500-word abstract
 \newif\ifshortabstract
 \shortabstracttrue
-\input{chapters/2_abstract}
-%TC:endignore
-
-\newpage
-
-\include{chapters/3_intro}
-\include{chapters/4_methods}
-\include{chapters/5_results}
-%\include{chapters/6_discussion}
-\include{chapters/6a_discussion_long}
-%\section{References}
-\bibliographystyle{naturemag}
-%\bibliographystyle{plainnat}
-%\bibliographystyle{unsrt}
-%\bibliographystyle{unsrtnat}
-\bibliography{references}
-
-
 
 % Number for supplementary material
 \newcommand{\beginsupplement}{
@@ -94,24 +85,56 @@
     \setcounter{table}{0}
     \renewcommand{\thetable}{S\arabic{table}}
 }
+
+
+\begin{document}
+
+% Ignore title and abstract in word count
+%TC:ignore
+\include{chapters/1_header}
+\maketitle
+
+\ifincludemain
+\input{chapters/2_abstract}
+\fi
+%TC:endignore
+
+%%%%%%%% Main paper
+\ifincludemain
+
+\newpage
+
+\include{chapters/3_intro}
+\include{chapters/4_methods}
+\include{chapters/5_results}
+\include{chapters/6_discussion}
+
+%\section{References}
+\bibliographystyle{naturemag}
+%\bibliographystyle{plainnat}
+%\bibliographystyle{unsrt}
+%\bibliographystyle{unsrtnat}
+\bibliography{references}
+
+\fi
+
+
+%%%%%%%% Supplement
+\ifincludesupplement
+
+\ifincludemain
+  \clearpage
+\fi
 \beginsupplement % Resets numbering
+\centerline{{\huge Supplementary Material}}
+\input{chapters/8_supplement}
 
-\clearpage
+% Supplement-only: the supplement has its own citations, so add a reference list
+\ifincludemain\else
+  \bibliographystyle{naturemag}
+  \bibliography{references}
+\fi
 
-
-
-%%%%%%%% Add supllemt (with if statement)
-
-% 1. Define the variable (usually placed in the preamble before \begin{document})
-\newif\ifaddsupplement
-
-% 2. Set it to true or false
-\addsupplementtrue% Use \addsupplementfalse to turn it off
-
-% 3. Wrap your code
-\ifaddsupplement
-  \centerline{{\huge Supplementary Material}}
-  \input{chapters/8_supplement}
 \fi
 
 

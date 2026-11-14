@@ -2,14 +2,14 @@
 
 \subsection{Data}
 
-We used anonymised data from the Sentinel Stroke National Audit Programme (SSNAP), the national stroke registry for England and Wales, covering stroke admissions in the six calendar years 2020--2025 inclusive. Data access was managed through the Healthcare Quality Improvement Partnership (HQIP; \url{https://www.hqip.org.uk/}, Data Request HQIP515).
+We used anonymised data from the Sentinel Stroke National Audit Programme (SSNAP), the national stroke registry for England and Wales, for stroke admissions in the six calendar years 2020--2025 inclusive. Data access was managed through the Healthcare Quality Improvement Partnership (HQIP; \url{https://www.hqip.org.uk/}, Data Request HQIP515).
 
 We included patients who:
 \begin{itemize}
     \item had an ischaemic stroke;
     \item arrived at hospital within 6 hours of known stroke onset;
-    \item had a National Institutes of Health Stroke Scale (NIHSS) score above 5, or a recorded large vessel occlusion; and
-    \item were admitted to a hospital that performed at least 10 MT procedures among patients meeting the other criteria.
+    \item had an NIHSS score above 5, \textit{or} a recorded LVO; and
+    \item were admitted to a hospital that performed at least 10 MT procedures.
 \end{itemize}
 We excluded patients:
 \begin{itemize}
@@ -18,39 +18,35 @@ We excluded patients:
     \item who received IVT more than 6 hours, or MT more than 12 hours, after stroke onset; or
     \item who were recorded as receiving IVT after MT.
 \end{itemize}
-Of the 74,678 patients in the final data set, 28,884 received IVT alone, 2,983 received MT alone, 5,164 received both IVT and MT, and 37,647 received neither. For the causal forest, a further 67 patients with missing values in one or more model features were excluded, leaving 74,611 patients.
+Of the 74,678 patients in the final data set, 28,884 received IVT alone, 2,983 received MT alone, 5,164 received both IVT and MT, and 37,647 received neither. 
 
-\subsection{Treatment groups}
+\subsection{Treatment groups and outcome}
 
-Patients were grouped by the reperfusion treatment they received (IVT alone, MT alone, or IVT and MT combined) and by its timing, with each treatment classed as early ($\leq$270 min from stroke onset) or late ($>$270 min from stroke onset). The same treatment groups were used in all three methods. Descriptive statistics for each group are given in the Supplementary Material.
+Patients were grouped by the reperfusion treatment they received (IVT alone, MT alone, or IVT and MT combined) and by its timing, with each treatment classed as early ($\leq$270 min from stroke onset) or late ($>$270 min). The same groups were used in all three methods; descriptive statistics for each group are given in the Supplementary Material.
 
-\subsection{Outcome}
-
-The outcome reported here is a good outcome at discharge, defined as a discharge mRS of 0--2, or a discharge mRS no worse than the patient's mRS before the stroke. The second criterion means that patients with disability before their stroke who returned to their previous level of function are counted as having a good outcome. Each method estimated the effect of treatment on the probability or odds of a good outcome. Results using the same definition at every other mRS threshold (discharge mRS at or below the threshold, or no worse than before the stroke) are given in the Supplementary Material.
+The outcome was a good outcome at discharge, defined as a discharge mRS of 0--2, or a discharge mRS no worse than the patient's mRS before the stroke. The second criterion means that patients with disability before their stroke who returned to their previous level of function are counted as having a good outcome. Results using the same definition at every other mRS threshold are given in the Supplementary Material. All three methods estimated the effect of treatment in the patients who received it (the average treatment effect on the treated, ATT).
 
 \subsection{Causal inference methods}
 
-We applied three causal inference methods, each resting on different assumptions, to estimate treatment effects.
+We applied three causal inference methods, each resting on different assumptions.
 
 \subsubsection{Target trial emulation by matching}
 
 Target trial emulation applies the design of a randomised trial (eligibility criteria, treatment strategies, start of follow-up and outcome) to observational data, so that the analysis mirrors the trial that would ideally have been run \cite{hernan2016}. Matching stands in for randomisation by pairing each treated patient with an untreated patient who has similar measured characteristics, so that, provided there is no important unmeasured confounding, differences in outcome between the matched groups can be attributed to treatment.
 
-For each treatment group, we matched every treated patient to an untreated patient \cite{stuart2010matching}, so that each treatment group had its own matched control group. Patients were matched on the features found to significantly affect outcome or the probability of receiving IVT or MT: prior disability, age group (5-year bands), stroke severity band (NIHSS 0--4, 5--9, 10--14, \textit{et seq.}), AF diagnosis, and anticoagulant use for AF. Treated patients without a match (at most 2.3\% of any treatment group) were excluded to ensure common support between treated and control groups \cite{greifer2021matching}. The proportion of patients discharged with a good outcome was then compared between treated patients and their matched controls.
+For each treatment group, we matched every treated patient to an untreated patient \cite{stuart2010matching} on the features found to significantly affect outcome or the probability of receiving IVT or MT: prior disability, age group (5-year bands), stroke severity band (NIHSS 0--4, 5--9, 10--14, \textit{et seq.}), atrial fibrillation (AF) diagnosis, and anticoagulant use for AF. Treated patients without a match (at most 2.6\% of any treatment group) were excluded to ensure common support between treated and control groups \cite{greifer2021matching}. The proportion of patients with a good outcome was then compared between treated patients and their matched controls.
 
 \subsubsection{Explainable S-learner}
 
-Meta-learners estimate treatment effects by using a machine learning model to predict each patient's outcome both with and without treatment; the difference between the two predictions is that patient's estimated treatment effect \cite{kunzel2019metalearners}. In the S-learner (``single'' learner), treatment is simply one of the model's input features, so the outcome under the alternative treatment is predicted by changing that feature while holding all other patient characteristics fixed.
+Meta-learners estimate treatment effects by using a machine learning model to predict each patient's outcome both with and without treatment, adjusting for all known confounding variables. The difference between the two predictions is that patient's estimated treatment effect \cite{kunzel2019metalearners}. In the S-learner (``single'' learner), treatment is one of the model's input features, so the outcome under the alternative treatment is predicted by changing that feature while holding all other patient characteristics fixed.
 
-We used Extreme Gradient Boosting (XGBoost) \cite{chen_xgboost_2016}, a flexible machine learning model that allows for interactions between features and for non-linear effects of feature values. Following feature selection (see Supplementary Material), the model included prior disability, stroke severity, age, congestive heart failure, hypertension, diabetes, AF diagnosis, AF anticoagulant use, onset-to-IVT time, onset-to-MT time, stroke team, and ethnicity. Onset-to-treatment times were modelled either as continuous variables or as the early/late groups defined above. Outcomes were predicted under each counterfactual treatment strategy, and treatment effects were estimated only in patients who actually received each treatment (the average treatment effect on the treated, ATT).
-
-Because XGBoost models are hard to interpret at an individual or global level, we used SHapley Additive exPlanations (SHAP) \cite{shap_documentation} to explain model predictions. To identify the patient and treatment features associated with greater benefit, we fitted a secondary XGBoost model to the estimated treatment benefit in treated patients and examined its SHAP values.
+We used Extreme Gradient Boosting (XGBoost) \cite{chen_xgboost_2016}, a flexible model that allows for interactions between features and for non-linear effects. Following feature selection (see Supplementary Material), the model included prior disability, stroke severity, age, congestive heart failure, hypertension, diabetes, AF diagnosis, AF anticoagulant use, onset-to-IVT time, onset-to-MT time, stroke team, and ethnicity. Onset-to-treatment times were modelled either as continuous variables or as the early/late groups defined above. To identify the characteristics associated with greater benefit, we fitted a secondary XGBoost model to the estimated benefit in treated patients and examined its SHapley Additive exPlanations (SHAP) values \cite{shap_documentation}.
 
 \subsubsection{Causal forest}
 
-A causal forest adapts the random forest \cite{breiman2001random} so that each tree splits patients into groups that differ in their response to treatment, rather than in their outcome, and estimates the treatment effect within each group of similar patients \cite{wager2018estimation}. Averaging over many such trees gives an estimate of how the treatment effect varies with patient characteristics, allowing effects to be estimated for individuals and subgroups rather than only for the population as a whole \cite{athey2019generalized}.
+A causal forest is a version of the random forest \cite{breiman2001random}, a widely used machine-learning method that repeatedly splits patients into smaller groups based on their characteristics. In a standard random forest, each split separates patients whose outcomes differ. In a causal forest, each split instead separates patients who differ in how much they benefit from treatment. The treatment effect is then estimated within each resulting group of similar patients \cite{wager2018estimation}. Combining the results of many such trees shows how the benefit of treatment changes with patient characteristics. This lets us estimate the effect for individual patients and for subgroups \cite{athey2019generalized}.
 
-We used an orthogonal causal forest \cite{oprescu2019orthogonal} to estimate conditional average treatment effects (CATE), that is, the expected effect of treatment for patients with a given combination of baseline characteristics. The approach had two stages. First, LightGBM models \cite{ke2017lightgbm} predicted each patient's expected outcome and probability of receiving treatment from their baseline features. Second, the residual variation in treatment and outcome not explained by these features was passed to a causal forest, which estimated how treatment effects varied between patients. Because it combines an outcome model with a treatment-assignment model, this estimator is \textit{doubly robust}: under the usual causal assumptions, the estimated treatment effect remains consistent if \textit{either} model is correctly specified, which gives some protection against model misspecification. The features were the same as for the S-learner, with onset-to-treatment times grouped as early or late.
+We used a variant called an orthogonal causal forest \cite{oprescu2019orthogonal} to estimate the conditional average treatment effect (CATE). This is the expected benefit of treatment for patients with a particular set of characteristics at presentation. The method works in two stages. First, we built two separate models from patients’ baseline characteristics: one predicting their outcome and one predicting their likelihood of receiving treatment. Second, the causal forest was applied only to the variation in outcome and treatment that these models could not explain. This two-model design makes the estimate “doubly robust”: it stays reliable if either model is correct, even if the other is not (see Supplementary Material). We used the same patient characteristics as in the S-learner analysis, with onset-to-treatment time grouped as early or late.
 
 \subsection{Code availability}
 

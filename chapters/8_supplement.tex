@@ -513,44 +513,61 @@ The main paper reports treatment effects for a good outcome at discharge, define
 
 \subsection{Target trial emulation}
 
-Figures \ref{fig:target_trial_mrs_1} to \ref{fig:target_trial_mrs_5} show treatment effects estimated by matching-based target trial emulation for each mRS threshold. For each treatment group, every treated patient was matched to an untreated patient with similar characteristics (see main Methods), and outcomes were then compared between the treated patients (red) and their matched controls (blue). The difference between each pair of points is the estimated effect of treatment in those who received it.
+Figure~\ref{fig:target_trial} shows treatment effects estimated by matching-based target trial emulation, with one panel for each mRS threshold. For each treatment group, every treated patient was matched to an untreated patient with similar characteristics (see main Methods), and outcomes were then compared between the treated patients (red) and their matched controls (blue). The difference between each pair of points is the estimated effect of treatment in those who received it.
 
-The left panel of each figure shows mean discharge mRS, which does not depend on the threshold and is therefore the same in every figure; a lower value indicates less disability. The right panel shows the proportion of patients with a good outcome at the given mRS threshold (discharge mRS at or below the threshold, or no worse than before the stroke), where a higher value indicates a better outcome. Because a separate matched control group was constructed for each treatment group, the untreated (blue) values differ between treatment groups, reflecting the different characteristics of the patients who received each treatment.
+Each panel contains three plots. The left plot shows mean discharge mRS, where a lower value indicates less disability, and the right plot shows length of stay; neither depends on the threshold, so both are the same in every panel. The middle plot shows the proportion of patients with a good outcome at the given mRS threshold (discharge mRS at or below the threshold, or no worse than before the stroke), where a higher value indicates a better outcome. Because a separate matched control group was constructed for each treatment group, the untreated (blue) values differ between treatment groups, reflecting the different characteristics of the patients who received each treatment.
 
-\begin{figure}
+\begin{figure}[p]
     \centering
-    \includegraphics[width=1\linewidth]{images/treatment_effects/target_trial_emulation_mrs_1.png}
-    \caption{Target trial emulation of reperfusion-treatment timing strategies and discharge functional outcomes, using matched control and treated patients. Estimated mean discharge modified Rankin Scale (mRS; left panel) and proportion achieving a good outcome at the mRS 0–1 threshold (right panel) are shown for patients receiving each treatment strategy (red) and their emulated untreated comparators (blue). Strategies are defined by early ($\leq$ 270 mins from onset) or late ($>$ 270 mins from onset) intravenous thrombolysis, mechanical thrombectomy, or their combination. Points denote estimated outcomes and horizontal bars 95\% confidence intervals; p-values indicate the treated–untreated comparison within each emulated treatment group, with sample sizes shown. Lower mRS and higher proportions with a good outcome indicate more favourable outcomes.}
-    \label{fig:target_trial_mrs_1}
+    \begin{subfigure}{\textwidth}
+        \centering
+        \includegraphics[width=\textwidth,height=0.28\textheight,keepaspectratio]{images/treatment_effects/target_trial_emulation_mrs_1.png}
+        \caption{mRS 0--1}
+        \label{fig:target_trial_mrs_1}
+    \end{subfigure}
+
+    \vspace{0.2cm}
+
+    \begin{subfigure}{\textwidth}
+        \centering
+        \includegraphics[width=\textwidth,height=0.28\textheight,keepaspectratio]{images/treatment_effects/target_trial_emulation_mrs_2.png}
+        \caption{mRS 0--2}
+        \label{fig:target_trial_mrs_2}
+    \end{subfigure}
+
+    \vspace{0.2cm}
+
+    \begin{subfigure}{\textwidth}
+        \centering
+        \includegraphics[width=\textwidth,height=0.28\textheight,keepaspectratio]{images/treatment_effects/target_trial_emulation_mrs_3.png}
+        \caption{mRS 0--3}
+        \label{fig:target_trial_mrs_3}
+    \end{subfigure}
+
+    \caption{Target trial emulation of reperfusion-treatment timing strategies and discharge outcomes at each mRS threshold for a good outcome (continued on next page).}
+    \label{fig:target_trial}
 \end{figure}
 
-
-\begin{figure}
+\begin{figure}[p]
+    \ContinuedFloat
     \centering
-    \includegraphics[width=1\linewidth]{images/treatment_effects/target_trial_emulation_mrs_2.png}
-    \caption{Target trial emulation of reperfusion-treatment timing strategies and discharge functional outcomes, using matched control and treated patients. Estimated mean discharge modified Rankin Scale (mRS; left panel) and proportion achieving a good outcome at the mRS 0–2 threshold (right panel) are shown for patients receiving each treatment strategy (red) and their emulated untreated comparators (blue). Strategies are defined by early ($\leq$ 270 mins from onset) or late ($>$ 270 mins from onset) intravenous thrombolysis, mechanical thrombectomy, or their combination. Points denote estimated outcomes and horizontal bars 95\% confidence intervals; p-values indicate the treated–untreated comparison within each emulated treatment group, with sample sizes shown. Lower mRS and higher proportions with a good outcome indicate more favourable outcomes.}
-    \label{fig:target_trial_mrs_2}
-\end{figure}
+    \begin{subfigure}{\textwidth}
+        \centering
+        \includegraphics[width=\textwidth,height=0.28\textheight,keepaspectratio]{images/treatment_effects/target_trial_emulation_mrs_4.png}
+        \caption{mRS 0--4}
+        \label{fig:target_trial_mrs_4}
+    \end{subfigure}
 
-\begin{figure}
-    \centering
-    \includegraphics[width=1\linewidth]{images/treatment_effects/target_trial_emulation_mrs_3.png}
-    \caption{Target trial emulation of reperfusion-treatment timing strategies and discharge functional outcomes, using matched control and treated patients. Estimated mean discharge modified Rankin Scale (mRS; left panel) and proportion achieving a good outcome at the mRS 0–3 threshold (right panel) are shown for patients receiving each treatment strategy (red) and their emulated untreated comparators (blue). Strategies are defined by early ($\leq$ 270 mins from onset) or late ($>$ 270 mins from onset) intravenous thrombolysis, mechanical thrombectomy, or their combination. Points denote estimated outcomes and horizontal bars 95\% confidence intervals; p-values indicate the treated–untreated comparison within each emulated treatment group, with sample sizes shown. Lower mRS and higher proportions with a good outcome indicate more favourable outcomes.}
-    \label{fig:target_trial_mrs_3}
-\end{figure}
+    \vspace{0.2cm}
 
-\begin{figure}
-    \centering
-    \includegraphics[width=1\linewidth]{images/treatment_effects/target_trial_emulation_mrs_4.png}
-    \caption{Target trial emulation of reperfusion-treatment timing strategies and discharge functional outcomes, using matched control and treated patients. Estimated mean discharge modified Rankin Scale (mRS; left panel) and proportion achieving a good outcome at the mRS 0–4 threshold (right panel) are shown for patients receiving each treatment strategy (red) and their emulated untreated comparators (blue). Strategies are defined by early ($\leq$ 270 mins from onset) or late ($>$ 270 mins from onset) intravenous thrombolysis, mechanical thrombectomy, or their combination. Points denote estimated outcomes and horizontal bars 95\% confidence intervals; p-values indicate the treated–untreated comparison within each emulated treatment group, with sample sizes shown. Lower mRS and higher proportions with a good outcome indicate more favourable outcomes.}
-    \label{fig:target_trial_mrs_4}
-\end{figure}
+    \begin{subfigure}{\textwidth}
+        \centering
+        \includegraphics[width=\textwidth,height=0.28\textheight,keepaspectratio]{images/treatment_effects/target_trial_emulation_mrs_5.png}
+        \caption{mRS 0--5 (survival to discharge)}
+        \label{fig:target_trial_mrs_5}
+    \end{subfigure}
 
-\begin{figure}
-    \centering
-    \includegraphics[width=1\linewidth]{images/treatment_effects/target_trial_emulation_mrs_5.png}
-    \caption{Target trial emulation of reperfusion-treatment timing strategies and discharge functional outcomes, using matched control and treated patients. Estimated mean discharge modified Rankin Scale (mRS; left panel) and proportion achieving a good outcome at the mRS 0–5 threshold (survival, right panel) are shown for patients receiving each treatment strategy (red) and their emulated untreated comparators (blue). Strategies are defined by early ($\leq$ 270 mins from onset) or late ($>$ 270 mins from onset) intravenous thrombolysis, mechanical thrombectomy, or their combination. Points denote estimated outcomes and horizontal bars 95\% confidence intervals; p-values indicate the treated–untreated comparison within each emulated treatment group, with sample sizes shown. Lower mRS and higher proportions with a good outcome indicate more favourable outcomes.}
-    \label{fig:target_trial_mrs_5}
+    \caption{Target trial emulation of reperfusion-treatment timing strategies and discharge outcomes, using matched treated and control patients, at each mRS threshold for a good outcome. Within each panel, the left plot shows estimated mean discharge modified Rankin Scale (mRS), the middle plot the proportion achieving a good outcome at that threshold (discharge mRS at or below the threshold, or no worse than the pre-stroke mRS), and the right plot length of stay; the left and right plots do not depend on the threshold and are the same in every panel. Patients receiving each treatment strategy are shown in red and their matched untreated comparators in blue. Strategies are defined by early ($\leq$ 270 mins from onset) or late ($>$ 270 mins from onset) intravenous thrombolysis, mechanical thrombectomy, or their combination. Points denote estimated outcomes and horizontal bars 95\% confidence intervals; p-values indicate the treated--untreated comparison within each treatment group, with sample sizes shown. Lower mRS and higher proportions with a good outcome indicate more favourable outcomes.}
 \end{figure}
 
 % ------------------------------------------------------------------------------------
@@ -851,4 +868,86 @@ Figure \ref{fig:causal_forest_benefit} shows treatment effects estimated by the 
     \label{fig:causal_forest_benefit}
 \end{figure}
 
+% ====================================================================================
 
+\newpage
+
+\section{Causal forest estimation}
+
+The orthogonal causal forest \cite{oprescu2019orthogonal} combined three tree-based models. First, LightGBM prediction models \cite{ke2017lightgbm} estimated each patient's expected outcome and probability of receiving treatment from the measured baseline features. Second, the residual variation in treatment and outcome remaining after accounting for these features was passed to a causal forest, which estimated how treatment effects varied between patients. This approach allows for complex and non-linear relationships among features. Because it combines an outcome model, which estimates expected outcomes given patients' baseline characteristics, with a treatment-assignment model, which estimates each patient's probability of receiving treatment given those characteristics, the estimator is \textit{doubly robust}: under the usual causal assumptions, the estimated treatment effect remains consistent if \textit{either} the outcome model or the treatment-assignment model is correctly specified. This property provides some protection against misspecification of the full causal model.
+
+% ====================================================================================
+
+\newpage
+
+\section{Extended discussion}
+
+This section gives a fuller comparison of our results with the published evidence, summarised in the Discussion of the main paper. Estimates for each treatment strategy are given in Table~\ref{tab:effects}.
+
+\subsection{Time to IVT and time to MT considered together}
+
+To our knowledge, this is the first study to describe how the benefit of reperfusion treatment varies across the joint distribution of onset-to-IVT and onset-to-MT times in a national population not selected by advanced imaging. The existing evidence treats the two clocks separately. The alteplase trials relate benefit to time to IVT in populations for whom MT was not available \cite{emberson_effect_2014}. The HERMES analyses relate benefit to time to arterial puncture or reperfusion in patients most of whom had already received alteplase, without modelling when the alteplase was given \cite{goyal2016,saver2016}. The trials of MT with or without prior IVT randomised IVT at a single moment in patients who were already at an MT centre, so that the interval between IVT and MT was short and varied little \cite{kaesmacher2024,majoie2023}. None of these designs can show what happens when the two times vary independently. In routine practice they do: many patients are treated with IVT at one hospital and undergo MT at another, one or several hours later.
+
+Figure~\ref{fig:main_s_learner_matrix} describes this joint dependence, and three patterns emerge. First, for a fixed time to MT, benefit rises the earlier IVT was given. For MT at 240--300 minutes, the estimated log odds ratio was 0.84 without IVT, 0.81--0.82 when IVT was given at 180--300 minutes, 0.99 when it was given at 120--180 minutes, and 1.29 when it was given at 60--120 minutes. IVT therefore adds substantially to MT when given within about two hours of onset (an additional 0.3--0.6 log odds units across MT times of 3--6 hours, equivalent to odds ratios of about 1.4--1.8), adds less at 2--3 hours, and adds little when first given after three hours and followed promptly by MT.
+
+Second, for a fixed time to IVT, benefit falls the later MT follows, and converges on the benefit of IVT alone. For IVT given at 60--120 minutes, the log odds ratio was 1.70 with MT at 120--180 minutes, 1.37 at 180--240 minutes, 1.29 at 240--300 minutes and 1.11 at 300--360 minutes, against 0.98 for IVT alone in the same time band. The same pattern was seen for IVT at 120--180 minutes (1.78 falling to 0.70 by 360--420 minutes, against 0.73 for IVT alone). In this population the additional value of MT over early IVT was therefore largely lost by six to seven hours after onset. The categorical analysis says the same thing more simply: patients given early IVT and late MT had an estimated benefit (log odds ratio 0.73) barely above that of early IVT alone (0.71).
+
+Third, when IVT was given later, it appeared to add more when MT was delayed further still. IVT at 180--240 minutes added nothing to MT performed in the same or the following hour (1.03 against 1.03; 0.82 against 0.84), but was associated with an additional 0.2--0.3 log odds units when MT did not take place until 300--480 minutes. One interpretation is that IVT matters most when the wait for MT is long, because the drug has more time to act; recanalisation before MT occurs in around one fifth of IVT-treated patients referred for MT and is more frequent in those transferred between hospitals than in those treated on one site \cite{seners2016,seners2018}. Cell sizes here are small, and we regard this observation as hypothesis-generating.
+
+The benefits of the two treatments were less than additive. The log odds ratio for early combined treatment (1.35) was well below the sum of those for early IVT alone and early MT alone (0.71 and 1.19). This is expected of two treatments that act through the same mechanism, reperfusion of the same tissue, and it means that neither the IVT trials nor the MT trials can be used on their own to predict the value of a combined strategy at a given pair of treatment times.
+
+\subsection{Comparison with randomised trials of IVT}
+
+Our estimates for IVT alone agree closely with the randomised evidence in absolute terms and in their dependence on time. In the individual patient data meta-analysis of Emberson et al., alteplase increased the proportion of patients with an excellent outcome by about 10 percentage points when given within 3 hours and about 5 percentage points at 3--4.5 hours \cite{emberson_effect_2014}. The causal forest estimated an absolute gain in good outcome at discharge of 11.1 percentage points for IVT within 4.5 hours and 9.2 percentage points after 4.5 hours, and the matched analysis gave 12.7 and 6.3 percentage points. Emberson et al.\ estimated that the benefit of alteplase reached zero at 6.3 hours after onset (95\% CI 5.0--13.8) \cite{emberson_effect_2014}; our linear model placed this point at 6.75 hours. The agreement is notable given that the two estimates come from different designs, eras and outcome definitions, although ours is extrapolated beyond the six hours within which IVT was given in our data.
+
+Our relative effects were larger than those of the trials. The S-learner odds ratio for early IVT alone was about 2.0, against 1.75 within 3 hours and 1.26 at 3--4.5 hours in the meta-analysis \cite{emberson_effect_2014}. Several differences in design may contribute. We restricted the cohort to patients with NIHSS above 5 or a recorded large vessel occlusion, we measured a good outcome at discharge (mRS 0--2, or no worse than before the stroke) and not mRS 0--1 at 3--6 months, and door-to-needle times and stroke unit care have improved since the trials. Residual confounding is also likely to act in this direction: patients who arrive early with a disabling stroke and are not treated with IVT usually have a reason, such as anticoagulation, recent surgery, frailty or a clinical judgement of futility, and not all of these reasons are captured in our covariates.
+
+The rate at which benefit was lost with delay is consistent with earlier registry work. In 58,353 patients treated with alteplase in the Get With The Guidelines-Stroke registry, each 15 minutes of earlier treatment was associated with an odds ratio of 1.04 for independent ambulation at discharge \cite{saver2013}, equivalent to about 0.16 log odds units per hour. Our estimate for the decline in treatment effect on a good outcome at discharge was about 0.18 log odds units per hour. The registry analysis could compare only treated patients with one another; by emulating an untreated comparison group we were able to estimate the treatment effect itself at each time, and so to locate the time at which benefit is exhausted. Time dependence of alteplase has also been examined specifically in large vessel occlusion: in the control arms of the HERMES trials, each hour of delay was associated with an odds ratio of 0.82 (95\% CI 0.66--1.03) for functional independence \cite{goyal2019}.
+
+We did not examine intracranial haemorrhage. The trials show that alteplase increases the risk of fatal intracranial haemorrhage by about 2 percentage points irrespective of treatment delay \cite{emberson_effect_2014,whiteley2016}, which is why the net benefit of late IVT is small. Our outcome, disability at discharge, includes the consequences of haemorrhage that occurred during the admission, so the estimates presented are net of early harm, but we cannot separate the two.
+
+\subsection{Comparison with randomised trials of MT}
+
+The time dependence we estimated for MT is very close to that reported from the trials. In the HERMES time-to-treatment analysis, each hour of delay to reperfusion was associated with a common odds ratio of 0.84 for less disability and an odds ratio of 0.81 for functional independence \cite{saver2016}. In MR CLEAN, the absolute treatment effect fell by about 6 percentage points per hour of delay to reperfusion \cite{fransen_time_2016}. Our estimate for MT alone, a loss of about 0.16 log odds units per hour, corresponds to an odds ratio of 0.86 per hour. In HERMES the benefit of MT was no longer statistically significant when arterial puncture was later than 7 hours 18 minutes after onset, although the point estimate still favoured treatment at 8 hours (common odds ratio 1.57) \cite{saver2016}. Our point estimate of the time at which benefit reached zero, 9.9 hours, is compatible with this, and in Figure~\ref{fig:main_s_learner_matrix} the estimated benefit of MT alone was close to zero in each time band beyond 9 hours.
+
+The size of the benefit requires more careful comparison, because the comparator differs. The HERMES trials compared MT plus standard care with standard care alone in patients with a proven anterior circulation large vessel occlusion, most of whom received alteplase in both arms; functional independence at 90 days was achieved by 46.0\% and 26.5\% \cite{goyal2016}. Our treated groups are compared with patients who received no reperfusion treatment. On that basis, early MT alone was associated with an absolute gain of 14--17 percentage points and early combined treatment with a gain of 19--23 percentage points, and the proportions with a good outcome in the early combined group and its controls (46.5\% and 23.5\%) are similar to those in the two arms of HERMES, although our outcome also counts patients discharged no worse than their pre-stroke mRS and was measured at discharge rather than at 90 days. The trial contrast, MT added to IVT, is best approximated in our data by the difference between combined treatment and IVT alone at the same time to IVT. For IVT given at 60--180 minutes, MT within 180 minutes was associated with an additional 0.7--1.0 log odds units (odds ratios of about 2.0--2.9), which brackets the HERMES common odds ratio of 2.49 \cite{goyal2016} and the 2.79 estimated at 3 hours \cite{saver2016}. At later MT times the increment in our data fell faster than in the trials: to about 0.3--0.4 log odds units at 3--5 hours and about 0.1 at 5--6 hours, against a common odds ratio of 1.98 at 6 hours in HERMES \cite{saver2016}.
+
+There are several reasons to expect a smaller increment at later times in routine practice than in trials. Our IVT-only group includes patients without a large vessel occlusion and patients whose occlusion recanalised with IVT, so its outcomes are better than those of a trial control arm in which every patient had a persisting occlusion. Conversely, patients who proceed to MT after IVT are by definition those in whom IVT has not yet succeeded. Several of the HERMES trials selected patients using collateral or perfusion imaging, which enriches for slowly progressing infarcts in whom late reperfusion still helps \cite{goyal2016,saver2016}. Finally, disability at discharge may understate the benefit of MT, since patients with severe strokes continue to recover over the following months.
+
+The patients who received MT without IVT were a distinct group: 39--53\% were taking an anticoagulant for atrial fibrillation, against 3--4\% of those who received both treatments. Their results therefore describe MT in patients who were ineligible for IVT, and should not be read as a comparison of direct MT with bridging in patients eligible for both. The finding that MT was effective in this group is consistent with HERMES, in which no heterogeneity of treatment effect was found across prespecified subgroups \cite{goyal2016}, and with MR CLEAN, in which the effect of treatment did not differ between patients who had and had not received alteplase \cite{mulder2016}.
+
+\subsection{Comparison with trials of MT with and without prior IVT}
+
+The randomised evidence closest to our joint analysis comes from the six trials that compared MT alone with IVT followed by MT in patients presenting directly to MT centres: DIRECT-MT, DEVT, SKIP, MR CLEAN-NO IV, SWIFT DIRECT and DIRECT-SAFE \cite{yang2020,zi2021,suzuki2021,lecouffe2021,fischer2022,mitchell2022}. Individually these trials were inconsistent. Pooled by the IRIS collaboration (2,313 patients), they did not establish non-inferiority of MT alone: the adjusted common odds ratio for MT alone against combined treatment was 0.89 (95\% CI 0.76--1.04) \cite{majoie2023}. The average effect of adding IVT immediately before MT is therefore small.
+
+A subsequent IRIS analysis showed that this average conceals a strong dependence on time \cite{kaesmacher2024}. The benefit of IVT plus MT over MT alone fell with time from onset to expected IVT (ratio of adjusted common odds ratios 0.84 per hour): the adjusted common odds ratio was 1.49 at 1 hour, 1.25 at 2 hours and 1.04 at 3 hours, with absolute differences in functional independence of 9, 5 and 1 percentage points. The benefit was no longer statistically significant after 2 hours 20 minutes, and the point estimate crossed the null at 3 hours 14 minutes \cite{kaesmacher2024}.
+
+Our observational estimates reproduce this pattern closely. In the IRIS trials MT followed IVT quickly (median onset to arterial puncture was 180 minutes, about half an hour after the median expected time of IVT) \cite{kaesmacher2024}, so the relevant cells of Figure~\ref{fig:main_s_learner_matrix} are those in which MT took place in the same hour as IVT or the next. In those cells, the estimated benefit with IVT at 60--180 minutes exceeded that of MT alone at the same time by about 0.1--0.3 log odds units (odds ratios of about 1.1--1.35), and with IVT after 180 minutes the difference was nil (1.03 against 1.03 at 180--240 minutes; 0.81 against 0.84 at 240--300 minutes). That two entirely different designs, one randomised and one emulated from registry data, locate the loss of added benefit at about three hours strengthens both findings.
+
+Our data extend the trial evidence in two directions that the trials could not address. First, the IRIS authors caution that their results apply only to patients who present directly to an MT centre \cite{kaesmacher2024}. In the UK, IVT at a local unit followed by secondary transfer is the predominant model of MT provision \cite{allen2022}, and in our data MT frequently followed IVT by two hours or more. Figure~\ref{fig:main_s_learner_matrix} covers these patients, and suggests that for them early IVT is worth considerably more than the trials of direct presenters imply (an additional 0.3--0.6 log odds units when IVT is given at 60--120 minutes and MT follows at 3--6 hours). Second, the trials varied only whether IVT was given, at one point in time; we describe how benefit changes as each treatment time moves while the other is held fixed.
+
+More recent trials are consistent with our findings. In BRIDGE-TNK, in patients presenting within 4.5 hours, tenecteplase before MT increased functional independence at 90 days from 44.1\% to 52.9\% \cite{qiu2025}. In TNK-PLUS, in patients presenting 4.5--24 hours after onset, tenecteplase before MT made no difference (44.2\% against 43.2\%) \cite{tnkplus2026}. A secondary analysis of SWIFT DIRECT alone did not find clear evidence that the effect of bridging depended on onset-to-needle time, although it was not powered to do so \cite{meinel2022}.
+
+\subsection{Comparison with registry and other observational evidence}
+
+Large registries have confirmed, among treated patients, that the time dependence seen in trials holds in routine care. In the Get With The Guidelines-Stroke registry (6,756 patients, onset to puncture within 8 hours), earlier MT was associated with better outcomes at discharge, and the relationship was non-linear, with a steeper gradient between 30 and 270 minutes than between 271 and 480 minutes \cite{jahan2019}. Our continuous estimates for MT alone show the same shape, falling steeply over the first four hours and more slowly thereafter, and it is of interest that the inflection identified in that registry coincides with the 270-minute threshold used to define early and late treatment here. In the MR CLEAN Registry (1,488 patients), each hour of delay to the start of MT was associated with an adjusted common odds ratio of 0.83 for functional outcome \cite{mulder2018}, almost identical to our 0.86.
+
+Observational comparisons of MT with and without prior IVT have generally favoured combined treatment. In the MR CLEAN Registry, IVT before MT was associated with better functional outcome (adjusted common odds ratio 1.47) \cite{chalos2019}, and in a recent analysis of 7,118 patients from 46 centres it was associated with functional independence whether MT took place within or after 4.5 hours (adjusted odds ratios 1.56 and 1.27), with no significant interaction with the MT time window \cite{chacon2026}. These analyses classify patients by whether IVT was given and by when MT took place, but not by when IVT was given. Our results suggest that this third quantity is the important one: the time of MT alone does not determine whether IVT adds benefit, whereas the time of IVT, and the interval that follows it, do. Among patients who received both treatments in a Berlin registry, a shorter interval between IVT and MT was associated with better outcome at three months \cite{wagner2022}, which corresponds to our finding that, for a fixed time to IVT, benefit falls as MT is delayed.
+
+These registry studies share a limitation that our design addresses in part. They compare treated patients with other treated patients, so they can estimate how outcome varies with time or with co-treatment, but not the effect of treatment against no treatment at each time. By constructing matched or model-based untreated comparators from the same national registry, we estimated treatment effects directly, at the cost of stronger assumptions about confounding, discussed in the main paper.
+
+\subsection{Late treatment and the late-window trials}
+
+Our finding that the benefit of MT declines to nothing by about ten hours appears to conflict with the trials of late MT, but the populations are different. DAWN and DEFUSE 3 enrolled patients 6--24 hours after they were last known to be well who had a small infarct core relative to their clinical deficit or perfusion lesion \cite{nogueira2018,albers2018}. In the AURORA pooled analysis of patients randomised more than six hours after onset, functional independence was achieved by 45.9\% with MT and 19.3\% without (adjusted common odds ratio 2.54), an effect as large as that seen in the early window \cite{jovin2022}. MR CLEAN-LATE found benefit at 6--24 hours in patients selected only by the presence of collateral flow on CT angiography \cite{olthuis2023}, and observational data suggest that patients selected in the late window by non-contrast CT have outcomes similar to those selected by perfusion imaging \cite{nguyen2022}.
+
+Patients in those trials presented late and were chosen because imaging showed that salvageable tissue remained; they are, by selection, patients whose infarcts progress slowly. The patients we studied all arrived within six hours of a known time of onset, and those treated late were, we presume, treated late mainly because of delay, not because imaging had identified them as late-window candidates. Our estimates therefore describe what delay costs the general population of early presenters, in whom fast and slow progressors are mixed. They do not describe the effect of MT in imaging-selected late presenters, and should not be used to argue against late-window treatment. The two bodies of evidence are complementary: the late-window trials show who can still benefit when presentation is late, and our data show how much is lost, on average, when treatment of an early presenter is delayed.
+
+Late MT was nonetheless associated with a clear benefit in our data. MT alone after 270 minutes was associated with an absolute gain in good outcome at discharge of 7.7--8.2 percentage points, and all three methods found this to be significantly greater than zero. The number of patients treated beyond nine hours was small, and estimates in that range are imprecise. The group that received both treatments late contained only 141 patients, and its wide confidence intervals do not allow any conclusion; the randomised evidence for that combination is the TNK-PLUS trial, which found no benefit of IVT before MT at 4.5--24 hours \cite{tnkplus2026}.
+
+\subsection{Agreement between methods, and who benefits}
+
+The three causal methods gave substantially the same results. Matching, the S-learner and the causal forest make different modelling assumptions: matching compares like with like on a small set of prognostic features without a model of outcome, the S-learner relies on a flexible outcome model, and the causal forest combines an outcome model with a model of treatment assignment and is consistent if either is correctly specified. All three agreed that early combined treatment gave the largest benefit, followed by early MT alone, and that later treatment gave less, although the order of the smaller late-treatment groups differed between methods. Where the methods estimate the same quantity the values were close: the absolute gain in good outcome at discharge from matching and from the causal forest was 12.7 and 11.1 percentage points for early IVT alone, 17.2 and 14.1 for early MT alone, and 23.0 and 18.8 for early combined treatment. Agreement between methods does not remove bias from confounders that none of them observe, but it makes it unlikely that the findings are an artefact of one model.
+
+The agreement with randomised trials, where trials exist, serves as a further check. The emulation recovered the absolute benefit of IVT and the time at which it is exhausted \cite{emberson_effect_2014}, the hourly decay of MT benefit \cite{fransen_time_2016,saver2016}, and the time dependence of the added value of IVT before MT \cite{kaesmacher2024}. Benchmarking an emulated target trial \cite{hernan2016} against known trial results is a recognised means of assessing whether observational data can support causal conclusions, and it gives some confidence in the estimates for which no trial exists, namely those for specific combinations of the two treatment times.
+
+Our estimates are of the effect of treatment in those who received it, and the treated groups differed from one another. Patients who received MT had more severe strokes and less prior disability than those who received IVT alone, and those who received MT without IVT were far more likely to have atrial fibrillation and to be anticoagulated. Differences in estimated benefit between groups therefore reflect differences in the patients as well as in the treatments and their timing. The secondary model of estimated benefit indicated which characteristics matter most. Benefit increased with stroke severity and decreased with pre-stroke disability across mRS 0--4, and the admitting stroke team was the single most influential feature. Variation between teams of this size, after accounting for patient characteristics and treatment times, suggests that how treatment is delivered, including patient selection, procedural success and post-procedural care, influences how much patients gain. It may also reflect differences between teams in case mix that we did not measure and in how discharge disability is assessed, and it deserves separate study.

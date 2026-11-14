@@ -1,11 +1,11 @@
 \section{Results}
 
-\subsection{Target Trial Emulation}
+\subsection{Patient characteristics for matched patient pairs}
 
-Table \ref{tab:matching} shows the baseline characteristics of each treatment group. Those receiving MT, with or without IVT, had higher average stroke severity and lower average pre-stroke disability than those receiving IVT alone. Those receiving IVT, with or without MT, had significantly lower rates of atrial fibrillation (AF) diagnosis and of anticoagulant use for AF. Other characteristics were similar between groups.
+Table~\ref{tab:matching} shows the characteristics of treated patients and their matched controls in each treatment group. Patients who received MT, with or without IVT, had more severe strokes and less pre-stroke disability than those who received IVT alone, and those who received MT alone were far more likely to have AF and to be taking anticoagulants for AF. Matching produced closely balanced groups, and at most 2.6\% of any treatment group could not be matched. Characteristics of all patients before matching are given in the Supplementary Material.
 
 \begin{longtable}[]{@{}llll@{}}
-\caption{Descriptive statistics for matched pair analysis of treatment strategies. Strategies are defined by early ($\leq$ 270 min from onset) or late ($>$ 270 min from onset) IVT, MT, or their combination. Patients were matched in each treatment strategy on prior disability, age group (5-year bands), stroke severity band (NIHSS 0--4, 5--9, 10--14, \textit{et seq.}), AF anticoagulant use, and AF diagnosis. Non-matched patients (a maximum of 2.3\% of each group) were dropped from the analysis. Values are mean (standard deviation).}\\
+\caption{Descriptive statistics for matched pair analysis of treatment strategies. Strategies are defined by early ($\leq$ 270 min from onset) or late ($>$ 270 min from onset) IVT, MT, or their combination. Patients were matched in each treatment strategy on prior disability, age group (5-year bands), stroke severity band (NIHSS 0--4, 5--9, 10--14, \textit{et seq.}), AF anticoagulant use, and AF diagnosis. Non-matched patients (a maximum of 2.6\% of each group) were dropped from the analysis. Values are mean (standard deviation).}\\
 \toprule
 \textbf{Treatment group} & \textbf{Feature} & \textbf{Treated} & \textbf{Untreated} \\
 \midrule
@@ -77,31 +77,39 @@ Late IVT + Late MT (n=141) & Prior disability & 0.45 (0.70) & 0.45
 \label{tab:matching}
 \end{longtable}
 
-Figure \ref{fig:main_target_trial_mrs_2} shows the differences between control and treated groups for each treatment group. Early (treatment given $\leq$ 270 minutes after stroke onset) combined IVT and MT had the greatest estimated benefit, followed by early IVT alone. Early MT alone had a significant benefit, but less than that of combined treatment or IVT alone. Late IVT alone ($>$ 270 minutes after stroke onset) had a reduced benefit, but late MT, with or without IVT, appeared to have little benefit.
+\subsection{Effect of each treatment strategy}
 
-\begin{figure}
-    \centering
-    \includegraphics[width=1\linewidth]{images/treatment_effects/target_trial_emulation_mrs_2.png}
-    \caption{Target trial emulation of reperfusion-treatment timing strategies and discharge functional outcomes, using matched control and treated patients. Estimated mean discharge modified Rankin Scale (mRS; left panel), proportion achieving a good outcome (discharge mRS 0–2, or no worse than the pre-stroke mRS; middle panel), and length of stay (right panel) are shown for patients receiving each treatment strategy (red) and their matched untreated comparators (blue). Strategies are defined by early ($\leq$ 270 min from onset) or late ($>$ 270 min from onset) IVT, MT, or their combination. Points denote estimated outcomes and horizontal bars 95\% confidence intervals; p-values indicate the treated–untreated comparison within each treatment group, with sample sizes shown. Lower mRS and higher proportions with a good outcome indicate more favourable outcomes.}
-    \label{fig:main_target_trial_mrs_2}
-\end{figure}
+Table~\ref{tab:effects} summarises the estimated effect of each strategy by target trial emulation, the S-learner and the causal forest. Figures of these estimates are available in the Supplementary Material (Figure~\ref{fig:target_trial_mrs_2} for target trial emulation, and the mRS 0--2 panels of Figures~\ref{fig:s_learner_benefit} and~\ref{fig:causal_forest_benefit} for the S-learner and causal forest). Every strategy was associated with a significantly higher chance of a good outcome. All three methods found that early combined IVT and MT gave the largest benefit: 46.5\% of treated patients had a good outcome against 23.5\% of matched controls, the S-learner log odds ratio was 1.35 (odds ratio 3.9), and the causal forest estimated an absolute gain of 18.8 percentage points. Early MT alone gave the next largest benefit by matching and the S-learner, followed by early IVT alone.
 
-% ============================================================
+Later treatment gave less benefit. On the log odds scale, late IVT alone and late MT alone gave about half to three quarters of the benefit of their early counterparts, and early IVT followed by late MT gave little more than early IVT alone (log odds ratio 0.73 against 0.71). Only 141 patients received both treatments late, and their estimates were imprecise.
 
-\subsection{S-learner}
+\begin{table}[htbp]
+\centering
+\caption{Estimated effect of each treatment strategy on a good outcome at discharge (discharge mRS 0--2, or no worse than the pre-stroke mRS), by method. Early: $\leq$270 minutes from onset; late: $>$270 minutes. Target trial emulation: percentage with a good outcome among treated patients and their matched controls, and the difference (percentage points). S-learner: mean log odds ratio, treated vs.\ untreated (95\% confidence interval). Causal forest: conditional average treatment effect, as an absolute change in percentage points (95\% confidence interval). $n$: patients in each treatment group before matching.}
+\label{tab:effects}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{@{}lrrrrll@{}}
+\toprule
+ & & \multicolumn{3}{c}{Target trial emulation} & S-learner & Causal forest \\
+\cmidrule(lr){3-5}
+Treatment strategy & $n$ & Treated (\%) & Control (\%) & Difference & Log odds ratio (95\% CI) & CATE, pp (95\% CI) \\
+\midrule
+Early IVT only & 27,695 & 49.0 & 36.3 & 12.7 & 0.71 (0.70--0.71) & 11.1 (11.0--11.1) \\
+Late IVT only & 1,189 & 47.3 & 40.9 & 6.3 & 0.50 (0.46--0.54) & 9.2 (8.3--10.2) \\
+Early MT only & 1,107 & 39.1 & 21.9 & 17.2 & 1.19 (1.15--1.24) & 14.1 (13.2--15.0) \\
+Late MT only & 1,876 & 33.5 & 25.3 & 8.2 & 0.58 (0.55--0.61) & 7.7 (7.2--8.2) \\
+Early IVT + early MT & 2,309 & 46.5 & 23.5 & 23.0 & 1.35 (1.33--1.38) & 18.8 (18.3--19.3) \\
+Early IVT + late MT & 2,714 & 37.2 & 26.7 & 10.5 & 0.73 (0.70--0.75) & 9.3 (8.9--9.7) \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
 
-Figure \ref{fig:main_s_learner_benefit} shows the estimated treatment effect for each treatment group, as estimated by the S-learner. Early (treatment given $\leq$ 270 minutes after stroke onset) combined IVT and MT had the greatest estimated benefit, followed by early IVT alone. Early MT alone had a significant benefit, but less than that of combined treatment or IVT alone. Late IVT alone ($>$ 270 minutes after stroke onset) had a reduced benefit. Late MT, with or without IVT, had a further reduced benefit (although estimates for late IVT with late MT were highly variable owing to the small sample size).
+\subsection{Effect of time to treatment}
 
-\begin{figure}
-    \centering
-    \includegraphics[width=1\linewidth]{images/treatment_effects/xgboost_counterfactual_cate_log_odds_estimates_2.png}
-    \caption{Estimated counterfactual treatment benefit across reperfusion-treatment timing strategies, derived from the XGBoost S-learner model, comparing the odds of being discharged with a good outcome (discharge mRS 0--2, or no worse than the pre-stroke mRS) with and without treatment. Points represent the mean estimated individual treatment effect for each treatment-timing group, expressed as the counterfactual log odds ratio for being discharged with a good outcome relative to no reperfusion treatment; horizontal error bars show 95\% confidence intervals. Treatment groups are defined by receipt of IVT and/or MT, with early treatment defined as onset-to-treatment time $\leq$270 minutes and late treatment as $>$270 minutes. Sample sizes are shown alongside group labels. Values above zero indicate a model-predicted increase in the odds of being discharged with a good outcome under the observed treatment strategy compared with no treatment.}
-    \label{fig:main_s_learner_benefit}
-\end{figure}
+Figure~\ref{fig:main_s_learner_matrix} shows the benefit estimated by the S-learner fitted to continuous times to IVT and MT, grouped into one-hour intervals. The benefit of IVT alone and of MT alone declined over the six hours after onset. A linear fit to the benefit of IVT alone gave a log odds ratio of 1.19 (95\% CI 1.17--1.21) extrapolated to the time of onset, falling to zero at 405 minutes (95\% CI 395--415). For MT alone, the corresponding values were 1.54 (95\% CI 1.47--1.62) and 596 minutes (95\% CI 572--621). These correspond to losses of about 0.18 and 0.16 log odds units per hour of delay, so that each hour multiplied the odds ratio for a good outcome by about 0.84 for IVT and 0.86 for MT.
 
-Figure \ref{fig:main_s_learner_matrix} shows results from the S-learner fitted to continuous times to IVT and MT, with times then grouped into one-hour intervals. IVT alone and MT alone both showed declining benefit over the six hours after stroke onset. The magnitude of benefit was similar for each treatment at comparable times. Combined treatment showed some benefit over either treatment alone.
-
-When a linear regression model was fitted to the benefit of IVT alone against time to IVT, the maximum log-odds benefit (of being discharged with a good outcome), extrapolated back to the time of stroke onset, was 1.19 (95\% CI 1.17--1.21). The time of no effect after stroke onset was 405 min (95\% CI 395--415 min). For MT alone, the maximum log-odds benefit extrapolated back to the time of stroke onset was 1.54 (95\% CI 1.47--1.62), and the time of no effect was 596 min (95\% CI 572--621 min). 
+The two treatment times interacted. For a fixed time to MT, benefit was greater the earlier IVT had been given: for MT at 240--300 minutes, the log odds ratio was 0.84 without IVT, 0.81--0.82 with IVT at 180--300 minutes, 0.99 with IVT at 120--180 minutes, and 1.29 with IVT at 60--120 minutes. For a fixed time to IVT, benefit fell the later MT followed and converged on that of IVT alone: for IVT at 60--120 minutes, the log odds ratio was 1.70 with MT at 120--180 minutes, 1.37 at 180--240 minutes, 1.29 at 240--300 minutes and 1.11 at 300--360 minutes, against 0.98 for IVT alone. IVT given at 180--240 minutes added nothing to MT performed in the same or the following hour, but was associated with an additional 0.2--0.3 log odds units when MT took place at 300--480 minutes. The benefit of early combined treatment (log odds ratio 1.35) was less than the sum of the benefits of early IVT alone and early MT alone (0.71 and 1.19).
 
 \begin{figure}
     \centering
@@ -110,7 +118,9 @@ When a linear regression model was fitted to the benefit of IVT alone against ti
     \label{fig:main_s_learner_matrix}
 \end{figure}
 
-After estimating treatment effects, we fitted an XGBoost regression model to understand what influences the benefit of treatment. This model predicted estimated benefit with an $R^2$ of 0.789. Figure \ref{fig:main_s_learner_benefit_shap_mrs_2} shows the SHAP values for that model, in order of their overall influence on treatment benefit. The most influential features affecting the estimated benefit of treatment (in treated patients only) were the stroke team attended, stroke severity, prior disability, and the type and time of treatment.
+\subsection{Characteristics associated with greater benefit}
+
+A secondary model predicted the estimated benefit of treatment in treated patients with an $R^2$ of 0.789 (Figure~\ref{fig:main_s_learner_benefit_shap_mrs_2}). The features most associated with benefit were the stroke team attended, stroke severity, pre-stroke disability, and the type and timing of treatment. Benefit increased with stroke severity and decreased with pre-stroke disability.
 
 \begin{figure}
     \centering
@@ -119,22 +129,3 @@ After estimating treatment effects, we fitted an XGBoost regression model to und
     \caption{Effect of patient feature values on the predicted benefit of treatment. Subplots (top to bottom, left to right) are ordered by their average effect on benefit of treatment. Each subplot shows the feature values and a box plot of SHAP values for each feature value. The SHAP value is the contribution to the log-odds ratio treatment effect (treated vs untreated) for being discharged with a good outcome.}
     \label{fig:main_s_learner_benefit_shap_mrs_2}
 \end{figure}
-
-
-
-% ============================================================
-
-\subsection{Causal Forest}
-
-Figure \ref{fig:main_causal_forest_mrs_2} shows the estimated treatment effect for each treatment group, as estimated by the Causal Forest. Early (treatment given $\leq$ 270 minutes after stroke onset) combined IVT and MT had the greatest estimated benefit, followed by early IVT alone. Early MT alone had a significant benefit, but less than that of combined treatment or IVT alone. Late IVT alone ($>$ 270 minutes after stroke onset) had a reduced benefit. Late MT, with or without IVT, had a further reduced benefit (although estimates for late IVT with late MT were highly variable owing to the small sample size).
-
-\begin{figure}
-    \centering
-    \includegraphics[width=1\linewidth]
-{images/treatment_effects/causal_forest_counterfactual_cate_estimates_2.png}
-    \caption{Estimated counterfactual treatment benefit across reperfusion-treatment timing strategies, derived from the Causal Forest model, comparing the probability of being discharged with a good outcome (discharge mRS 0--2, or no worse than the pre-stroke mRS) with and without treatment. Treatment effects are shown as conditional average treatment effects (CATE), i.e.\ the absolute change, in percentage points, in the probability of being discharged with a good outcome relative to no reperfusion treatment.
-    Horizontal error bars show 95\% confidence intervals. Treatment groups are defined by receipt of IVT and/or MT, with early treatment defined as onset-to-treatment time $\leq$ 270 minutes and late treatment as $>$270 minutes. Sample sizes are shown alongside group labels. Values above zero indicate a model-predicted increase in the probability of a good outcome under the observed treatment strategy compared with no treatment.}
-    \label{fig:main_causal_forest_mrs_2}
-\end{figure}
-
-

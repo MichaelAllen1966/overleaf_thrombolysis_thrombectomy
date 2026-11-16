@@ -235,7 +235,7 @@ Use of thrombectomy is predicted well (ROC-AUC $\sim$0.94) from known features. 
 
 Figures \ref{fig:shap_mrs0-2_all} to \ref{fig:shap_thrombectomy_all} show SHAP analysis for the different models. SHAP values quantify how each feature, given its specific value for an individual patient, contributed to that patient's model prediction. Each prediction is composed of two parts: a base value, common to all predictions from that model, and the sum of the SHAP values for every feature in that individual's case. Because the model allows for interactions between features, two patients with identical values for a given feature may still receive different SHAP values for that feature, depending on their other characteristics.
 
-The units of the SHAP values depend on the type of model output. For binary outcomes (survival, discharge mRS 0-2, use of thrombolysis or thrombectomy, and thrombolysis-induced haemorrhage), SHAP values are expressed in log-odds; summing them with the base value yields the final log-odds prediction. For the continuous regression outcome (length of stay), SHAP values are expressed in the same units as the outcome itself (days).
+The units of the SHAP values depend on the type of model output. For binary outcomes (discharge mRS 0-2, use of thrombolysis or thrombectomy, and thrombolysis-induced haemorrhage), SHAP values are expressed in log-odds; summing them with the base value yields the final log-odds prediction. For the continuous regression outcome (length of stay), SHAP values are expressed in the same units as the outcome itself (days).
 
 In each figure, the top plot is a SHAP \textit{bee-swarm} plot. Feature values are colour-coded from blue (low) to red (high); for stroke severity, for example, blue points indicate low severity and red points indicate high severity. The position on the x-axis shows the SHAP value for each point, with points further to the left indicating that the feature is pushing the model's prediction lower (though this effect may be offset by other features, since SHAP values are additive). Points further to the right indicate the opposite: the feature is pushing the prediction higher. Features are ordered top-to-bottom by their overall importance - specifically, by the mean absolute SHAP value across all instances in the dataset, with the most influential feature at the top and the least influential at the bottom.
 
@@ -246,8 +246,6 @@ Though SHAP adds explainability to the model, care should be taken remembering t
 Some observations may be made:
 
 \textbf{Prediction of favourable outcome (mRS 0-2) at discharge} (figure \ref{fig:shap_mrs0-2_all}): Lower disability outcomes were especially associated with lower stroke severity, lower prior disability, and lower age. Ischaemic stroke patients had a lower chance of favourable outcomes, compared to haemorrhagic stroke (if all other feature values were similar). The stroke team attended also significantly affected the odds of being discharged mRS 0-2. Black and Asian patients had somewhat lower odds of being discharged mRS 0-2. Lower time to thrombolysis or thrombectomy improved the odds of being discharged mRS 0-2, but longer times to treatment worsened those odds compared to untreated patients. Figure \ref{fig:shap_mrs0-2_no_treatment} repeated the modelling, but for patients not treated with thrombolysis or thrombectomy, confirming that stroke severity, age, prior disability, stroke team and stroke type were the most important features affecting odds of being discharged mRS 0-2, independent of treatment.
-
-\textbf{Prediction of survival until discharge} (figure \ref{fig:shap_survival_all}): Survival was especially associated with lower stroke severity, lower age, and lower prior disability. The stroke team attended also significantly affected the odds of survival. Ischaemic stroke patients had a lower chance of survival, compared to haemorrhagic stroke (if all other feature values were similar). Black, Asian, and Mixed ethnicity patients had \textit{higher} odds of survival compared to white patients (but, as we previously said, with lower odds of being discharged disability-free). Figure \ref{fig:shap_survival_no_treatment} repeated the modelling, but for patients not treated with thrombolysis or thrombectomy, confirming that stroke severity, age, prior disability, stroke team and stroke type were the most important features affecting odds of survival to discharge, independent of treatment.
 
 \textbf{Prediction of length of stay} (figure \ref{fig:shap_los_all}): Higher stroke severity was associated with longer lengths of stay, though dying in hospital was associated with shorter lengths of stay, as was being discharged to a community or early-supported discharge team. Stroke team attended had a significant effect on prediction of length of stay. Shorter onset-to-arrival times were associated with lower lengths of stay.
 
@@ -315,66 +313,6 @@ Some observations may be made:
 
     \caption{SHAP analysis of feature contributions to predicting favourable discharge outcomes (mRS 0-2) in stroke patients who did not receive thrombolysis or thrombectomy. \textit{Top}: A SHAP summary plot detailing the impact of features on the model's log-odds predictions. Each point represents an individual patient instance. The position on the x-axis indicates the SHAP value, where positive values increase the predicted odds of a favourable outcome, and negative values decrease it. For continuous and binary variables, colour represents the original feature value (red indicating high values; blue indicating low values). Categorical variables (\textit{stroke team} and \textit{ethnicity}) are plotted in grey. \textit{Bottom left}: Violin plots illustrating the distribution of SHAP values across distinct ethnic groups. This panel highlights the marginal impact and variance of ethnicity on the model’s prediction for disability outcome. \textit{Bottom Right}: A ranked bar chart displaying the average SHAP value associated with each individual stroke team. This panel visualizes institutional variation, reflecting the contribution of the treating stroke team to the predicted patient outcome after accounting for patient-level clinical characteristics.}
     \label{fig:shap_mrs0-2_no_treatment}
-\end{figure}
-
-%%%%%%%%%%% Survival %%%%%%%%%%%%%%%
-
-%% All patients
-
-\begin{figure}[htbp]
-    \centering
-    
-    % Top image (Full width)
-    \begin{subfigure}{0.50\textwidth}
-        \includegraphics[width=\linewidth]{images/shap/shap_all_patients_survival.png}
-        %\caption{}
-    \end{subfigure}
-
-    \vspace{0.5cm} % Optional vertical space between rows
-
-    % Bottom left image (~45% width)
-    \begin{subfigure}{0.407\textwidth}
-        \includegraphics[width=\linewidth]{images/shap/shap_all_patients_survival_ethnicity.png}
-        %\caption{}
-    \end{subfigure}
-    \hfill % Adds flexible horizontal spacing
-    % Bottom right image (~55% width)
-    \begin{subfigure}{0.543\textwidth}
-        \includegraphics[width=\linewidth]{images/shap/shap_all_patients_survival_stroke_team.png}
-        %\caption{}
-    \end{subfigure}
-
-    \caption{SHAP analysis of feature contributions to predicting survival in stroke patients. \textit{Top}: A SHAP summary plot detailing the impact of features on the model's log-odds predictions. Each point represents an individual patient instance. The position on the x-axis indicates the SHAP value, where positive values increase the predicted odds of survival, and negative values decrease it. For continuous and binary variables, colour represents the original feature value (red indicating high values; blue indicating low values). Categorical variables (\textit{stroke team} and \textit{ethnicity}) are plotted in grey. \textit{Bottom left}: Violin plots illustrating the distribution of SHAP values across distinct ethnic groups. This panel highlights the marginal impact and variance of ethnicity on the model’s prediction for survival. \textit{Bottom Right}: A ranked bar chart displaying the average SHAP value associated with each individual stroke team. This panel visualizes institutional variation, reflecting the contribution of the treating stroke team to the predicted survival outcome after accounting for patient-level clinical characteristics.}
-    \label{fig:shap_survival_all}
-\end{figure}
-
-%% Untreated patients
-
-\begin{figure}[htbp]
-    \centering
-    
-    % Top image (Full width)
-    \begin{subfigure}{0.50\textwidth}
-        \includegraphics[width=\linewidth]{images/shap/shap_untreated_patients_survival.png}
-        %\caption{}
-    \end{subfigure}
-
-    \vspace{0.5cm} % Optional vertical space between rows
-
-    % Bottom left image (~45% width)
-    \begin{subfigure}{0.407\textwidth}
-        \includegraphics[width=\linewidth]{images/shap/shap_untreated_patients_survival_ethnicity.png}
-        %\caption{}
-    \end{subfigure}
-    \hfill % Adds flexible horizontal spacing
-    % Bottom right image (~55% width)
-    \begin{subfigure}{0.543\textwidth}
-        \includegraphics[width=\linewidth]{images/shap/shap_untreated_patients_survival_stroke_team.png}
-        %\caption{}
-    \end{subfigure}
-
-    \caption{SHAP analysis of feature contributions to predicting survival in stroke patients who did not receive thrombolysis or thrombectomy. \textit{Top}: A SHAP summary plot detailing the impact of features on the model's log-odds predictions. Each point represents an individual patient instance. The position on the x-axis indicates the SHAP value, where positive values increase the predicted odds of survival, and negative values decrease it. For continuous and binary variables, colour represents the original feature value (red indicating high values; blue indicating low values). Categorical variables (\textit{stroke team} and \textit{ethnicity}) are plotted in grey. \textit{Bottom left}: Violin plots illustrating the distribution of SHAP values across distinct ethnic groups. This panel highlights the marginal impact and variance of ethnicity on the model’s prediction for survival. \textit{Bottom Right}: A ranked bar chart displaying the average SHAP value associated with each individual stroke team. This panel visualizes institutional variation, reflecting the contribution of the treating stroke team to the predicted survival outcome after accounting for patient-level clinical characteristics.}
-    \label{fig:shap_survival_no_treatment}
 \end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%% Length of stay %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -509,65 +447,19 @@ Some observations may be made:
 
 \section{Treatment effects}
 
-The main paper reports treatment effects for a good outcome at discharge, defined as a discharge mRS of 0--2, or a discharge mRS no worse than the patient's pre-stroke mRS. This section repeats each analysis with the mRS threshold set to each possible value (mRS 0--1, 0--2, 0--3, 0--4 and 0--5, the last being survival to discharge), to show whether the conclusions depend on the threshold chosen. At each threshold, a good outcome is a discharge mRS at or below the threshold, or no worse than the patient's pre-stroke mRS. Treatment groups are as defined in the main paper: thrombolysis and thrombectomy, alone or combined, each given early ($\leq$270 minutes after stroke onset) or late ($>$270 minutes).
+The main paper reports treatment effects for a good outcome at discharge, defined as a discharge mRS of 0--2, or a discharge mRS no worse than the patient's pre-stroke mRS. This section gives further detail of each analysis for that outcome. Treatment groups are as defined in the main paper: thrombolysis and thrombectomy, alone or combined, each given early ($\leq$270 minutes after stroke onset) or late ($>$270 minutes).
 
 \subsection{Target trial emulation}
 
-Figure~\ref{fig:target_trial} shows treatment effects estimated by matching-based target trial emulation, with one panel for each mRS threshold. For each treatment group, every treated patient was matched to an untreated patient with similar characteristics (see main Methods), and outcomes were then compared between the treated patients (red) and their matched controls (blue). The difference between each pair of points is the estimated effect of treatment in those who received it.
+Figure~\ref{fig:target_trial} shows treatment effects estimated by matching-based target trial emulation. For each treatment group, every treated patient was matched to an untreated patient with similar characteristics (see main Methods), and outcomes were then compared between the treated patients (red) and their matched controls (blue). The difference between each pair of points is the estimated effect of treatment in those who received it.
 
-Each panel contains three plots. The left plot shows mean discharge mRS, where a lower value indicates less disability, and the right plot shows length of stay; neither depends on the threshold, so both are the same in every panel. The middle plot shows the proportion of patients with a good outcome at the given mRS threshold (discharge mRS at or below the threshold, or no worse than before the stroke), where a higher value indicates a better outcome. Because a separate matched control group was constructed for each treatment group, the untreated (blue) values differ between treatment groups, reflecting the different characteristics of the patients who received each treatment.
+The figure contains three plots. The left plot shows mean discharge mRS, where a lower value indicates less disability, and the right plot shows length of stay. The middle plot shows the proportion of patients with a good outcome (discharge mRS 0--2, or no worse than before the stroke), where a higher value indicates a better outcome. Because a separate matched control group was constructed for each treatment group, the untreated (blue) values differ between treatment groups, reflecting the different characteristics of the patients who received each treatment.
 
-\begin{figure}[p]
+\begin{figure}[htbp]
     \centering
-    \begin{subfigure}{\textwidth}
-        \centering
-        \includegraphics[width=\textwidth,height=0.28\textheight,keepaspectratio]{images/treatment_effects/target_trial_emulation_mrs_1.png}
-        \caption{mRS 0--1}
-        \label{fig:target_trial_mrs_1}
-    \end{subfigure}
-
-    \vspace{0.2cm}
-
-    \begin{subfigure}{\textwidth}
-        \centering
-        \includegraphics[width=\textwidth,height=0.28\textheight,keepaspectratio]{images/treatment_effects/target_trial_emulation_mrs_2.png}
-        \caption{mRS 0--2}
-        \label{fig:target_trial_mrs_2}
-    \end{subfigure}
-
-    \vspace{0.2cm}
-
-    \begin{subfigure}{\textwidth}
-        \centering
-        \includegraphics[width=\textwidth,height=0.28\textheight,keepaspectratio]{images/treatment_effects/target_trial_emulation_mrs_3.png}
-        \caption{mRS 0--3}
-        \label{fig:target_trial_mrs_3}
-    \end{subfigure}
-
-    \caption{Target trial emulation of reperfusion-treatment timing strategies and discharge outcomes at each mRS threshold for a good outcome (continued on next page).}
+    \includegraphics[width=\textwidth,height=0.8\textheight,keepaspectratio]{images/treatment_effects/target_trial_emulation_mrs_2.png}
+    \caption{Target trial emulation of reperfusion-treatment timing strategies and discharge outcomes, using matched treated and control patients. The left plot shows estimated mean discharge modified Rankin Scale (mRS), the middle plot the proportion achieving a good outcome (discharge mRS 0--2, or no worse than the pre-stroke mRS), and the right plot length of stay. Patients receiving each treatment strategy are shown in red and their matched untreated comparators in blue. Strategies are defined by early ($\leq$ 270 mins from onset) or late ($>$ 270 mins from onset) intravenous thrombolysis, mechanical thrombectomy, or their combination. Points denote estimated outcomes and horizontal bars 95\% confidence intervals; p-values indicate the treated--untreated comparison within each treatment group, with sample sizes shown. Lower mRS and higher proportions with a good outcome indicate more favourable outcomes.}
     \label{fig:target_trial}
-\end{figure}
-
-\begin{figure}[p]
-    \ContinuedFloat
-    \centering
-    \begin{subfigure}{\textwidth}
-        \centering
-        \includegraphics[width=\textwidth,height=0.28\textheight,keepaspectratio]{images/treatment_effects/target_trial_emulation_mrs_4.png}
-        \caption{mRS 0--4}
-        \label{fig:target_trial_mrs_4}
-    \end{subfigure}
-
-    \vspace{0.2cm}
-
-    \begin{subfigure}{\textwidth}
-        \centering
-        \includegraphics[width=\textwidth,height=0.28\textheight,keepaspectratio]{images/treatment_effects/target_trial_emulation_mrs_5.png}
-        \caption{mRS 0--5 (survival to discharge)}
-        \label{fig:target_trial_mrs_5}
-    \end{subfigure}
-
-    \caption{Target trial emulation of reperfusion-treatment timing strategies and discharge outcomes, using matched treated and control patients, at each mRS threshold for a good outcome. Within each panel, the left plot shows estimated mean discharge modified Rankin Scale (mRS), the middle plot the proportion achieving a good outcome at that threshold (discharge mRS at or below the threshold, or no worse than the pre-stroke mRS), and the right plot length of stay; the left and right plots do not depend on the threshold and are the same in every panel. Patients receiving each treatment strategy are shown in red and their matched untreated comparators in blue. Strategies are defined by early ($\leq$ 270 mins from onset) or late ($>$ 270 mins from onset) intravenous thrombolysis, mechanical thrombectomy, or their combination. Points denote estimated outcomes and horizontal bars 95\% confidence intervals; p-values indicate the treated--untreated comparison within each treatment group, with sample sizes shown. Lower mRS and higher proportions with a good outcome indicate more favourable outcomes.}
 \end{figure}
 
 % ------------------------------------------------------------------------------------
@@ -576,48 +468,14 @@ Each panel contains three plots. The left plot shows mean discharge mRS, where a
 
 \subsection{S-learner}
 
-Figure \ref{fig:s_learner_benefit} shows treatment effects estimated by the XGBoost S-learner for each mRS threshold. For each treated patient, the model predicted the outcome both with the treatment actually received and with no reperfusion treatment; the difference between these two predictions is that patient's estimated treatment effect. Treatment effects are shown as log odds ratios (treated vs.\ untreated) for achieving the outcome, averaged over patients in each treatment group. A value of zero indicates no effect, positive values indicate benefit, and a log odds ratio of about 0.69 corresponds to a doubling of the odds. Treatment type and timing (early vs.\ late, using a 270-minute onset-to-treatment threshold) were coded as a single categorical feature for this model.
+Figure \ref{fig:s_learner_benefit} shows treatment effects estimated by the XGBoost S-learner. For each treated patient, the model predicted the outcome both with the treatment actually received and with no reperfusion treatment; the difference between these two predictions is that patient's estimated treatment effect. Treatment effects are shown as log odds ratios (treated vs.\ untreated) for achieving the outcome, averaged over patients in each treatment group. A value of zero indicates no effect, positive values indicate benefit, and a log odds ratio of about 0.69 corresponds to a doubling of the odds. Treatment type and timing (early vs.\ late, using a 270-minute onset-to-treatment threshold) were coded as a single categorical feature for this model.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\begin{figure}
+\begin{figure}[htbp]
     \centering
-    
-    % Top left
-    \begin{subfigure}{0.48\textwidth}
-        \includegraphics[width=\linewidth]{images/treatment_effects/xgboost_counterfactual_cate_log_odds_estimates_1.png}
-        %\caption{}
-    \end{subfigure}
-    \hfill % Adds flexible horizontal spacing
-    % top right image 
-    \begin{subfigure}{0.48\textwidth}
-        \includegraphics[width=\linewidth]{images/treatment_effects/xgboost_counterfactual_cate_log_odds_estimates_2.png}
-        %\caption{}
-    \end{subfigure}
-
-    \vspace{0.5cm} % Optional vertical space between rows
-
-    % Center left image
-    \begin{subfigure}{0.48\textwidth}
-        \includegraphics[width=\linewidth]{images/treatment_effects/xgboost_counterfactual_cate_log_odds_estimates_3}
-        %\caption{}
-    \end{subfigure}
-    \hfill % Adds flexible horizontal spacing
-    % Centre right image 
-    \begin{subfigure}{0.48\textwidth}
-        \includegraphics[width=\linewidth]{images/treatment_effects/xgboost_counterfactual_cate_log_odds_estimates_4}
-        %\caption{}
-    \end{subfigure}
-
-    \vspace{0.5cm} % Optional vertical space between rows
-
-    % Bottom image
-    \begin{subfigure}{0.48\textwidth}
-        \includegraphics[width=\linewidth]{images/treatment_effects/xgboost_counterfactual_cate_log_odds_estimates_5}
-        %\caption{}
-    \end{subfigure}
-    
-    \caption{Estimated counterfactual treatment benefit across reperfusion-treatment timing strategies, derived from the XGBoost S-learner model. Each panel shows results for discharge at or below each modified Rankin Scale (mRS) level. Points represent the mean estimated individual treatment effect for each treatment-timing group, expressed as the counterfactual log odds ratio for the specified outcome relative to no reperfusion treatment; horizontal error bars show 95\% confidence intervals. Treatment groups are defined by receipt of intravenous thrombolysis and/or mechanical thrombectomy, with early treatment defined as onset-to-treatment time $<$270 minutes and late treatment as $\geq$270 minutes. Sample sizes are shown alongside group labels. Values above zero indicate a model-predicted increase in the odds of a good outcome at the corresponding threshold under the observed treatment strategy compared with no treatment.}
+    \includegraphics[width=0.8\textwidth,height=0.8\textheight,keepaspectratio]{images/treatment_effects/xgboost_counterfactual_cate_log_odds_estimates_2.png}
+    \caption{Estimated counterfactual treatment benefit across reperfusion-treatment timing strategies, derived from the XGBoost S-learner model. A good outcome is a discharge modified Rankin Scale (mRS) of 0--2, or no worse than the pre-stroke mRS. Points represent the mean estimated individual treatment effect for each treatment-timing group, expressed as the counterfactual log odds ratio for the specified outcome relative to no reperfusion treatment; horizontal error bars show 95\% confidence intervals. Treatment groups are defined by receipt of intravenous thrombolysis and/or mechanical thrombectomy, with early treatment defined as onset-to-treatment time $<$270 minutes and late treatment as $\geq$270 minutes. Sample sizes are shown alongside group labels. Values above zero indicate a model-predicted increase in the odds of a good outcome under the observed treatment strategy compared with no treatment.}
     \label{fig:s_learner_benefit}
 \end{figure}
 
@@ -625,46 +483,12 @@ Figure \ref{fig:s_learner_benefit} shows treatment effects estimated by the XGBo
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-Figure \ref{fig:s_learner_heatmap_log odds} shows a heatmap of the estimated benefit of thrombolysis and thrombectomy by use and speed in achieving each mRS threshold. This model used actual onset-to-treatment times for each of thrombolysis and thrombectomy, rather than early/late groups. The resulting benefit, estimated for each patient using counterfactual modelling, was then grouped by the time (in hours) of each treatment after stroke onset. Each cell gives the mean predicted benefit for patients whose thrombolysis and thrombectomy were given in that pair of hourly intervals, so reading along a row or down a column shows how benefit changes as one treatment is delayed while the timing of the other is held fixed. The final row and column show patients who received only one of the two treatments.
+Figure \ref{fig:s_learner_heatmap_log odds} shows a heatmap of the estimated benefit of thrombolysis and thrombectomy by use and speed in achieving a good outcome. This model used actual onset-to-treatment times for each of thrombolysis and thrombectomy, rather than early/late groups. The resulting benefit, estimated for each patient using counterfactual modelling, was then grouped by the time (in hours) of each treatment after stroke onset. Each cell gives the mean predicted benefit for patients whose thrombolysis and thrombectomy were given in that pair of hourly intervals, so reading along a row or down a column shows how benefit changes as one treatment is delayed while the timing of the other is held fixed. The final row and column show patients who received only one of the two treatments.
 
 \begin{figure}[htbp]
     \centering
-    
-    % Top left
-    \begin{subfigure}{0.48\textwidth}
-        \includegraphics[width=\linewidth]{images/treatment_effects/thrombolysis_thrombectomy_heatmap_mrs_1.png}
-        %\caption{}
-    \end{subfigure}
-    \hfill % Adds flexible horizontal spacing
-    % top right image 
-    \begin{subfigure}{0.48\textwidth}
-        \includegraphics[width=\linewidth]{images/treatment_effects/thrombolysis_thrombectomy_heatmap_mrs_2.png}
-        %\caption{}
-    \end{subfigure}
-
-    \vspace{0.5cm} % Optional vertical space between rows
-
-    % Center left image
-    \begin{subfigure}{0.48\textwidth}
-        \includegraphics[width=\linewidth]{images/treatment_effects/thrombolysis_thrombectomy_heatmap_mrs_3.png}
-        %\caption{}
-    \end{subfigure}
-    \hfill % Adds flexible horizontal spacing
-    % Centre right image 
-    \begin{subfigure}{0.48\textwidth}
-        \includegraphics[width=\linewidth]{images/treatment_effects/thrombolysis_thrombectomy_heatmap_mrs_4.png}
-        %\caption{}
-    \end{subfigure}
-
-    \vspace{0.5cm} % Optional vertical space between rows
-
-    % Bottom image
-    \begin{subfigure}{0.48\textwidth}
-        \includegraphics[width=\linewidth]{images/treatment_effects/thrombolysis_thrombectomy_heatmap_mrs_5}
-        %\caption{}
-    \end{subfigure}
-    
-    \caption{Predicted treatment benefit by thrombolysis and thrombectomy timing from the S-learner XGBoost model. Each panel shows a heatmap of the model-estimated effect of treatment on the log-odds of being discharged at each modified Rankin Scale (mRS) level, comparing treated with untreated patients across combinations of onset-to-thrombolysis and onset-to-thrombectomy time intervals. Each cell reports the mean predicted treatment benefit ± standard deviation, with the number of patients in parentheses. Blue shading denotes a positive predicted effect of treatment (increased log-odds of achieving each mRS level), whereas red shading denotes a negative predicted effect. The final row and column represent patients receiving thrombectomy without thrombolysis and thrombolysis without thrombectomy, respectively; blank cells indicate treatment-timing combinations with fewer than 10 observations in the data}
+    \includegraphics[width=\textwidth,height=0.8\textheight,keepaspectratio]{images/treatment_effects/thrombolysis_thrombectomy_heatmap_mrs_2.png}
+    \caption{Predicted treatment benefit by thrombolysis and thrombectomy timing from the S-learner XGBoost model. The heatmap shows the model-estimated effect of treatment on the log-odds of a good outcome at discharge (modified Rankin Scale (mRS) 0--2, or no worse than the pre-stroke mRS), comparing treated with untreated patients across combinations of onset-to-thrombolysis and onset-to-thrombectomy time intervals. Each cell reports the mean predicted treatment benefit ± standard deviation, with the number of patients in parentheses. Blue shading denotes a positive predicted effect of treatment (increased log-odds of a good outcome), whereas red shading denotes a negative predicted effect. The final row and column represent patients receiving thrombectomy without thrombolysis and thrombolysis without thrombectomy, respectively; blank cells indicate treatment-timing combinations with fewer than 10 observations in the data.}
     \label{fig:s_learner_heatmap_log odds}
 \end{figure}
 
@@ -672,93 +496,25 @@ Figure \ref{fig:s_learner_heatmap_log odds} shows a heatmap of the estimated ben
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-Figure \ref{fig:s_learner_time_thrombolysis} shows a scatter plot, with regression line, of the estimated benefit of thrombolysis (log odds ratio, treated vs untreated), by time after onset, in achieving each mRS threshold. This model used actual onset-to-treatment times for thrombolysis, and includes only patients who received thrombolysis without thrombectomy. Each point represents one patient. The fitted line shows the average decline in benefit with increasing time to treatment: extrapolating it back to the time of onset gives the maximum expected benefit, and the time at which it crosses zero gives the estimated time beyond which no benefit would be expected.
+Figure \ref{fig:s_learner_time_thrombolysis} shows a scatter plot, with regression line, of the estimated benefit of thrombolysis (log odds ratio, treated vs untreated), by time after onset, in achieving a good outcome. This model used actual onset-to-treatment times for thrombolysis, and includes only patients who received thrombolysis without thrombectomy. Each point represents one patient. The fitted line shows the average decline in benefit with increasing time to treatment: extrapolating it back to the time of onset gives the maximum expected benefit, and the time at which it crosses zero gives the estimated time beyond which no benefit would be expected.
 
 \begin{figure}[htbp]
     \centering
-    
-    % Top left
-    \begin{subfigure}{0.38\textwidth}
-        \includegraphics[width=\linewidth]{images/treatment_effects/thrombolysis_alone_time_effect_mrs_1.png}
-        %\caption{}
-    \end{subfigure}
-    %\hfill % Adds flexible horizontal spacing
-    % top right image 
-    \begin{subfigure}{0.38\textwidth}
-        \includegraphics[width=\linewidth]{images/treatment_effects/thrombolysis_alone_time_effect_mrs_2.png}
-        %\caption{}
-    \end{subfigure}
-
-    \vspace{0.2cm} % Optional vertical space between rows
-
-    % Center left image
-    \begin{subfigure}{0.38\textwidth}
-        \includegraphics[width=\linewidth]{images/treatment_effects/thrombolysis_alone_time_effect_mrs_3.png}
-        %\caption{}
-    \end{subfigure}
-    %\hfill % Adds flexible horizontal spacing
-    % Centre right image 
-    \begin{subfigure}{0.38\textwidth}
-        \includegraphics[width=\linewidth]{images/treatment_effects/thrombolysis_alone_time_effect_mrs_4.png}
-        %\caption{}
-    \end{subfigure}
-
-    \vspace{0.2cm} % Optional vertical space between rows
-
-    % Bottom image
-    \begin{subfigure}{0.38\textwidth}
-        \includegraphics[width=\linewidth]{images/treatment_effects/thrombolysis_alone_time_effect_mrs_5}
-        %\caption{}
-    \end{subfigure}
-    
-    \caption{Association between onset-to-thrombolysis time and individualised predicted benefit of thrombolysis alone, estimated using the S-learner XGBoost model. Each panel shows the predicted improvement in the odds of a good outcome (discharge at or below the specified modified Rankin Scale (mRS) threshold, or no worse than the pre-stroke mRS). Analyses are restricted to patients receiving intravenous thrombolysis without mechanical thrombectomy; each point represents an individual patient. The vertical axis shows the model-estimated treatment benefit on the log-odds scale, relative to the counterfactual prediction under no treatment. The red line denotes the fitted linear trend, illustrating the decline in predicted benefit with increasing onset-to-thrombolysis time. The dashed horizontal line indicates no predicted treatment benefit (log-odds ratio = 0); values above and below this line indicate predicted benefit and harm, respectively.}
+    \includegraphics[width=0.8\textwidth,height=0.8\textheight,keepaspectratio]{images/treatment_effects/thrombolysis_alone_time_effect_mrs_2.png}
+    \caption{Association between onset-to-thrombolysis time and individualised predicted benefit of thrombolysis alone, estimated using the S-learner XGBoost model. Benefit is the predicted improvement in the odds of a good outcome (discharge modified Rankin Scale (mRS) 0--2, or no worse than the pre-stroke mRS). Analyses are restricted to patients receiving intravenous thrombolysis without mechanical thrombectomy; each point represents an individual patient. The vertical axis shows the model-estimated treatment benefit on the log-odds scale, relative to the counterfactual prediction under no treatment. The red line denotes the fitted linear trend, illustrating the decline in predicted benefit with increasing onset-to-thrombolysis time. The dashed horizontal line indicates no predicted treatment benefit (log-odds ratio = 0); values above and below this line indicate predicted benefit and harm, respectively.}
     \label{fig:s_learner_time_thrombolysis}
 \end{figure}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-Figure \ref{fig:s_learner_time_thrombectomy} shows a scatter plot, with regression line, of the estimated benefit of thrombectomy (log odds ratio, treated vs untreated), by time after onset, in achieving each mRS threshold. This model used actual onset-to-treatment times for thrombectomy, and includes only patients who received thrombectomy without thrombolysis. As for thrombolysis, each point represents one patient, and the fitted line summarises how benefit declines with time to treatment.
+Figure \ref{fig:s_learner_time_thrombectomy} shows a scatter plot, with regression line, of the estimated benefit of thrombectomy (log odds ratio, treated vs untreated), by time after onset, in achieving a good outcome. This model used actual onset-to-treatment times for thrombectomy, and includes only patients who received thrombectomy without thrombolysis. As for thrombolysis, each point represents one patient, and the fitted line summarises how benefit declines with time to treatment.
 
 
 \begin{figure}[htbp]
     \centering
-    
-    % Top left
-    \begin{subfigure}{0.38\textwidth}
-        \includegraphics[width=\linewidth]{images/treatment_effects/thrombectomy_alone_time_effect_mrs_1.png}
-        %\caption{}
-    \end{subfigure}
-    %\hfill % Adds flexible horizontal spacing
-    % top right image 
-    \begin{subfigure}{0.38\textwidth}
-        \includegraphics[width=\linewidth]{images/treatment_effects/thrombectomy_alone_time_effect_mrs_2.png}
-        %\caption{}
-    \end{subfigure}
-
-    \vspace{0.2cm} % Optional vertical space between rows
-
-    % Center left image
-    \begin{subfigure}{0.38\textwidth}
-        \includegraphics[width=\linewidth]{images/treatment_effects/thrombectomy_alone_time_effect_mrs_3.png}
-        %\caption{}
-    \end{subfigure}
-    %\hfill{} % Adds flexible horizontal spacing
-    % Centre right image 
-    \begin{subfigure}{0.38\textwidth}
-        \includegraphics[width=\linewidth]{images/treatment_effects/thrombectomy_alone_time_effect_mrs_4.png}
-        %\caption{}
-    \end{subfigure}
-
-    \vspace{0.2cm} % Optional vertical space between rows
-
-    % Bottom image
-    \begin{subfigure}{0.38\textwidth}
-        \includegraphics[width=\linewidth]{images/treatment_effects/thrombectomy_alone_time_effect_mrs_5}
-        %\caption{}
-    \end{subfigure}
-    
-    \caption{Association between onset-to-thrombectomy time and individualised predicted benefit of thrombectomy alone, estimated using the S-learner XGBoost model. Each panel shows the predicted improvement in the odds of a good outcome (discharge at or below the specified modified Rankin Scale (mRS) threshold, or no worse than the pre-stroke mRS). Analyses are restricted to patients receiving mechanical thrombectomy without intravenous thrombolysis; each point represents an individual patient. The vertical axis shows the model-estimated treatment benefit on the log-odds scale, relative to the counterfactual prediction under no treatment. The red line denotes the fitted linear trend, illustrating the decline in predicted benefit with increasing onset-to-thrombectomy time. The dashed horizontal line indicates no predicted treatment benefit (log-odds ratio = 0); values above and below this line indicate predicted benefit and harm, respectively.}
+    \includegraphics[width=0.8\textwidth,height=0.8\textheight,keepaspectratio]{images/treatment_effects/thrombectomy_alone_time_effect_mrs_2.png}
+    \caption{Association between onset-to-thrombectomy time and individualised predicted benefit of thrombectomy alone, estimated using the S-learner XGBoost model. Benefit is the predicted improvement in the odds of a good outcome (discharge modified Rankin Scale (mRS) 0--2, or no worse than the pre-stroke mRS). Analyses are restricted to patients receiving mechanical thrombectomy without intravenous thrombolysis; each point represents an individual patient. The vertical axis shows the model-estimated treatment benefit on the log-odds scale, relative to the counterfactual prediction under no treatment. The red line denotes the fitted linear trend, illustrating the decline in predicted benefit with increasing onset-to-thrombectomy time. The dashed horizontal line indicates no predicted treatment benefit (log-odds ratio = 0); values above and below this line indicate predicted benefit and harm, respectively.}
     \label{fig:s_learner_time_thrombectomy}
 \end{figure}
 
@@ -770,54 +526,16 @@ Figure \ref{fig:s_learner_time_thrombectomy} shows a scatter plot, with regressi
 
 \subsubsection{SHAP for S-learner predicted benefit}
 
-To understand which patients benefited most, a secondary XGBoost model was fitted to predict each treated patient's estimated benefit (from the S-learner) from their characteristics and treatment, and SHAP values were calculated for this model. Figures \ref{fig:s_learner_benefit_shap_mrs_1} to \ref{fig:s_learner_benefit_shap_mrs_5} show these SHAP values for each mRS threshold. For each feature, the box plots show how the feature's values were associated with higher (positive SHAP value) or lower (negative SHAP value) predicted benefit than average. As with the other SHAP analyses in this supplement, these associations describe how the model makes its predictions and should not, on their own, be interpreted as causal.
+To understand which patients benefited most, a secondary XGBoost model was fitted to predict each treated patient's estimated benefit (from the S-learner) from their characteristics and treatment, and SHAP values were calculated for this model. Figure \ref{fig:s_learner_benefit_shap_mrs_2} shows these SHAP values. For each feature, the box plots show how the feature's values were associated with higher (positive SHAP value) or lower (negative SHAP value) predicted benefit than average. As with the other SHAP analyses in this supplement, these associations describe how the model makes its predictions and should not, on their own, be interpreted as causal.
 
-
-\begin{figure}
-    \centering
-    \includegraphics[width=1\linewidth]
-{images/treatment_effects/s_learner_shap_box_plots_1.png}
-    \caption{Effect of patient feature values on the predicted benefit of treatment. Subplots (top to bottom, left to right) are ordered by their average effect on benefit of treatment. Each subplot shows the feature value, and a boxplot of SHAP values for that feature value. The SHAP value is the contribution to the log-odds ratio treatment effect (treated vs untreated) for achieving a good outcome at the mRS 0–1 threshold.}
-    \label{fig:s_learner_benefit_shap_mrs_1}
-\end{figure}
 
 \begin{figure}
     \centering
     \includegraphics[width=1\linewidth]
 {images/treatment_effects/s_learner_shap_box_plots_2.png}
-    \caption{Effect of patient feature values on the predicted benefit of treatment. Subplots (top to bottom, left to right) are ordered by their average effect on benefit of treatment. Each subplot shows the feature value, and a boxplot of SHAP values for that feature value. The SHAP value is the contribution to the log-odds ratio treatment effect (treated vs untreated) for achieving a good outcome at the mRS 0–2 threshold.}
+    \caption{Effect of patient feature values on the predicted benefit of treatment. Subplots (top to bottom, left to right) are ordered by their average effect on benefit of treatment. Each subplot shows the feature value, and a boxplot of SHAP values for that feature value. The SHAP value is the contribution to the log-odds ratio treatment effect (treated vs untreated) for achieving a good outcome (discharge mRS 0--2, or no worse than the pre-stroke mRS).}
     \label{fig:s_learner_benefit_shap_mrs_2}
 \end{figure}
-
-\begin{figure}
-    \centering
-    \includegraphics[width=1\linewidth]
-{images/treatment_effects/s_learner_shap_box_plots_3.png}
-    \caption{Effect of patient feature values on the predicted benefit of treatment. Subplots (top to bottom, left to right) are ordered by their average effect on benefit of treatment. Each subplot shows the feature value, and a boxplot of SHAP values for that feature value. The SHAP value is the contribution to the log-odds ratio treatment effect (treated vs untreated) for achieving a good outcome at the mRS 0–3 threshold.}
-    \label{fig:s_learner_benefit_shap_mrs_3}
-\end{figure}
-
-\begin{figure}
-    \centering
-    \includegraphics[width=1\linewidth]
-{images/treatment_effects/s_learner_shap_box_plots_4.png}
-    \caption{Effect of patient feature values on the predicted benefit of treatment. Subplots (top to bottom, left to right) are ordered by their average effect on benefit of treatment. Each subplot shows the feature value, and a boxplot of SHAP values for that feature value. The SHAP value is the contribution to the log-odds ratio treatment effect (treated vs untreated) for achieving a good outcome at the mRS 0–4 threshold.}
-    \label{fig:s_learner_benefit_shap_mrs_4}
-\end{figure}
-
-\begin{figure}
-    \centering
-    \includegraphics[width=1\linewidth]
-{images/treatment_effects/s_learner_shap_box_plots_5.png}
-    \caption{Effect of patient feature values on the predicted benefit of treatment. Subplots (top to bottom, left to right) are ordered by their average effect on benefit of treatment. Each subplot shows the feature value, and a boxplot of SHAP values for that feature value. The SHAP value is the contribution to the log-odds ratio treatment effect (treated vs untreated) for achieving a good outcome at the mRS 0–5 threshold.}
-    \label{fig:s_learner_benefit_shap_mrs_5}
-\end{figure}
-
-
-
-
-
-
 
 % ################### CASUAL FOREST ###########################
 
@@ -825,46 +543,12 @@ To understand which patients benefited most, a secondary XGBoost model was fitte
 
 \subsection{Causal Forest}
 
-Figure \ref{fig:causal_forest_benefit} shows treatment effects estimated by the orthogonal causal forest for each mRS threshold. Treatment effects are shown as conditional average treatment effects (CATE), i.e.\ the absolute change, in percentage points, in the probability of achieving the outcome with treatment compared with no reperfusion treatment, averaged over patients in each treatment group. Unlike the S-learner, which reports effects on the log-odds scale, the causal forest reports effects on the absolute probability scale, which is directly comparable with the differences in proportions from the target trial emulation. Positive values indicate that treatment increased the probability of a good outcome at that threshold, and horizontal bars show 95\% confidence intervals. Treatment type and timing (early vs.\ late, using a 270-minute onset-to-treatment threshold) were coded as a single categorical feature for this model.
+Figure \ref{fig:causal_forest_benefit} shows treatment effects estimated by the orthogonal causal forest. Treatment effects are shown as conditional average treatment effects (CATE), i.e.\ the absolute change, in percentage points, in the probability of achieving the outcome with treatment compared with no reperfusion treatment, averaged over patients in each treatment group. Unlike the S-learner, which reports effects on the log-odds scale, the causal forest reports effects on the absolute probability scale, which is directly comparable with the differences in proportions from the target trial emulation. Positive values indicate that treatment increased the probability of a good outcome, and horizontal bars show 95\% confidence intervals. Treatment type and timing (early vs.\ late, using a 270-minute onset-to-treatment threshold) were coded as a single categorical feature for this model.
 
-\begin{figure}
+\begin{figure}[htbp]
     \centering
-    
-    % Top left
-    \begin{subfigure}{0.49\textwidth}
-        \includegraphics[width=\linewidth]{images/treatment_effects/causal_forest_counterfactual_cate_estimates_1.png}
-        %\caption{}
-    \end{subfigure}
-    \hfill % Adds flexible horizontal spacing
-    % top right image 
-    \begin{subfigure}{0.49\textwidth}
-        \includegraphics[width=\linewidth]{images/treatment_effects/causal_forest_counterfactual_cate_estimates_2.png}
-        %\caption{}
-    \end{subfigure}
-
-    \vspace{0.5cm} % Optional vertical space between rows
-
-    % Center left image
-    \begin{subfigure}{0.49\textwidth}
-        \includegraphics[width=\linewidth]{images/treatment_effects/causal_forest_counterfactual_cate_estimates_3.png}
-        %\caption{}
-    \end{subfigure}
-    \hfill % Adds flexible horizontal spacing
-    % Centre right image 
-    \begin{subfigure}{0.49\textwidth}
-        \includegraphics[width=\linewidth]{images/treatment_effects/causal_forest_counterfactual_cate_estimates_4}
-        %\caption{}
-    \end{subfigure}
-
-    \vspace{0.5cm} % Optional vertical space between rows
-
-    % Bottom image
-    \begin{subfigure}{0.49\textwidth}
-        \includegraphics[width=\linewidth]{images/treatment_effects/causal_forest_counterfactual_cate_estimates_5}
-        %\caption{}
-    \end{subfigure}
-    
-    \caption{Estimated counterfactual treatment benefit across reperfusion-treatment timing strategies, derived from the Causal Forest model. Each panel shows results for discharge at or below each modified Rankin Scale (mRS) level. Points represent the mean estimated individual treatment effect for each treatment-timing group, expressed as the counterfactual probability improvement for the specified outcome relative to no reperfusion treatment; horizontal error bars show 95\% confidence intervals. Treatment groups are defined by receipt of intravenous thrombolysis and/or mechanical thrombectomy, with early treatment defined as onset-to-treatment time $<$270 minutes and late treatment as $\geq$270 minutes. Sample sizes are shown alongside group labels. Values above zero indicate a model-predicted increase in the probability of a good outcome at the corresponding threshold under the observed treatment strategy compared with no treatment.}
+    \includegraphics[width=0.8\textwidth,height=0.8\textheight,keepaspectratio]{images/treatment_effects/causal_forest_counterfactual_cate_estimates_2.png}
+    \caption{Estimated counterfactual treatment benefit across reperfusion-treatment timing strategies, derived from the Causal Forest model. A good outcome is a discharge modified Rankin Scale (mRS) of 0--2, or no worse than the pre-stroke mRS. Points represent the mean estimated individual treatment effect for each treatment-timing group, expressed as the counterfactual probability improvement for the specified outcome relative to no reperfusion treatment; horizontal error bars show 95\% confidence intervals. Treatment groups are defined by receipt of intravenous thrombolysis and/or mechanical thrombectomy, with early treatment defined as onset-to-treatment time $<$270 minutes and late treatment as $\geq$270 minutes. Sample sizes are shown alongside group labels. Values above zero indicate a model-predicted increase in the probability of a good outcome under the observed treatment strategy compared with no treatment.}
     \label{fig:causal_forest_benefit}
 \end{figure}
 
@@ -898,7 +582,7 @@ The benefits of the two treatments were less than additive. The log odds ratio f
 
 \subsection{Comparison with randomised trials of IVT}
 
-Our estimates for IVT alone agree closely with the randomised evidence in absolute terms and in their dependence on time. In the individual patient data meta-analysis of Emberson et al., alteplase increased the proportion of patients with an excellent outcome by about 10 percentage points when given within 3 hours and about 5 percentage points at 3--4.5 hours \cite{emberson_effect_2014}. The causal forest estimated an absolute gain in good outcome at discharge of 11.1 percentage points for IVT within 4.5 hours and 9.2 percentage points after 4.5 hours, and the matched analysis gave 12.7 and 6.3 percentage points. Emberson et al.\ estimated that the benefit of alteplase reached zero at 6.3 hours after onset (95\% CI 5.0--13.8) \cite{emberson_effect_2014}; our linear model placed this point at 6.75 hours. The agreement is notable given that the two estimates come from different designs, eras and outcome definitions, although ours is extrapolated beyond the six hours within which IVT was given in our data.
+Our estimates for IVT alone agree closely with the randomised evidence in absolute terms and in their dependence on time. In the individual patient data meta-analysis of Emberson et al., alteplase increased the proportion of patients with an excellent outcome by about 10 percentage points when given within 3 hours and about 5 percentage points at 3--4.5 hours \cite{emberson_effect_2014}. The causal forest estimated an absolute gain in good outcome at discharge of 11.1 percentage points for IVT within 4.5 hours and 9.2 percentage points after 4.5 hours, and the matched analysis gave 12.4 and 6.3 percentage points. Emberson et al.\ estimated that the benefit of alteplase reached zero at 6.3 hours after onset (95\% CI 5.0--13.8) \cite{emberson_effect_2014}; our linear model placed this point at 6.75 hours. The agreement is notable given that the two estimates come from different designs, eras and outcome definitions, although ours is extrapolated beyond the six hours within which IVT was given in our data.
 
 Our relative effects were larger than those of the trials. The S-learner odds ratio for early IVT alone was about 2.0, against 1.75 within 3 hours and 1.26 at 3--4.5 hours in the meta-analysis \cite{emberson_effect_2014}. Several differences in design may contribute. We restricted the cohort to patients with NIHSS above 5 or a recorded large vessel occlusion, we measured a good outcome at discharge (mRS 0--2, or no worse than before the stroke) and not mRS 0--1 at 3--6 months, and door-to-needle times and stroke unit care have improved since the trials. Residual confounding is also likely to act in this direction: patients who arrive early with a disabling stroke and are not treated with IVT usually have a reason, such as anticoagulation, recent surgery, frailty or a clinical judgement of futility, and not all of these reasons are captured in our covariates.
 
@@ -910,7 +594,7 @@ We did not examine intracranial haemorrhage. The trials show that alteplase incr
 
 The time dependence we estimated for MT is very close to that reported from the trials. In the HERMES time-to-treatment analysis, each hour of delay to reperfusion was associated with a common odds ratio of 0.84 for less disability and an odds ratio of 0.81 for functional independence \cite{saver2016}. In MR CLEAN, the absolute treatment effect fell by about 6 percentage points per hour of delay to reperfusion \cite{fransen_time_2016}. Our estimate for MT alone, a loss of about 0.16 log odds units per hour, corresponds to an odds ratio of 0.86 per hour. In HERMES the benefit of MT was no longer statistically significant when arterial puncture was later than 7 hours 18 minutes after onset, although the point estimate still favoured treatment at 8 hours (common odds ratio 1.57) \cite{saver2016}. Our point estimate of the time at which benefit reached zero, 9.9 hours, is compatible with this, and in Figure~\ref{fig:main_s_learner_matrix} the estimated benefit of MT alone was close to zero in each time band beyond 9 hours.
 
-The size of the benefit requires more careful comparison, because the comparator differs. The HERMES trials compared MT plus standard care with standard care alone in patients with a proven anterior circulation large vessel occlusion, most of whom received alteplase in both arms; functional independence at 90 days was achieved by 46.0\% and 26.5\% \cite{goyal2016}. Our treated groups are compared with patients who received no reperfusion treatment. On that basis, early MT alone was associated with an absolute gain of 14--17 percentage points and early combined treatment with a gain of 19--23 percentage points, and the proportions with a good outcome in the early combined group and its controls (46.5\% and 23.5\%) are similar to those in the two arms of HERMES, although our outcome also counts patients discharged no worse than their pre-stroke mRS and was measured at discharge rather than at 90 days. The trial contrast, MT added to IVT, is best approximated in our data by the difference between combined treatment and IVT alone at the same time to IVT. For IVT given at 60--180 minutes, MT within 180 minutes was associated with an additional 0.7--1.0 log odds units (odds ratios of about 2.0--2.9), which brackets the HERMES common odds ratio of 2.49 \cite{goyal2016} and the 2.79 estimated at 3 hours \cite{saver2016}. At later MT times the increment in our data fell faster than in the trials: to about 0.3--0.4 log odds units at 3--5 hours and about 0.1 at 5--6 hours, against a common odds ratio of 1.98 at 6 hours in HERMES \cite{saver2016}.
+The size of the benefit requires more careful comparison, because the comparator differs. The HERMES trials compared MT plus standard care with standard care alone in patients with a proven anterior circulation large vessel occlusion, most of whom received alteplase in both arms; functional independence at 90 days was achieved by 46.0\% and 26.5\% \cite{goyal2016}. Our treated groups are compared with patients who received no reperfusion treatment. On that basis, early MT alone was associated with an absolute gain of 14--17 percentage points and early combined treatment with a gain of 19--23 percentage points, and the proportions with a good outcome in the early combined group and its controls (46.5\% and 23.0\%) are similar to those in the two arms of HERMES, although our outcome also counts patients discharged no worse than their pre-stroke mRS and was measured at discharge rather than at 90 days. The trial contrast, MT added to IVT, is best approximated in our data by the difference between combined treatment and IVT alone at the same time to IVT. For IVT given at 60--180 minutes, MT within 180 minutes was associated with an additional 0.7--1.0 log odds units (odds ratios of about 2.0--2.9), which brackets the HERMES common odds ratio of 2.49 \cite{goyal2016} and the 2.79 estimated at 3 hours \cite{saver2016}. At later MT times the increment in our data fell faster than in the trials: to about 0.3--0.4 log odds units at 3--5 hours and about 0.1 at 5--6 hours, against a common odds ratio of 1.98 at 6 hours in HERMES \cite{saver2016}.
 
 There are several reasons to expect a smaller increment at later times in routine practice than in trials. Our IVT-only group includes patients without a large vessel occlusion and patients whose occlusion recanalised with IVT, so its outcomes are better than those of a trial control arm in which every patient had a persisting occlusion. Conversely, patients who proceed to MT after IVT are by definition those in whom IVT has not yet succeeded. Several of the HERMES trials selected patients using collateral or perfusion imaging, which enriches for slowly progressing infarcts in whom late reperfusion still helps \cite{goyal2016,saver2016}. Finally, disability at discharge may understate the benefit of MT, since patients with severe strokes continue to recover over the following months.
 
@@ -942,12 +626,12 @@ Our finding that the benefit of MT declines to nothing by about ten hours appear
 
 Patients in those trials presented late and were chosen because imaging showed that salvageable tissue remained; they are, by selection, patients whose infarcts progress slowly. The patients we studied all arrived within six hours of a known time of onset, and those treated late were, we presume, treated late mainly because of delay, not because imaging had identified them as late-window candidates. Our estimates therefore describe what delay costs the general population of early presenters, in whom fast and slow progressors are mixed. They do not describe the effect of MT in imaging-selected late presenters, and should not be used to argue against late-window treatment. The two bodies of evidence are complementary: the late-window trials show who can still benefit when presentation is late, and our data show how much is lost, on average, when treatment of an early presenter is delayed.
 
-Late MT was nonetheless associated with a clear benefit in our data. MT alone after 270 minutes was associated with an absolute gain in good outcome at discharge of 7.7--8.2 percentage points, and all three methods found this to be significantly greater than zero. The number of patients treated beyond nine hours was small, and estimates in that range are imprecise. The group that received both treatments late contained only 141 patients, and its wide confidence intervals do not allow any conclusion; the randomised evidence for that combination is the TNK-PLUS trial, which found no benefit of IVT before MT at 4.5--24 hours \cite{tnkplus2026}.
+Late MT was nonetheless associated with a clear benefit in our data. MT alone after 270 minutes was associated with an absolute gain in good outcome at discharge of 7.7--8.3 percentage points, and all three methods found this to be significantly greater than zero. The number of patients treated beyond nine hours was small, and estimates in that range are imprecise. The group that received both treatments late contained only 141 patients, and its wide confidence intervals do not allow any conclusion; the randomised evidence for that combination is the TNK-PLUS trial, which found no benefit of IVT before MT at 4.5--24 hours \cite{tnkplus2026}.
 
 \subsection{Agreement between methods, and who benefits}
 
-The three causal methods gave substantially the same results. Matching, the S-learner and the causal forest make different modelling assumptions: matching compares like with like on a small set of prognostic features without a model of outcome, the S-learner relies on a flexible outcome model, and the causal forest combines an outcome model with a model of treatment assignment and is consistent if either is correctly specified. All three agreed that early combined treatment gave the largest benefit, followed by early MT alone, and that later treatment gave less, although the order of the smaller late-treatment groups differed between methods. Where the methods estimate the same quantity the values were close: the absolute gain in good outcome at discharge from matching and from the causal forest was 12.7 and 11.1 percentage points for early IVT alone, 17.2 and 14.1 for early MT alone, and 23.0 and 18.8 for early combined treatment. Agreement between methods does not remove bias from confounders that none of them observe, but it makes it unlikely that the findings are an artefact of one model.
+The three causal methods gave substantially the same results. Matching, the S-learner and the causal forest make different modelling assumptions: matching compares like with like on a small set of prognostic features without a model of outcome, the S-learner relies on a flexible outcome model, and the causal forest combines an outcome model with a model of treatment assignment and is consistent if either is correctly specified. All three agreed that early combined treatment gave the largest benefit, followed by early MT alone, and that later treatment gave less, although the order of the smaller late-treatment groups differed between methods. Where the methods estimate the same quantity the values were close: the absolute gain in good outcome at discharge from matching and from the causal forest was 12.4 and 11.1 percentage points for early IVT alone, 17.2 and 14.1 for early MT alone, and 23.5 and 18.8 for early combined treatment. Agreement between methods does not remove bias from confounders that none of them observe, but it makes it unlikely that the findings are an artefact of one model.
 
 The agreement with randomised trials, where trials exist, serves as a further check. The emulation recovered the absolute benefit of IVT and the time at which it is exhausted \cite{emberson_effect_2014}, the hourly decay of MT benefit \cite{fransen_time_2016,saver2016}, and the time dependence of the added value of IVT before MT \cite{kaesmacher2024}. Benchmarking an emulated target trial \cite{hernan2016} against known trial results is a recognised means of assessing whether observational data can support causal conclusions, and it gives some confidence in the estimates for which no trial exists, namely those for specific combinations of the two treatment times.
 
-Our estimates are of the effect of treatment in those who received it, and the treated groups differed from one another. Patients who received MT had more severe strokes and less prior disability than those who received IVT alone, and those who received MT without IVT were far more likely to have atrial fibrillation and to be anticoagulated. Differences in estimated benefit between groups therefore reflect differences in the patients as well as in the treatments and their timing. The secondary model of estimated benefit indicated which characteristics matter most. Benefit increased with stroke severity and decreased with pre-stroke disability across mRS 0--4, and the admitting stroke team was the single most influential feature. Variation between teams of this size, after accounting for patient characteristics and treatment times, suggests that how treatment is delivered, including patient selection, procedural success and post-procedural care, influences how much patients gain. It may also reflect differences between teams in case mix that we did not measure and in how discharge disability is assessed, and it deserves separate study.
+Our estimates are of the effect of treatment in those who received it, and the treated groups differed from one another. Patients who received MT had more severe strokes and less prior disability than those who received IVT alone, and those who received MT without IVT were far more likely to have atrial fibrillation and to be anticoagulated. Differences in estimated benefit between groups therefore reflect differences in the patients as well as in the treatments and their timing. The secondary model of estimated benefit indicated which characteristics matter most. Benefit increased with stroke severity and decreased with pre-stroke disability, and the admitting stroke team was the single most influential feature. Variation between teams of this size, after accounting for patient characteristics and treatment times, suggests that how treatment is delivered, including patient selection, procedural success and post-procedural care, influences how much patients gain. It may also reflect differences between teams in case mix that we did not measure and in how discharge disability is assessed, and it deserves separate study.

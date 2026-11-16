@@ -5,7 +5,7 @@
 Table~\ref{tab:matching} shows the characteristics of treated patients and their matched controls (used for target trail emulation) in each treatment group. Patients who received MT, with or without IVT, had more severe strokes and less pre-stroke disability than those who received IVT alone, and those who received MT alone were far more likely to have AF and to be taking anticoagulants for AF. Matching produced closely balanced groups, and at most 2.6\% of any treatment group could not be matched. Characteristics of all patients before matching are given in the Supplementary Material.
 
 \begin{longtable}[]{@{}llll@{}}
-\caption{Descriptive statistics for matched pair analysis of treatment strategies. Strategies are defined by early ($\leq$ 270 min from onset) or late ($>$ 270 min from onset) IVT, MT, or their combination. Patients were matched in each treatment strategy on prior disability, age group (5-year bands), stroke severity band (NIHSS 0--4, 5--9, 10--14, \textit{et seq.}), AF anticoagulant use, and AF diagnosis. Non-matched patients (a maximum of 2.6\% of each group) were dropped from the analysis. Values are mean (standard deviation).}\\
+\caption{Descriptive statistics for matched pair analysis of treatment strategies. Strategies are defined by early ($\leq$ 270 min from onset) or late ($>$ 270 min from onset) IVT, MT, or their combination. Patients were matched in each treatment strategy on prior disability, age group (5-year bands), stroke severity band (NIHSS 0--4, 5--9, 10--14, \textit{et seq.}), AF anticoagulant use, and AF diagnosis. Each untreated patient could serve as a control for at most three treated patients. Non-matched patients (a maximum of 2.6\% of each group) were dropped from the analysis. Values are mean (standard deviation).}\\
 \toprule
 \textbf{Treatment group} & \textbf{Feature} & \textbf{Treated} & \textbf{Untreated} \\
 \midrule
@@ -13,64 +13,60 @@ Table~\ref{tab:matching} shows the characteristics of treated patients and their
 \multicolumn{4}{@{}l}{\textit{Table \thetable\ continued}}\\
 \endhead
 \endlastfoot
-Early IVT only (n=27603) & Prior disability & 1.00 (1.31) & 1.00
-(1.31) \\
-& Stroke severity & 12.60 (6.12) & 12.55 (6.18) \\
-& Age & 74.24 (13.29) & 74.24 (13.29) \\
+Early IVT only (n=27536) & Prior disability & 1.00 (1.31) & 1.00 (1.31) \\
+& Stroke severity & 12.58 (6.11) & 12.52 (6.17) \\
+& Age & 74.28 (13.28) & 74.28 (13.28) \\
 & Congestive heart failure & 0.05 (0.23) & 0.06 (0.23) \\
-& Hypertension & 0.55 (0.50) & 0.55 (0.50) \\
+& Hypertension & 0.55 (0.50) & 0.56 (0.50) \\
 & Diabetes & 0.21 (0.41) & 0.24 (0.43) \\
 & AF anticoagulant use & 0.03 (0.18) & 0.03 (0.18) \\
 & AF diagnosis & 0.21 (0.41) & 0.21 (0.41) \\
 Late IVT only (n=1183) & Prior disability & 0.97 (1.29) & 0.97 (1.29) \\
-& Stroke severity & 11.89 (5.89) & 11.85 (5.96) \\
+& Stroke severity & 11.89 (5.89) & 11.82 (5.96) \\
 & Age & 73.93 (13.22) & 73.93 (13.22) \\
 & Congestive heart failure & 0.06 (0.23) & 0.05 (0.22) \\
-& Hypertension & 0.57 (0.50) & 0.55 (0.50) \\
+& Hypertension & 0.57 (0.50) & 0.57 (0.50) \\
 & Diabetes & 0.23 (0.42) & 0.25 (0.43) \\
 & AF anticoagulant use & 0.03 (0.18) & 0.03 (0.18) \\
 & AF diagnosis & 0.20 (0.40) & 0.20 (0.40) \\
 Early MT only (n=1078) & Prior disability & 0.75 (0.89) & 0.75 (0.89) \\
-& Stroke severity & 17.75 (5.88) & 17.56 (6.12) \\
+& Stroke severity & 17.75 (5.88) & 17.59 (6.13) \\
 & Age & 73.14 (12.65) & 73.14 (12.65) \\
 & Congestive heart failure & 0.11 (0.31) & 0.09 (0.29) \\
-& Hypertension & 0.54 (0.50) & 0.56 (0.50) \\
-& Diabetes & 0.17 (0.38) & 0.24 (0.43) \\
+& Hypertension & 0.54 (0.50) & 0.58 (0.49) \\
+& Diabetes & 0.17 (0.38) & 0.25 (0.43) \\
 & AF anticoagulant use & 0.53 (0.50) & 0.53 (0.50) \\
 & AF diagnosis & 0.58 (0.49) & 0.58 (0.49) \\
 Late MT only (n=1840) & Prior disability & 0.62 (0.84) & 0.62 (0.84) \\
-& Stroke severity & 15.89 (5.96) & 15.72 (6.14) \\
+& Stroke severity & 15.89 (5.96) & 15.69 (6.17) \\
 & Age & 72.51 (13.19) & 72.51 (13.19) \\
-& Congestive heart failure & 0.07 (0.26) & 0.09 (0.29) \\
-& Hypertension & 0.53 (0.50) & 0.57 (0.50) \\
-& Diabetes & 0.18 (0.38) & 0.23 (0.42) \\
+& Congestive heart failure & 0.07 (0.26) & 0.08 (0.27) \\
+& Hypertension & 0.53 (0.50) & 0.56 (0.50) \\
+& Diabetes & 0.18 (0.38) & 0.22 (0.42) \\
 & AF anticoagulant use & 0.39 (0.49) & 0.39 (0.49) \\
 & AF diagnosis & 0.47 (0.50) & 0.47 (0.50) \\
-Early IVT + Early MT (n=2290) & Prior disability & 0.42 (0.74) & 0.42
-(0.74) \\
-& Stroke severity & 17.27 (5.89) & 17.05 (6.10) \\
-& Age & 69.66 (12.99) & 69.66 (12.99) \\
+Early IVT + Early MT (n=2288) & Prior disability & 0.42 (0.74) & 0.42 (0.74) \\
+& Stroke severity & 17.26 (5.89) & 17.10 (6.16) \\
+& Age & 69.66 (13.00) & 69.66 (13.00) \\
 & Congestive heart failure & 0.04 (0.20) & 0.04 (0.20) \\
-& Hypertension & 0.47 (0.50) & 0.50 (0.50) \\
-& Diabetes & 0.14 (0.34) & 0.21 (0.41) \\
+& Hypertension & 0.47 (0.50) & 0.51 (0.50) \\
+& Diabetes & 0.14 (0.34) & 0.22 (0.41) \\
 & AF anticoagulant use & 0.03 (0.16) & 0.03 (0.16) \\
 & AF diagnosis & 0.23 (0.42) & 0.23 (0.42) \\
-Early IVT + Late MT (n=2688) & Prior disability & 0.40 (0.73) & 0.40
-(0.73) \\
-& Stroke severity & 16.13 (6.02) & 15.98 (6.20) \\
+Early IVT + Late MT (n=2688) & Prior disability & 0.40 (0.73) & 0.40 (0.73) \\
+& Stroke severity & 16.13 (6.02) & 15.93 (6.19) \\
 & Age & 70.48 (13.45) & 70.48 (13.45) \\
-& Congestive heart failure & 0.04 (0.20) & 0.04 (0.20) \\
+& Congestive heart failure & 0.04 (0.20) & 0.05 (0.21) \\
 & Hypertension & 0.51 (0.50) & 0.51 (0.50) \\
 & Diabetes & 0.16 (0.37) & 0.21 (0.41) \\
 & AF anticoagulant use & 0.03 (0.17) & 0.03 (0.17) \\
 & AF diagnosis & 0.24 (0.43) & 0.24 (0.43) \\
-Late IVT + Late MT (n=141) & Prior disability & 0.45 (0.70) & 0.45
-(0.70) \\
-& Stroke severity & 15.06 (6.03) & 14.91 (6.47) \\
+Late IVT + Late MT (n=141) & Prior disability & 0.45 (0.70) & 0.45 (0.70) \\
+& Stroke severity & 15.06 (6.03) & 14.93 (6.37) \\
 & Age & 70.20 (13.50) & 70.20 (13.50) \\
-& Congestive heart failure & 0.05 (0.22) & 0.06 (0.23) \\
-& Hypertension & 0.48 (0.50) & 0.46 (0.50) \\
-& Diabetes & 0.25 (0.43) & 0.21 (0.41) \\
+& Congestive heart failure & 0.05 (0.22) & 0.02 (0.14) \\
+& Hypertension & 0.48 (0.50) & 0.55 (0.50) \\
+& Diabetes & 0.25 (0.43) & 0.17 (0.38) \\
 & AF anticoagulant use & 0.04 (0.20) & 0.04 (0.20) \\
 & AF diagnosis & 0.17 (0.38) & 0.17 (0.38) \\
 \bottomrule
@@ -79,7 +75,7 @@ Late IVT + Late MT (n=141) & Prior disability & 0.45 (0.70) & 0.45
 
 \subsection{Effect of each treatment strategy}
 
-Table~\ref{tab:effects} summarises the estimated effect of each strategy by target trial emulation, the S-learner and the causal forest. Figures of these estimates for each method are given in the Supplementary Material. Every strategy was associated with a significantly higher chance of a good outcome. All three methods found that early combined IVT and MT gave the largest benefit: 46.5\% of treated patients had a good outcome against 23.5\% of matched controls, the S-learner log odds ratio was 1.35 (odds ratio 3.9), and the causal forest estimated an absolute gain of 18.8 percentage points. Early MT alone gave the next largest benefit by matching and the S-learner, followed by early IVT alone.
+Table~\ref{tab:effects} summarises the estimated effect of each strategy by target trial emulation, the S-learner and the causal forest. Figures of these estimates for each method are given in the Supplementary Material. Every strategy was associated with a significantly higher chance of a good outcome. All three methods found that early combined IVT and MT gave the largest benefit: 46.5\% of treated patients had a good outcome against 23.0\% of matched controls, the S-learner log odds ratio was 1.35 (odds ratio 3.9), and the causal forest estimated an absolute gain of 18.8 percentage points. Early MT alone gave the next largest benefit by matching and the S-learner, followed by early IVT alone.
 
 Later treatment gave less benefit. On the log odds scale, late IVT alone and late MT alone gave about half to three quarters of the benefit of their early counterparts, and early IVT followed by late MT gave little more than early IVT alone (log odds ratio 0.73 against 0.71). Only 141 patients received both treatments late, and their estimates were imprecise.
 
@@ -94,12 +90,12 @@ Later treatment gave less benefit. On the log odds scale, late IVT alone and lat
 \cmidrule(lr){3-5}
 Treatment strategy & $n$ & Treated (\%) & Control (\%) & Difference & Log odds ratio (95\% CI) & CATE, pp (95\% CI) \\
 \midrule
-Early IVT only & 27,695 & 49.0 (48.4--49.6) & 36.3 (35.7--36.9) & 12.7 (11.9--13.5)$^{**}$ & 0.71 (0.70--0.71)$^{**}$ & 11.1 (11.0--11.1)$^{**}$ \\
+Early IVT only & 27,695 & 49.0 (48.5--49.6) & 36.6 (36.1--37.2) & 12.4 (11.6--13.2)$^{**}$ & 0.71 (0.70--0.71)$^{**}$ & 11.1 (11.0--11.1)$^{**}$ \\
 Late IVT only & 1,189 & 47.3 (44.4--50.1) & 40.9 (38.1--43.7) & 6.3 (2.3--10.3)$^{**}$ & 0.50 (0.46--0.54)$^{**}$ & 9.2 (8.3--10.2)$^{**}$ \\
 Early MT only & 1,107 & 39.1 (36.1--42.0) & 21.9 (19.4--24.4) & 17.2 (13.3--21.0)$^{**}$ & 1.19 (1.15--1.24)$^{**}$ & 14.1 (13.2--15.0)$^{**}$ \\
-Late MT only & 1,876 & 33.5 (31.3--35.6) & 25.3 (23.3--27.3) & 8.2 (5.3--11.1)$^{**}$ & 0.58 (0.55--0.61)$^{**}$ & 7.7 (7.2--8.2)$^{**}$ \\
-Early IVT + early MT & 2,309 & 46.5 (44.5--48.6) & 23.5 (21.8--25.2) & 23.0 (20.3--25.7)$^{**}$ & 1.35 (1.33--1.38)$^{**}$ & 18.8 (18.3--19.3)$^{**}$ \\
-Early IVT + late MT & 2,714 & 37.2 (35.4--39.0) & 26.7 (25.0--28.3) & 10.5 (8.1--13.0)$^{**}$ & 0.73 (0.70--0.75)$^{**}$ & 9.3 (8.9--9.7)$^{**}$ \\
+Late MT only & 1,876 & 33.5 (31.3--35.6) & 25.2 (23.2--27.2) & 8.3 (5.3--11.2)$^{**}$ & 0.58 (0.55--0.61)$^{**}$ & 7.7 (7.2--8.2)$^{**}$ \\
+Early IVT + early MT & 2,309 & 46.5 (44.5--48.5) & 23.0 (21.3--24.7) & 23.5 (20.8--26.2)$^{**}$ & 1.35 (1.33--1.38)$^{**}$ & 18.8 (18.3--19.3)$^{**}$ \\
+Early IVT + late MT & 2,714 & 37.2 (35.4--39.0) & 26.2 (24.6--27.9) & 11.0 (8.5--13.4)$^{**}$ & 0.73 (0.70--0.75)$^{**}$ & 9.3 (8.9--9.7)$^{**}$ \\
 \bottomrule
 \end{tabular}%
 }

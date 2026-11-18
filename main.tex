@@ -28,6 +28,26 @@
 \usepackage{ragged2e} % Better right ragged edges (allows hyphenation)
 \usepackage{subcaption} % Allows use of subfigures
 \usepackage[super]{natbib} % Citations using superscript
+\usepackage{multibib} % Separate reference lists for main paper and supplement
+\newcites{supp}{Supplementary references}
+\makeatletter
+% Supplement citations get their own internal labels (key@supp), so a reference
+% cited in both the main paper and the supplement is numbered independently in
+% each reference list. Called by \beginsupplement.
+
+
+
+
+\newcommand{\suppcitelabels}{%
+  \def\@extra@b@citeb{@supp}%
+  \let\supp@orig@lbibitem\@lbibitem
+  \def\@lbibitem[##1]##2{\supp@orig@lbibitem[##1]{##2@supp}}%
+  \let\supp@orig@bibitem\@bibitem
+  \def\@bibitem##1{\supp@orig@bibitem{##1@supp}}%
+}
+\makeatother
+
+
 \usepackage{titlesec} % For title spacing
 \usepackage[toc,page]{appendix}
 \usepackage{url} % Tidy web links
@@ -78,6 +98,7 @@
 
 % Number for supplementary material
 \newcommand{\beginsupplement}{
+    \suppcitelabels
     \setcounter{section}{0}
     \renewcommand{\thesection}{S\arabic{section}}
     \setcounter{figure}{0}
@@ -129,11 +150,9 @@
 \centerline{{\huge Supplementary Material}}
 \input{chapters/8_supplement}
 
-% Supplement-only: the supplement has its own citations, so add a reference list
-\ifincludemain\else
-  \bibliographystyle{naturemag}
-  \bibliography{references}
-\fi
+% Supplement has its own reference list (citations use \citesupp{...})
+\bibliographystylesupp{naturemag}
+\bibliographysupp{references}
 
 \fi
 

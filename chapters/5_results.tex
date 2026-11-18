@@ -1,11 +1,12 @@
 \section{Results}
 
-\subsection{Patient characteristics for treated patients and matched controls}
+\subsection{Patients}
 
-Table~\ref{tab:matching} shows the characteristics of treated patients and their matched controls (used for target trail emulation) in each treatment group. Patients who received MT, with or without IVT, had more severe strokes and less pre-stroke disability than those who received IVT alone, and those who received MT alone were far more likely to have AF and to be taking anticoagulants for AF. Matching produced closely balanced groups, and at most 2.6\% of any treatment group could not be matched. Characteristics of all patients before matching are given in the Supplementary Material.
+Patients who received MT, with or without IVT, had more severe strokes and less pre-stroke disability than those who received IVT alone, and those who received MT alone were far more likely to have AF and to be taking anticoagulants (Table~\ref{tab:matching}). Matching produced closely balanced groups, and at most 2.6\% of any group could not be matched, although diabetes was less common in patients given MT than in their matched controls.
 
+{\small
 \begin{longtable}[]{@{}llll@{}}
-\caption{Descriptive statistics for matched pair analysis of treatment strategies. Strategies are defined by early ($\leq$ 270 min from onset) or late ($>$ 270 min from onset) IVT, MT, or their combination. Patients were matched in each treatment strategy on prior disability, age group (5-year bands), stroke severity band (NIHSS 0--4, 5--9, 10--14, \textit{et seq.}), AF anticoagulant use, and AF diagnosis. Each untreated patient could serve as a control for at most three treated patients. Non-matched patients (a maximum of 2.6\% of each group) were dropped from the analysis. Values are mean (standard deviation).}\\
+\caption{Characteristics of treated patients and their matched untreated controls in the target trial emulation, by treatment strategy (mean, standard deviation). Early: $\leq$270 minutes from onset; late: $>$270 minutes. Patients were matched on pre-stroke disability, age band, NIHSS band, AF diagnosis and anticoagulant use for AF; each control could be used for up to three treated patients.}\\
 \toprule
 \textbf{Treatment group} & \textbf{Feature} & \textbf{Treated} & \textbf{Untreated} \\
 \midrule
@@ -72,58 +73,58 @@ Late IVT + Late MT (n=141) & Prior disability & 0.45 (0.70) & 0.45 (0.70) \\
 \bottomrule
 \label{tab:matching}
 \end{longtable}
+}
 
 \subsection{Effect of each treatment strategy}
 
-Table~\ref{tab:effects} summarises the estimated effect of each strategy by target trial emulation, the S-learner and the causal forest. Figures of these estimates for each method are given in the Supplementary Material. Every strategy was associated with a significantly higher chance of a good outcome. All three methods found that early combined IVT and MT gave the largest benefit: 46.5\% of treated patients had a good outcome against 23.0\% of matched controls, the S-learner log odds ratio was 1.35 (odds ratio 3.9), and the causal forest estimated an absolute gain of 18.8 percentage points. Early MT alone gave the next largest benefit by matching and the S-learner, followed by early IVT alone.
-
-Later treatment gave less benefit. On the log odds scale, late IVT alone and late MT alone gave about half to three quarters of the benefit of their early counterparts, and early IVT followed by late MT gave little more than early IVT alone (log odds ratio 0.73 against 0.71). Only 141 patients received both treatments late, and their estimates were imprecise.
+Every treatment strategy was associated with a higher chance of a good outcome (Table~\ref{tab:effects}). All three methods found that early IVT plus early MT gave the largest benefit: 46.5\% of treated patients had a good outcome against 23.0\% of matched controls, the S-learner odds ratio was 3.2 (log odds ratio 1.16), and the causal forest estimated a gain of 15.2 percentage points. Early MT alone gave the next largest benefit, followed by early IVT alone. The causal forest gave smaller gains than matching for the three early strategies, but similar gains for the late strategies. Late treatment gave about half to two thirds of the benefit of early treatment on the log odds scale, and early IVT followed by late MT gave no more than early IVT alone. Only 141 patients received both treatments late, and their estimates were imprecise.
 
 \begin{table}[htbp]
 \centering
-\caption{Estimated effect of each treatment strategy on a good outcome at discharge (discharge mRS 0--2, or no worse than the pre-stroke mRS), by method. Early: $\leq$270 minutes from onset; late: $>$270 minutes. Target trial emulation: percentage with a good outcome among treated patients and their matched controls (95\% confidence interval, calculated from the $t$-distribution for the mean of the binary outcome in each matched group), and the difference (percentage points, with 95\% confidence interval for the difference in means from the two-sample $t$-test). S-learner: mean log odds ratio, treated vs.\ untreated (95\% confidence interval). Causal forest: conditional average treatment effect, as an absolute change in percentage points (95\% confidence interval). $n$: patients in each treatment group before matching. $^{*}p<0.05$; $^{**}p<0.01$. Tests: target trial emulation, independent two-sample $t$-test of treated vs.\ matched control patients; S-learner and causal forest, Wald $z$-test based on standard error of improvement.}
+\caption{Estimated effect of each treatment strategy on a good outcome at discharge (mRS 0--2, or no worse than before the stroke), by method. Early: $\leq$270 minutes from onset; late: $>$270 minutes. Target trial emulation: percentage with a good outcome in treated patients and matched controls, and the difference (percentage points), with 95\% confidence intervals. S-learner: mean log odds ratio, treated \textit{vs} untreated (95\% CI reflects variation between patients only). Causal forest: average treatment effect in the treated, percentage points (95\% CI); 67 patients with missing data excluded. $n$: patients in each group before matching. $^{**}p<0.01$.}
 \label{tab:effects}
 \resizebox{\textwidth}{!}{%
 \begin{tabular}{@{}lrrrrll@{}}
 \toprule
  & & \multicolumn{3}{c}{Target trial emulation} & S-learner & Causal forest \\
 \cmidrule(lr){3-5}
-Treatment strategy & $n$ & Treated (\%) & Control (\%) & Difference & Log odds ratio (95\% CI) & CATE, pp (95\% CI) \\
+Treatment strategy & $n$ & Treated (\%) & Control (\%) & Difference & Log odds ratio (95\% CI) & ATT, pp (95\% CI) \\
 \midrule
-Early IVT only & 27,695 & 49.0 (48.5--49.6) & 36.6 (36.1--37.2) & 12.4 (11.6--13.2)$^{**}$ & 0.71 (0.70--0.71)$^{**}$ & 11.1 (11.0--11.1)$^{**}$ \\
-Late IVT only & 1,189 & 47.3 (44.4--50.1) & 40.9 (38.1--43.7) & 6.3 (2.3--10.3)$^{**}$ & 0.50 (0.46--0.54)$^{**}$ & 9.2 (8.3--10.2)$^{**}$ \\
-Early MT only & 1,107 & 39.1 (36.1--42.0) & 21.9 (19.4--24.4) & 17.2 (13.3--21.0)$^{**}$ & 1.19 (1.15--1.24)$^{**}$ & 14.1 (13.2--15.0)$^{**}$ \\
-Late MT only & 1,876 & 33.5 (31.3--35.6) & 25.2 (23.2--27.2) & 8.3 (5.3--11.2)$^{**}$ & 0.58 (0.55--0.61)$^{**}$ & 7.7 (7.2--8.2)$^{**}$ \\
-Early IVT + early MT & 2,309 & 46.5 (44.5--48.5) & 23.0 (21.3--24.7) & 23.5 (20.8--26.2)$^{**}$ & 1.35 (1.33--1.38)$^{**}$ & 18.8 (18.3--19.3)$^{**}$ \\
-Early IVT + late MT & 2,714 & 37.2 (35.4--39.0) & 26.2 (24.6--27.9) & 11.0 (8.5--13.4)$^{**}$ & 0.73 (0.70--0.75)$^{**}$ & 9.3 (8.9--9.7)$^{**}$ \\
+Early IVT only & 27,695 & 49.0 (48.5--49.6) & 36.6 (36.1--37.2) & 12.4 (11.6--13.2)$^{**}$ & 0.64 (0.64--0.64)$^{**}$ & 9.9 (8.8--11.0)$^{**}$ \\
+Late IVT only & 1,189 & 47.3 (44.4--50.1) & 40.9 (38.1--43.7) & 6.3 (2.3--10.3)$^{**}$ & 0.41 (0.41--0.42)$^{**}$ & 9.5 (6.5--12.5)$^{**}$ \\
+Early MT only & 1,107 & 39.1 (36.1--42.0) & 21.9 (19.4--24.4) & 17.2 (13.3--21.0)$^{**}$ & 1.00 (0.98--1.01)$^{**}$ & 12.1 (7.4--16.8)$^{**}$ \\
+Late MT only & 1,876 & 33.5 (31.3--35.6) & 25.2 (23.2--27.2) & 8.3 (5.3--11.2)$^{**}$ & 0.47 (0.46--0.48)$^{**}$ & 9.4 (7.1--11.7)$^{**}$ \\
+Early IVT + early MT & 2,309 & 46.5 (44.5--48.5) & 23.0 (21.3--24.7) & 23.5 (20.8--26.2)$^{**}$ & 1.16 (1.15--1.17)$^{**}$ & 15.2 (10.9--19.6)$^{**}$ \\
+Early IVT + late MT & 2,714 & 37.2 (35.4--39.0) & 26.2 (24.6--27.9) & 11.0 (8.5--13.4)$^{**}$ & 0.60 (0.60--0.61)$^{**}$ & 9.3 (6.8--11.7)$^{**}$ \\
+Late IVT + late MT & 141 & 44.0 (35.7--52.3) & 27.0 (19.5--34.4) & 17.0 (5.9--28.1)$^{**}$ & 0.69 (0.65--0.72)$^{**}$ & 15.4 (6.6--24.2)$^{**}$ \\
 \bottomrule
 \end{tabular}%
 }
 \end{table}
 
-Having established that all estimates of treatment effect were similar, we used the S-learner to analyse heterogeneity of treatment effect further.
-
 \subsection{Effect of time to treatment}
 
-Figure~\ref{fig:main_s_learner_matrix} shows the benefit estimated by the S-learner fitted to continuous times to IVT and MT, grouped into one-hour intervals. The benefit of IVT alone and of MT alone declined over the six hours after onset. A linear fit to the benefit of IVT alone gave a log odds ratio of 1.19 (95\% CI 1.17--1.21) extrapolated to the time of onset, falling to zero at 405 minutes (95\% CI 395--415). For MT alone, the corresponding values were 1.54 (95\% CI 1.47--1.62) and 596 minutes (95\% CI 572--621). These correspond to losses of about 0.18 and 0.16 log odds units per hour of delay, so that each hour multiplied the odds ratio for a good outcome by about 0.84 for IVT and 0.86 for MT (reducing the improved odds each hour).
-
-The two treatment times interacted. For a fixed time to MT, benefit was greater the earlier IVT had been given: for MT at 240--300 minutes, the log odds ratio was 0.84 without IVT, 0.81--0.82 with IVT at 180--300 minutes, 0.99 with IVT at 120--180 minutes, and 1.29 with IVT at 60--120 minutes. For a fixed time to IVT, benefit fell the later MT followed and converged on that of IVT alone: for IVT at 60--120 minutes, the log odds ratio was 1.70 with MT at 120--180 minutes, 1.37 at 180--240 minutes, 1.29 at 240--300 minutes and 1.11 at 300--360 minutes, against 0.98 for IVT alone. IVT given at 180--240 minutes added nothing to MT performed in the same or the following hour, but was associated with an additional 0.2--0.3 log odds units when MT took place at 300--480 minutes. The benefit of early combined treatment (log odds ratio 1.35) was less than the sum of the benefits of early IVT alone and early MT alone (0.71 and 1.19).
+Figure~\ref{fig:main_s_learner_matrix} shows the S-learner's estimated benefit by time to IVT and time to MT. The benefit of each treatment given alone declined steadily with delay, reaching zero at 406 minutes (95\% CI 402--409) for IVT and 570 minutes (563--577) for MT; for MT, each hour of delay multiplied the odds ratio for a good outcome by about 0.86. The two treatment times interacted. For a fixed time to MT, benefit was greater the earlier IVT had been given: with MT at 240--300 minutes, the log odds ratio rose from 0.68 without IVT to 1.06 with IVT at 60--120 minutes. For a fixed time to IVT, benefit fell the later MT followed: with IVT at 60--120 minutes, it fell from 1.71 with MT at 60--120 minutes to 0.81 with MT at 360--420 minutes, close to the 0.84 for IVT alone. The benefit of early combined treatment (1.16) was less than the sum of those of early IVT alone and early MT alone (0.64 and 1.00).
 
 \begin{figure}
     \centering
-    \includegraphics[width=1\linewidth]{images/treatment_effects/thrombolysis_thrombectomy_heatmap_mrs_2.png}
-    \caption{Predicted treatment benefit by IVT and MT timing from the S-learner XGBoost model. The heatmap shows the estimated effect of treatment on the log-odds of discharge with a good outcome (discharge mRS 0--2, or no worse than the pre-stroke mRS), comparing treated and untreated patients across combinations of onset-to-IVT and onset-to-MT intervals. Each cell displays the mean predicted treatment benefit and standard deviation, with the number of patients shown in parentheses. Blue shading indicates a positive predicted treatment effect (higher log-odds of a good outcome), whereas red shading indicates a negative effect. The final row represents patients who received MT without IVT, and the final column represents patients who received IVT without MT. Blank cells indicate timing combinations with fewer than 10 observations.}
+    \includegraphics[width=1\linewidth]{images/treatment_effects/non_mild_stroke_early_arrival_good_outcome_s_learner_heatmap_log_odds.png}
+    \caption{S-learner estimate of the benefit of treatment (log odds of a good outcome, treated \textit{vs} untreated) by onset-to-IVT time (columns) and onset-to-MT time (rows). Each cell shows the mean $\pm$ the half-width of its 95\% confidence interval (variation between patients only), with the number of patients in parentheses. The last row is IVT without MT and the last column MT without IVT; cells with fewer than 10 patients are blank.}
     \label{fig:main_s_learner_matrix}
 \end{figure}
 
 \subsection{Characteristics associated with greater benefit}
 
-A secondary model predicted the estimated benefit of treatment in treated patients with an $R^2$ of 0.789 (Figure~\ref{fig:main_s_learner_benefit_shap_mrs_2}). The features most associated with benefit were the stroke team attended, stroke severity, pre-stroke disability, and the type and timing of treatment. Benefit increased with stroke severity and decreased with pre-stroke disability (reversing with the highest pre-stroke disability).
+The features most associated with the size of benefit were stroke severity, the type and timing of treatment, the stroke team attended, age and pre-stroke disability (Figure~\ref{fig:main_s_learner_benefit_shap_mrs_2}). Benefit increased with stroke severity up to an NIHSS score of about 20, and was smaller with greater pre-stroke disability and in patients aged 85 or over.
 
 \begin{figure}
     \centering
     \includegraphics[width=1\linewidth]
-{images/treatment_effects/s_learner_shap_box_plots_2.png}
-    \caption{Effect of patient feature values on the predicted benefit of treatment. Subplots (top to bottom, left to right) are ordered by their average effect on benefit of treatment. Each subplot shows the feature values and a box plot of SHAP values for each feature value. The SHAP value is the contribution to the log-odds ratio treatment effect (treated vs untreated) for being discharged with a good outcome.}
+{images/treatment_effects/non_mild_stroke_early_arrival_good_outcome_s_learner_treatment_effect_shap_box_plots.png}
+    \caption{Patient characteristics associated with the predicted benefit of treatment. Each panel shows box plots of SHAP values (contribution to the log odds of a good outcome, treated \textit{vs} untreated) for each feature value; panels are ordered by average effect.}
     \label{fig:main_s_learner_benefit_shap_mrs_2}
 \end{figure}
+
+\subsection{Sensitivity analyses}
+
+In every sensitivity analysis, each strategy remained associated with more good outcomes, mostly with changes of 3 percentage points or less (Supplementary Section~\ref{sec:sensitivity}). Adding comorbidities to the matching reduced the estimate for early MT alone from 17.2 to 12.6 percentage points, and adjusting for LVO, where recorded, increased the MT estimates. Without adjustment for onset-to-scan time, the causal forest estimates for early treatment came within 1.5 percentage points of matching. The effects of IVT alone would survive a hidden confounder three times as strong as stroke severity, age or onset-to-scan time, but one as strong as stroke severity or pre-stroke disability could remove or halve the benefit of MT.

@@ -10,7 +10,7 @@ The study used an extract of SSNAP data for stroke admissions in 2020--2025 (Hea
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.95\textwidth]{images/data_cleaning_flow.png}
+\includegraphics[width=0.95\textwidth]{images/data/data_cleaning_flow.png}
 \caption{Data cleaning: records in the SSNAP extract, records removed at each step, and the cleaned data from which the study cohort was selected (Figures~\ref{fig:flow_tte}--\ref{fig:flow_cf}). Produced by \texttt{data/sam3/clean\_data.ipynb}.}
 \label{fig:flow_cleaning}
 \end{figure}
@@ -91,7 +91,7 @@ For our S-learner, we used Extreme Gradient Boosting (XGBoost) \citesupp{chen_xg
 
 A causal forest is a version of the random forest \citesupp{breiman2001random}, a widely used machine learning method that creates many decision trees that each repeatedly split patients into smaller groups based on their characteristics (with each tree being trained on a random sample of the data, and each split using a random subset of features). The majority vote of these trees (collectively termed a forest) gives the predicted result. In a standard random forest, each split separates patients whose outcomes differ. In a causal forest, each split instead separates patients who differ in how much they benefit from treatment. The treatment effect is then estimated within each resulting group of similar patients \citesupp{wager2018estimation}. Combining the results of many such trees shows how the benefit of treatment changes with patient characteristics. This lets us estimate the effect for individual patients and for subgroups \citesupp{athey2019generalized}.
 
-We used a causal forest estimated within a double machine learning framework \citesupp{chernozhukov2018double,oprescu2019orthogonal} to estimate the conditional average treatment effect (CATE). This is the expected benefit of treatment for patients with a particular set of characteristics at presentation. The method works in two stages. First, we built two separate gradient-boosted (LightGBM \citesupp{ke2017lightgbm}) models from patients’ baseline characteristics, with five-fold cross-fitting: one predicting their outcome and one predicting which of the eight treatment groups they received. Second, a forest of 2,000 honest trees was fitted only to the variation in outcome and treatment that these models could not explain. The average effect in the treated (ATT) for each treatment group was then estimated by augmented inverse-probability weighting (AIPW), with treatment probabilities clipped at 0.01 and 95\% confidence intervals derived from the influence function. This two-model design makes the estimate “doubly robust”: it stays reliable if either model is correct, even if the other is not. The forest used the same patient characteristics as the S-learner as potential modifiers of the treatment effect; the first-stage models also adjusted for stroke team, year of admission and onset-to-scan time. Onset-to-treatment time was grouped as early or late. Patients with missing data for any model feature were excluded (67 patients; 74,611 analysed).
+We used a causal forest estimated within a double machine learning framework \citesupp{chernozhukov2018double,oprescu2019orthogonal} to estimate the conditional average treatment effect (CATE). This is the expected benefit of treatment for patients with a particular set of characteristics at presentation. The method works in two stages. First, we built two separate gradient-boosted (LightGBM \citesupp{ke2017lightgbm}) models from patients’ baseline characteristics, with five-fold cross-fitting: one predicting their outcome and one predicting which of the eight treatment groups they received. Second, a forest of 2,000 honest trees was fitted only to the variation in outcome and treatment that these models could not explain. The average effect in the treated (ATT) for each treatment group was then estimated by augmented inverse-probability weighting (AIPW), with treatment probabilities clipped at 0.01 and 95\% confidence intervals derived from the influence function. This two-model design makes the estimate “doubly robust”: it stays reliable if either model is correct, even if the other is not. The forest used the same patient characteristics as the S-learner as potential modifiers of the treatment effect; the first-stage models also adjusted for stroke team and year of admission. Onset-to-scan time was not adjusted for in the primary analysis: it largely determines whether early treatment is possible, so adjusting for it compares early-treated patients with untreated patients who were also scanned early, many of whom will have had a specific reason not to be treated. Because it may also capture confounding (for example, how a patient presents, or the reasons for delay), its effect was tested in a sensitivity analysis (Section~\ref{sec:sens_cf}). Onset-to-treatment time was grouped as early or late. Patients with missing data for any model feature were excluded (67 patients; 74,611 analysed).
 
 % ====================================================================================
 
@@ -99,7 +99,7 @@ We used a causal forest estimated within a double machine learning framework \ci
 
 \section{Study protocol}\label{sec:protocol}
 
-This protocol specifies the target trial that the study emulates, and the analysis plan for each of the three causal methods, following the TARGET guidance for reporting observational studies that emulate a target trial. It documents the analyses as carried out. It was written during the analysis and was not registered in advance; analyses added after the first version (the sensemakr analyses, and the re-specification of the S-learner and causal forest described in the Supplementary Material) are identified below.
+This protocol specifies the target trial that the study emulates, and the analysis plan for each of the three causal methods, following the TARGET guidance for reporting observational studies that emulate a target trial. It documents the analyses as carried out. It was written during the analysis and was not registered in advance; analyses added after the first version (the sensemakr analyses, the re-specification of the S-learner and causal forest described in the Supplementary Material, and the move of onset-to-scan time from the causal forest's primary adjustment set to a sensitivity analysis) are identified below.
 
 \subsection{Target trial and its emulation}
 
@@ -162,16 +162,16 @@ Treatment strategy boundaries: IVT at exactly 270 minutes counts as early, and M
 \subsection{Protocol C: causal forest}\label{sec:protocol_cf}
 
 \begin{itemize}
-\item \textbf{Features.} Effect modifiers ($X$): pre-stroke mRS, NIHSS, age, congestive heart failure, hypertension, diabetes, anticoagulant use for AF, AF diagnosis and ethnicity. Confounders ($W$): $X$ plus stroke team, year of admission and onset-to-scan time. Patients with missing data for any feature are excluded.
+\item \textbf{Features.} Effect modifiers ($X$): pre-stroke mRS, NIHSS, age, congestive heart failure, hypertension, diabetes, anticoagulant use for AF, AF diagnosis and ethnicity. Confounders ($W$): $X$ plus stroke team and year of admission. Onset-to-scan time is not adjusted for in the primary analysis, because it largely determines whether early treatment is possible; it is added to $W$ in a sensitivity analysis. (Onset-to-scan time was included in $W$ in an earlier version of the analysis, and was moved to a sensitivity analysis during the analysis.) Patients with missing data for any feature are excluded.
 \item \textbf{Model.} CausalForestDML (EconML) with LightGBM first-stage models for outcome and for the eight treatment groups (400 trees, 31 leaves, learning rate 0.03, subsampling 0.8), five-fold cross-fitting, and a forest of 2,000 honest trees with at least 25 patients per leaf (fixed seed, 42).
 \item \textbf{Estimation.} Primary estimate: the average treatment effect in the treated for each strategy compared with no treatment, by augmented inverse-probability weighting with treatment probabilities clipped at 0.01 and 95\% confidence intervals from the influence function. Also reported: the mean of individual (conditional) effects in treated patients, and the average treatment effect in the whole cohort where fewer than 20\% of patients have a probability of the strategy below 0.01. (The first version reported the mean of individual effects with intervals based on their spread; this was replaced during the analysis, together with a correction to the handling of categorical features.)
 \item \textbf{Diagnostics and heterogeneity.} First-stage discrimination (ROC AUC, with bootstrap 95\% confidence intervals) and calibration of the outcome model, risk ratios in the treated, and a best linear predictor test of heterogeneity (added later); overlap, as the distribution of the probability of receiving neither treatment; mean individual effects by NIHSS, age and pre-stroke mRS bands (groups of at least 50 patients); and comparison with the target trial emulation.
-\item \textbf{Sensitivity analyses.} Original (incorrect) categorical feature handling; without stroke team; without onset-to-scan time and year; additional adjustment for LVO; exclusion of patients with a probability of receiving neither treatment below 0.05; smaller first-stage models (200 trees, 15 leaves); minimum leaf size of 50; cross-fitting folds grouped by stroke team; early/late cut-off of 240 or 300 minutes; the three alternative outcome definitions; three other random seeds; E-values; and sensemakr (added later).
+\item \textbf{Sensitivity analyses.} Original (incorrect) categorical feature handling; without stroke team; additional adjustment for onset-to-scan time; additional adjustment for LVO; exclusion of patients with a probability of receiving neither treatment below 0.05; smaller first-stage models (200 trees, 15 leaves); minimum leaf size of 50; cross-fitting folds grouped by stroke team; early/late cut-off of 240 or 300 minutes; the three alternative outcome definitions; three other random seeds; E-values; and sensemakr (added later).
 \end{itemize}
 
 \subsection{Unmeasured confounding}
 
-For each method, E-values are calculated for the point estimate and for the confidence limit closest to no effect. The Sensemakr analysis fits, for each strategy, a linear probability model of good outcome on treatment and the method's covariates, and reports robustness values and bounds for confounders one to three times as strong as pre-stroke mRS, NIHSS and age (and onset-to-scan time for method C).
+For each method, E-values are calculated for the point estimate and for the confidence limit closest to no effect. The Sensemakr analysis fits, for each strategy, a linear probability model of good outcome on treatment and the method's covariates, and reports robustness values and bounds for confounders one to three times as strong as pre-stroke mRS, NIHSS and age.
 
 \subsection{Software}
 
@@ -189,21 +189,21 @@ Figures~\ref{fig:flow_tte}--\ref{fig:flow_cf} show the number of patients at eac
 
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=\textwidth,height=0.8\textheight,keepaspectratio]{images/treatment_effects/non_mild_stroke_early_arrival_good_outcome_target_trial_flow_diagram.png}
+    \includegraphics[width=\textwidth,height=0.8\textheight,keepaspectratio]{images/target_trial_emulation/non_mild_stroke_early_arrival_good_outcome_target_trial_flow_diagram.png}
     \caption{Patient flow for the target trial emulation, from admissions in the cleaned SSNAP data (2020--2025) to the eligible cohort, the treatment groups, and the treated patients matched to an untreated control in each group (with the percentage matched). Untreated patients could serve as a control up to three times within a treatment group, and in more than one group. Early: IVT within 270 minutes of onset, or MT before 270 minutes. IVT, intravenous thrombolysis; LVO, large vessel occlusion; MT, mechanical thrombectomy; mRS, modified Rankin Scale; NIHSS, National Institutes of Health Stroke Scale.}
     \label{fig:flow_tte}
 \end{figure}
 
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=\textwidth,height=0.8\textheight,keepaspectratio]{images/treatment_effects/non_mild_stroke_early_arrival_good_outcome_s_learner_flow_diagram.png}
+    \includegraphics[width=\textwidth,height=0.8\textheight,keepaspectratio]{images/s_learner/non_mild_stroke_early_arrival_good_outcome_s_learner_flow_diagram.png}
     \caption{Patient flow for the S-learner, from admissions in the cleaned SSNAP data (2020--2025) to the eligible cohort and the treatment groups. All eligible patients were used to fit the S-learner, and treatment effects were estimated for the treated groups. Abbreviations as in Figure~\ref{fig:flow_tte}.}
     \label{fig:flow_sl}
 \end{figure}
 
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=\textwidth,height=0.8\textheight,keepaspectratio]{images/treatment_effects/non_mild_stroke_early_arrival_good_outcome_causal_forest_flow_diagram.png}
+    \includegraphics[width=\textwidth,height=0.8\textheight,keepaspectratio]{images/causal_forest/non_mild_stroke_early_arrival_good_outcome_causal_forest_flow_diagram.png}
     \caption{Patient flow for the causal forest, from admissions in the cleaned SSNAP data (2020--2025) to the analysed cohort and the treatment groups. The causal forest requires complete data, so patients with missing data for any model feature were also excluded. Abbreviations as in Figure~\ref{fig:flow_tte}.}
     \label{fig:flow_cf}
 \end{figure}
@@ -212,7 +212,7 @@ Figures~\ref{fig:flow_tte}--\ref{fig:flow_cf} show the number of patients at eac
 
 \subsection{Descriptive statistics}\label{sec:supp_descriptive}
 
-Table \ref{tab:full_group_stats} summarises the characteristics of patients in each treatment group before matching. For each feature, the table gives the number of patients with data, the mean, standard deviation, minimum, quartiles and maximum. Binary features (congestive heart failure, hypertension, diabetes, atrial fibrillation (AF) diagnosis and anticoagulant use for AF) are coded 0 or 1, so their means are the proportion of patients with that characteristic. The table also gives onset-to-scan time and year of admission, which the causal forest adjusts for, the distribution of ethnicity, and the number of patients with missing data for each feature.
+Table \ref{tab:full_group_stats} summarises the characteristics of patients in each treatment group before matching. For each feature, the table gives the number of patients with data, the mean, standard deviation, minimum, quartiles and maximum. Binary features (congestive heart failure, hypertension, diabetes, atrial fibrillation (AF) diagnosis and anticoagulant use for AF) are coded 0 or 1, so their means are the proportion of patients with that characteristic. The table also gives year of admission, which the causal forest adjusts for, onset-to-scan time, which it adjusts for in a sensitivity analysis, the distribution of ethnicity, and the number of patients with missing data for each feature.
 
 The treatment groups differed considerably. Untreated patients were older (mean age 78.5 years, compared with 69.5--74.2 years in the treated groups) and had more disability before their stroke (mean pre-stroke mRS 1.87, compared with 0.41--1.00). Patients who received thrombectomy, with or without thrombolysis, had more severe strokes (mean NIHSS 15.1--17.9) than those who received thrombolysis alone (12.0--12.6) or no reperfusion treatment (12.8). AF and anticoagulant use for AF were much more common in patients who received thrombectomy alone (AF 47--57\%; anticoagulant use 39--53\%) than in any group that received thrombolysis (AF 17--24\%; anticoagulant use 3--4\%), consistent with anticoagulation being a contraindication to thrombolysis. Mean onset-to-thrombolysis time was 122--170 minutes in the early groups and 300--304 minutes in the late groups; mean onset-to-thrombectomy time was 207--210 minutes in the early groups and 357--439 minutes in the late groups. These differences show why simple comparisons between treated and untreated patients would be confounded, and why the causal methods described in the main paper were needed.
 
@@ -223,7 +223,7 @@ The treatment groups differed considerably. Untreated patients were older (mean 
 \footnotesize
 \begin{longtable}[]{@{}llllllllll@{}}
 % Header on first page
-\caption{Descriptive statistics for each reperfusion treatment group (all 74,678 patients). Strategies are defined by early ($\leq$ 270 mins from onset) or late ($>$ 270 mins from onset) intravenous thrombolysis, mechanical thrombectomy, or their combination. Treatment times (minutes) are summarised for treated patients only. Onset-to-scan time (minutes) and year of admission are adjusted for in the causal forest; onset-to-scan time in untreated patients includes implausibly long values (maximum 85,103 minutes), which inflate its mean and standard deviation but not its median. Ethnicity counts below 10 are suppressed. Missing values: NIHSS was missing for 67 patients, who were excluded from the causal forest (74,611 analysed); no other model feature (pre-stroke mRS, age, comorbidities, AF diagnosis, anticoagulant use for AF, onset-to-scan time, year, stroke team or ethnicity) had missing values.}
+\caption{Descriptive statistics for each reperfusion treatment group (all 74,678 patients). Strategies are defined by early ($\leq$ 270 mins from onset) or late ($>$ 270 mins from onset) intravenous thrombolysis, mechanical thrombectomy, or their combination. Treatment times (minutes) are summarised for treated patients only. Year of admission is adjusted for in the causal forest, and onset-to-scan time (minutes) in a causal forest sensitivity analysis; onset-to-scan time in untreated patients includes implausibly long values (maximum 85,103 minutes), which inflate its mean and standard deviation but not its median. Ethnicity counts below 10 are suppressed. Missing values: NIHSS was missing for 67 patients, who were excluded from the causal forest (74,611 analysed); no other model feature (pre-stroke mRS, age, comorbidities, AF diagnosis, anticoagulant use for AF, onset-to-scan time, year, stroke team or ethnicity) had missing values.}
 \label{tab:full_group_stats}\\
 \toprule
 Feature & Statistic & No treatment & Early IVT only & Late IVT only &
@@ -707,7 +707,7 @@ The figure contains three plots. The left plot shows mean discharge mRS, where a
 
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=\textwidth,height=0.8\textheight,keepaspectratio]{images/treatment_effects/non_mild_stroke_early_arrival_good_outcome_target_trial.png}
+    \includegraphics[width=\textwidth,height=0.8\textheight,keepaspectratio]{images/target_trial_emulation/non_mild_stroke_early_arrival_good_outcome_target_trial.png}
     \caption{Target trial emulation of reperfusion-treatment timing strategies and discharge outcomes, using matched treated and control patients. The left plot shows estimated mean discharge modified Rankin Scale (mRS), the middle plot the proportion achieving a good outcome (discharge mRS 0--2, or no worse than the pre-stroke mRS), and the right plot length of stay. Patients receiving each treatment strategy are shown in red and their matched untreated comparators in blue. Strategies are defined by early ($\leq$ 270 mins from onset) or late ($>$ 270 mins from onset) intravenous thrombolysis, mechanical thrombectomy, or their combination. Points denote estimated outcomes and horizontal bars 95\% confidence intervals; p-values indicate the treated--untreated comparison within each treatment group, with sample sizes shown. Lower mRS and higher proportions with a good outcome indicate more favourable outcomes.}
     \label{fig:target_trial}
 \end{figure}
@@ -781,20 +781,20 @@ Late IVT + late MT & 141 & 12.9 (6.4--19.5) & 0.69 (0.38--0.99) & 1.98 (1.46--2.
 \cmidrule(lr){2-4} \cmidrule(lr){5-7}
 Decile & $n$ & Predicted & Observed & $n$ & Predicted & Observed \\
 \midrule
-1 & 7,468 & 0.080 & 0.075 & 7,462 & 0.082 & 0.088 \\
-2 & 7,468 & 0.159 & 0.155 & 7,461 & 0.154 & 0.155 \\
-3 & 7,468 & 0.232 & 0.237 & 7,461 & 0.225 & 0.243 \\
-4 & 7,467 & 0.304 & 0.309 & 7,461 & 0.299 & 0.312 \\
-5 & 7,468 & 0.376 & 0.382 & 7,461 & 0.374 & 0.380 \\
-6 & 7,468 & 0.448 & 0.450 & 7,461 & 0.451 & 0.452 \\
-7 & 7,467 & 0.524 & 0.525 & 7,461 & 0.528 & 0.518 \\
-8 & 7,468 & 0.604 & 0.611 & 7,461 & 0.608 & 0.601 \\
-9 & 7,468 & 0.689 & 0.684 & 7,461 & 0.693 & 0.681 \\
-10 & 7,468 & 0.806 & 0.794 & 7,461 & 0.805 & 0.792 \\
+1 & 7,468 & 0.080 & 0.075 & 7,462 & 0.084 & 0.091 \\
+2 & 7,468 & 0.159 & 0.155 & 7,461 & 0.160 & 0.166 \\
+3 & 7,468 & 0.232 & 0.237 & 7,461 & 0.229 & 0.245 \\
+4 & 7,467 & 0.304 & 0.309 & 7,461 & 0.303 & 0.313 \\
+5 & 7,468 & 0.376 & 0.382 & 7,461 & 0.377 & 0.385 \\
+6 & 7,468 & 0.448 & 0.450 & 7,461 & 0.452 & 0.450 \\
+7 & 7,467 & 0.524 & 0.525 & 7,461 & 0.527 & 0.517 \\
+8 & 7,468 & 0.604 & 0.611 & 7,461 & 0.603 & 0.598 \\
+9 & 7,468 & 0.689 & 0.684 & 7,461 & 0.686 & 0.670 \\
+10 & 7,468 & 0.806 & 0.794 & 7,461 & 0.800 & 0.785 \\
 \addlinespace
-ROC AUC (95\% CI) & \multicolumn{3}{r}{0.764 (0.760--0.767)} & \multicolumn{3}{r}{0.759 (0.755--0.762)} \\
+ROC AUC (95\% CI) & \multicolumn{3}{r}{0.764 (0.760--0.767)} & \multicolumn{3}{r}{0.753 (0.748--0.756)} \\
 Calibration intercept (95\% CI) & \multicolumn{3}{r}{0.00 ($-$0.02 to 0.01)} & \multicolumn{3}{r}{0.00 ($-$0.01 to 0.02)} \\
-Calibration slope (95\% CI) & \multicolumn{3}{r}{0.99 (0.97 to 1.01)} & \multicolumn{3}{r}{0.95 (0.93 to 0.97)} \\
+Calibration slope (95\% CI) & \multicolumn{3}{r}{0.99 (0.97 to 1.01)} & \multicolumn{3}{r}{0.94 (0.92 to 0.96)} \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -803,14 +803,14 @@ Calibration slope (95\% CI) & \multicolumn{3}{r}{0.99 (0.97 to 1.01)} & \multico
 
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=0.8\textwidth,height=0.8\textheight,keepaspectratio]{images/treatment_effects/non_mild_stroke_early_arrival_good_outcome_s_learner_counterfactual_cate_log_odds_estimates.png}
+    \includegraphics[width=0.8\textwidth,height=0.8\textheight,keepaspectratio]{images/s_learner/non_mild_stroke_early_arrival_good_outcome_s_learner_counterfactual_cate_log_odds_estimates.png}
     \caption{Estimated counterfactual treatment benefit across reperfusion-treatment timing strategies, derived from the XGBoost S-learner model. A good outcome is a discharge modified Rankin Scale (mRS) of 0--2, or no worse than the pre-stroke mRS. Points represent the mean estimated individual treatment effect for each treatment-timing group, expressed as the counterfactual log odds ratio for the specified outcome relative to no reperfusion treatment; horizontal error bars show 95\% confidence intervals. Treatment groups are defined by receipt of intravenous thrombolysis and/or mechanical thrombectomy, with early treatment defined as onset-to-treatment time $<$270 minutes and late treatment as $\geq$270 minutes. Sample sizes are shown alongside group labels. Values above zero indicate a model-predicted increase in the odds of a good outcome under the observed treatment strategy compared with no treatment. Confidence intervals reflect variation between patients' predicted effects only, not model uncertainty.}
     \label{fig:s_learner_benefit}
 \end{figure}
 
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=0.8\textwidth,height=0.8\textheight,keepaspectratio]{images/treatment_effects/non_mild_stroke_early_arrival_good_outcome_s_learner_counterfactual_cate_probabilities_estimates.png}
+    \includegraphics[width=0.8\textwidth,height=0.8\textheight,keepaspectratio]{images/s_learner/non_mild_stroke_early_arrival_good_outcome_s_learner_counterfactual_cate_probabilities_estimates.png}
     \caption{Estimated counterfactual treatment benefit across reperfusion-treatment timing strategies from the XGBoost S-learner, on the probability scale. Points show the mean estimated individual difference in the probability of a good outcome (discharge mRS 0--2, or no worse than the pre-stroke mRS) under the observed treatment strategy compared with no reperfusion treatment; horizontal error bars show 95\% confidence intervals, which reflect variation between patients' predicted effects only, not model uncertainty.}
     \label{fig:s_learner_benefit_prob}
 \end{figure}
@@ -823,7 +823,7 @@ Figure \ref{fig:s_learner_heatmap_log odds} shows a heatmap of the estimated ben
 
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=\textwidth,height=0.8\textheight,keepaspectratio]{images/treatment_effects/non_mild_stroke_early_arrival_good_outcome_s_learner_heatmap_log_odds.png}
+    \includegraphics[width=\textwidth,height=0.8\textheight,keepaspectratio]{images/s_learner/non_mild_stroke_early_arrival_good_outcome_s_learner_heatmap_log_odds.png}
     \caption{Predicted treatment benefit by thrombolysis and thrombectomy timing from the S-learner XGBoost model. The heatmap shows the model-estimated effect of treatment on the log-odds of a good outcome at discharge (modified Rankin Scale (mRS) 0--2, or no worse than the pre-stroke mRS), comparing treated with untreated patients across combinations of onset-to-thrombolysis and onset-to-thrombectomy time intervals. Each cell reports the mean predicted treatment benefit $\pm$ the half-width of its 95\% confidence interval (reflecting variation between patients only, not model uncertainty), with the number of patients in parentheses. Darker blue shading denotes a larger predicted benefit (increased log-odds of a good outcome). Rows are onset-to-thrombectomy intervals and columns onset-to-thrombolysis intervals. The final row represents patients receiving thrombolysis without thrombectomy, and the final column patients receiving thrombectomy without thrombolysis; blank cells indicate treatment-timing combinations with fewer than 10 observations in the data.}
     \label{fig:s_learner_heatmap_log odds}
 \end{figure}
@@ -836,7 +836,7 @@ Figure \ref{fig:s_learner_time_thrombolysis} shows a scatter plot, with regressi
 
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=0.8\textwidth,height=0.8\textheight,keepaspectratio]{images/treatment_effects/non_mild_stroke_early_arrival_good_outcome_s_learner_time_effect_thrombolysis_alone.png}
+    \includegraphics[width=0.8\textwidth,height=0.8\textheight,keepaspectratio]{images/s_learner/non_mild_stroke_early_arrival_good_outcome_s_learner_time_effect_thrombolysis_alone.png}
     \caption{Association between onset-to-thrombolysis time and individualised predicted benefit of thrombolysis alone, estimated using the S-learner XGBoost model. Benefit is the predicted improvement in the odds of a good outcome (discharge modified Rankin Scale (mRS) 0--2, or no worse than the pre-stroke mRS). Analyses are restricted to patients receiving intravenous thrombolysis without mechanical thrombectomy; each point represents an individual patient. The vertical axis shows the model-estimated treatment benefit on the log-odds scale, relative to the counterfactual prediction under no treatment. The red line denotes the fitted linear trend, illustrating the decline in predicted benefit with increasing onset-to-thrombolysis time. The dashed horizontal line indicates no predicted treatment benefit (log-odds ratio = 0); values above and below this line indicate predicted benefit and harm, respectively.}
     \label{fig:s_learner_time_thrombolysis}
 \end{figure}
@@ -849,10 +849,47 @@ Figure \ref{fig:s_learner_time_thrombectomy} shows a scatter plot, with regressi
 
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=0.8\textwidth,height=0.8\textheight,keepaspectratio]{images/treatment_effects/non_mild_stroke_early_arrival_good_outcome_s_learner_time_effect_thrombectomy_alone.png}
+    \includegraphics[width=0.8\textwidth,height=0.8\textheight,keepaspectratio]{images/s_learner/non_mild_stroke_early_arrival_good_outcome_s_learner_time_effect_thrombectomy_alone.png}
     \caption{Association between onset-to-thrombectomy time and individualised predicted benefit of thrombectomy alone, estimated using the S-learner XGBoost model. Benefit is the predicted improvement in the odds of a good outcome (discharge modified Rankin Scale (mRS) 0--2, or no worse than the pre-stroke mRS). Analyses are restricted to patients receiving mechanical thrombectomy without intravenous thrombolysis; each point represents an individual patient. The vertical axis shows the model-estimated treatment benefit on the log-odds scale, relative to the counterfactual prediction under no treatment. The red line denotes the fitted linear trend, illustrating the decline in predicted benefit with increasing onset-to-thrombectomy time. The dashed horizontal line indicates no predicted treatment benefit (log-odds ratio = 0); values above and below this line indicate predicted benefit and harm, respectively.}
     \label{fig:s_learner_time_thrombectomy}
 \end{figure}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsubsection{Thrombectomy effect by time: no thrombolysis compared with thrombolysis within 2 hours}\label{sec:te_sl_mt_time_by_ivt}
+
+Figures \ref{fig:s_learner_time_thrombolysis} and \ref{fig:s_learner_time_thrombectomy} describe each treatment given alone. To ask how the value of MT changes with time when IVT has already been given early, we compared two groups of patients who underwent MT 120--600 minutes after onset, using the same S-learner counterfactual predictions that underlie Figure~\ref{fig:main_s_learner_matrix}: patients who received MT without IVT (n = 2,870), and patients who received IVT within 120 minutes of onset before MT (n = 1,652; mean onset-to-IVT time 99 minutes, mean onset-to-MT time 236 minutes). For each patient we used two estimates on the log-odds scale: the \emph{total effect} of the treatment actually given, against no reperfusion treatment; and the \emph{additional effect} of MT, against the counterfactual in which the same patient had received the same treatment without MT. For patients without IVT the two are identical. For patients given early IVT, the additional effect is the value of proceeding to MT over and above IVT. We related each estimate to onset-to-MT time with a natural cubic regression spline (four degrees of freedom), so that the curve could flatten at later times rather than being forced to fall linearly (Figure~\ref{fig:s_learner_mt_time_by_ivt}, Table~\ref{tab:s_learner_mt_time_by_ivt}).
+
+The additional effect of MT was much smaller after early IVT than without IVT at every time to MT. At 2 hours the fitted additional effect was 1.50 log odds units (95\% CI 1.47--1.53) without IVT and 0.63 (0.60--0.65) after early IVT. Without IVT the additional effect declined steadily, reaching 0.05 (0.01--0.08) at 10 hours. After early IVT it fell to zero at about 270 minutes (4.5 hours) and was below zero from about 5 hours, reaching a minimum of $-0.19$ at about 8 hours. In linear models fitted over the same range the two lines were close to parallel (difference in slope 0.005 log odds units per hour, 95\% CI $-0.003$ to 0.014, p = 0.25), separated by a constant 0.71 log odds units (0.67--0.74): early IVT removed a fixed part of the benefit that MT would otherwise provide, rather than changing how quickly the benefit of MT decays.
+
+Expressed as the total effect against no treatment, patients given early IVT followed by MT had greater estimated benefit than patients given MT alone at the same time (1.70 against 1.50 at 2 hours; 0.85 against 0.43 at 6 hours), reflecting the contribution of IVT. Their total effect, however, approached the benefit of early IVT given without MT (log odds ratio 1.04 in the same population) when MT took place at about 266 minutes, mirroring the point at which the additional effect of MT reached zero.
+
+The confidence intervals shown are those of the fitted curves through the individual predicted effects, and do not include the uncertainty of the S-learner itself; they should be read as describing the shape of the relationship rather than as formal tests. Patients given early IVT who underwent MT late were few (MT after 8 hours was rare in this group) and are likely to differ from those treated earlier in ways the model cannot fully capture, for example in the reasons for delay to MT or in imaging selection for late treatment. The estimates of no or negative additional effect at late times should therefore be regarded as indicating that the benefit of MT after early IVT is small or uncertain beyond about 4.5 hours in this unselected population, not that late MT is harmful.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth,height=0.8\textheight,keepaspectratio]{images/s_learner/non_mild_stroke_early_arrival_good_outcome_s_learner_thrombectomy_time_effect_by_thrombolysis.png}
+\caption{Estimated effect of mechanical thrombectomy (MT) by onset-to-MT time (120--600 minutes) in patients who received MT without intravenous thrombolysis (IVT) and in patients who received IVT within 120 minutes of onset before MT, from S-learner counterfactual predictions for a good outcome (discharge modified Rankin Scale (mRS) 0--2, or no worse than the pre-stroke mRS). Left: total effect, against no reperfusion treatment. Right: additional effect of MT, against the same patient receiving the same treatment without MT. Points are individual patients; lines are natural cubic regression splines (four degrees of freedom) with 95\% confidence bands for the fitted curve. The dashed horizontal line indicates no effect (log odds ratio = 0).}
+\label{fig:s_learner_mt_time_by_ivt}
+\end{figure}
+
+\begin{table}[htbp]
+\centering
+\caption{Fitted effect of mechanical thrombectomy (MT), log odds ratio for a good outcome, by onset-to-MT time, from natural cubic regression splines fitted to S-learner predictions. Total effect is against no reperfusion treatment; additional effect is against the same treatment without MT. For patients without intravenous thrombolysis (IVT) the two are identical. In the early-IVT group, the additional effect reached zero at about 270 minutes, and the total effect fell to the level of early IVT alone (1.04) at about 266 minutes. --- indicates outside the range of the data.}
+\label{tab:s_learner_mt_time_by_ivt}
+\begin{tabular}{lrrrrrrr}
+\toprule
+ & \multicolumn{7}{c}{Onset to MT (hours)} \\
+\cmidrule(lr){2-8}
+ & 2 & 3 & 4 & 5 & 6 & 8 & 10 \\
+\midrule
+No IVT (n = 2,870): total = additional & 1.50 & 1.11 & 0.78 & 0.55 & 0.43 & 0.27 & 0.05 \\
+IVT $\leq$ 2 h (n = 1,652): total & 1.70 & 1.37 & 1.12 & 0.95 & 0.85 & 0.75 & --- \\
+IVT $\leq$ 2 h (n = 1,652): additional & 0.63 & 0.32 & 0.08 & $-0.06$ & $-0.14$ & $-0.19$ & --- \\
+\bottomrule
+\end{tabular}
+\end{table}
 
 
 
@@ -868,7 +905,7 @@ To understand which patients benefited most, a secondary XGBoost model was fitte
 \begin{figure}
     \centering
     \includegraphics[width=1\linewidth]
-{images/treatment_effects/non_mild_stroke_early_arrival_good_outcome_s_learner_treatment_effect_shap_box_plots.png}
+{images/s_learner/non_mild_stroke_early_arrival_good_outcome_s_learner_treatment_effect_shap_box_plots.png}
     \caption{Effect of patient feature values on the predicted benefit of treatment. Subplots (top to bottom, left to right) are ordered by their average effect on benefit of treatment. Each subplot shows the feature value, and a boxplot of SHAP values for that feature value. The SHAP value is the contribution to the log-odds ratio treatment effect (treated vs untreated) for achieving a good outcome (discharge mRS 0--2, or no worse than the pre-stroke mRS).}
     \label{fig:s_learner_benefit_shap_mrs_2}
 \end{figure}
@@ -879,9 +916,9 @@ To understand which patients benefited most, a secondary XGBoost model was fitte
 
 \subsection{Causal Forest}\label{sec:te_cf}
 
-Figure \ref{fig:causal_forest_benefit} shows treatment effects estimated by the causal forest. The main estimate is the average treatment effect in the treated (ATT) for each strategy compared with neither treatment, calculated by augmented inverse-probability weighting (AIPW). Each treated patient's outcome is compared with a doubly robust estimate of their outcome without treatment, which combines the cross-fitted first-stage predictions, the forest's individual effect estimates, and untreated patients reweighted by the odds $P(\mathrm{strategy} \mid X, W) / P(\mathrm{neither} \mid X, W)$. Treatment probabilities were clipped at 0.01, and 95\% confidence intervals were derived from the influence function. The ATT is on the absolute probability scale, so it is directly comparable with the differences in proportions from the target trial emulation. Figure \ref{fig:causal_forest_benefit} also shows the simple average of the forest's individual (conditional) effect estimates in each treated group (mean CATE), which was within 2 percentage points of the ATT for every strategy. Treatment type and timing (early vs.\ late, using a 270-minute onset-to-treatment threshold) were coded as a single categorical treatment with eight levels.
+Figure \ref{fig:causal_forest_benefit} shows treatment effects estimated by the causal forest. The main estimate is the average treatment effect in the treated (ATT) for each strategy compared with neither treatment, calculated by augmented inverse-probability weighting (AIPW). Each treated patient's outcome is compared with a doubly robust estimate of their outcome without treatment, which combines the cross-fitted first-stage predictions, the forest's individual effect estimates, and untreated patients reweighted by the odds $P(\mathrm{strategy} \mid X, W) / P(\mathrm{neither} \mid X, W)$. Treatment probabilities were clipped at 0.01, and 95\% confidence intervals were derived from the influence function. The ATT is on the absolute probability scale, so it is directly comparable with the differences in proportions from the target trial emulation. Figure \ref{fig:causal_forest_benefit} also shows the simple average of the forest's individual (conditional) effect estimates in each treated group (mean CATE), which was 0.5--2.2 percentage points below the ATT for every strategy. Treatment type and timing (early vs.\ late, using a 270-minute onset-to-treatment threshold) were coded as a single categorical treatment with eight levels.
 
-The average effect if every patient in the cohort had received a strategy (the average treatment effect, ATE) could be estimated only for early IVT alone (8.8 percentage points, 95\% CI 7.7--9.8). For the other strategies, 54--99\% of the cohort had less than a 1\% predicted probability of receiving them, so a whole-cohort effect would be pure extrapolation. EconML's built-in doubly robust ATT, which divides by unclipped treatment probabilities, gave implausible values for most strategies (for example, $-$8,082 percentage points for late IVT with late MT), because some treated patients had a predicted probability of their own treatment as low as $7 \times 10^{-7}$; the clipped AIPW estimates used here were stable and agreed with the forest's own averages. Table~\ref{tab:cf_relative} gives the corresponding relative effects: risk ratios in the treated ranged from 1.25 (early and late IVT alone) to 1.54 (late combined treatment), with 95\% confidence intervals from the influence function.
+The average effect if every patient in the cohort had received a strategy (the average treatment effect, ATE) could be estimated only for early IVT alone (11.5 percentage points, 95\% CI 10.4--12.6), slightly below its ATT, consistent with IVT being given to patients who benefit more. For the other strategies, 49--98\% of the cohort had less than a 1\% predicted probability of receiving them, so a whole-cohort effect would be pure extrapolation. EconML's built-in doubly robust ATT, which divides by unclipped treatment probabilities, gave implausible values for most strategies (for example, $+$83.4 percentage points for late IVT alone and $-$1,139 for late IVT with late MT), because some treated patients had a predicted probability of their own treatment as low as $2 \times 10^{-6}$; the clipped AIPW estimates used here were stable and agreed with the forest's own averages. Table~\ref{tab:cf_relative} gives the corresponding relative effects: risk ratios in the treated ranged from 1.22 (late IVT alone) to 2.05 (early combined treatment), with 95\% confidence intervals from the influence function.
 
 \begin{table}[htbp]
 \centering
@@ -892,40 +929,40 @@ The average effect if every patient in the cohort had received a strategy (the a
 \toprule
 Treatment strategy & $n$ & Treated (\%) & Without treatment (\%) & Risk ratio (95\% CI) \\
 \midrule
-Early IVT only & 27,675 & 49.0 & 39.1 & 1.25 (1.22--1.29) \\
-Late IVT only & 1,189 & 47.2 & 37.7 & 1.25 (1.17--1.34) \\
-Early MT only & 1,107 & 38.8 & 26.7 & 1.45 (1.24--1.71) \\
-Late MT only & 1,876 & 33.6 & 24.2 & 1.39 (1.29--1.50) \\
-Early IVT + early MT & 2,307 & 46.3 & 31.1 & 1.49 (1.30--1.70) \\
-Early IVT + late MT & 2,714 & 37.2 & 28.0 & 1.33 (1.23--1.44) \\
-Late IVT + late MT & 141 & 44.0 & 28.6 & 1.54 (1.21--1.96) \\
+Early IVT only & 27,675 & 49.0 & 35.9 & 1.36 (1.34--1.39) \\
+Late IVT only & 1,189 & 47.2 & 38.7 & 1.22 (1.15--1.29) \\
+Early MT only & 1,107 & 38.8 & 21.2 & 1.83 (1.61--2.08) \\
+Late MT only & 1,876 & 33.6 & 25.0 & 1.34 (1.25--1.44) \\
+Early IVT + early MT & 2,307 & 46.3 & 22.6 & 2.05 (1.88--2.23) \\
+Early IVT + late MT & 2,714 & 37.2 & 25.2 & 1.47 (1.37--1.58) \\
+Late IVT + late MT & 141 & 44.0 & 29.1 & 1.51 (1.17--1.96) \\
 \bottomrule
 \end{tabular}
 \end{table}
 
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=0.9\textwidth,height=0.8\textheight,keepaspectratio]{images/treatment_effects/non_mild_stroke_early_arrival_good_outcome_causal_forest_cate.png}
+    \includegraphics[width=0.9\textwidth,height=0.8\textheight,keepaspectratio]{images/causal_forest/non_mild_stroke_early_arrival_good_outcome_causal_forest_cate.png}
     \caption{Estimated effect of each reperfusion-treatment timing strategy, compared with no reperfusion treatment, from the causal forest. A good outcome is a discharge modified Rankin Scale (mRS) of 0--2, or no worse than the pre-stroke mRS. Blue circles show the average treatment effect in the treated (ATT), estimated by augmented inverse-probability weighting, with 95\% confidence intervals from the influence function. Orange squares show the mean of the forest's individual conditional average treatment effect (CATE) estimates in treated patients (no confidence interval, because individual estimates share the same trees and are strongly correlated). Effects are absolute changes in the probability of a good outcome, in percentage points. Early treatment is $\leq$270 minutes from onset for IVT and $<$270 minutes for MT. Sample sizes are shown alongside group labels.}
     \label{fig:causal_forest_benefit}
 \end{figure}
 
 \subsubsection{First-stage models and overlap}\label{sec:cf_firststage}
 
-The first-stage outcome model predicted a good outcome with an out-of-fold ROC AUC of 0.759 (95\% CI 0.755--0.762, from 30 bootstrap samples) and was well calibrated (calibration intercept 0.00, 95\% CI $-$0.01 to 0.02; slope 0.95, 0.93 to 0.97; Table~\ref{tab:calibration}). The treatment model predicted each treatment group with AUCs of 0.84--0.94 (highest for early MT alone, 0.936, 95\% CI 0.931--0.941, and early combined treatment, 0.930, 0.925--0.934). Treatment was therefore highly predictable from baseline characteristics, stroke team and onset-to-scan time, which shows how strong the confounding is. To estimate the effect of a strategy in those who received it, there must be untreated patients with similar characteristics. Figure \ref{fig:cf_overlap} shows, for each treatment group, the estimated probability of receiving neither treatment. Among treated patients the median was 0.12 (early combined treatment) to 0.60 (late IVT alone). In the early combined group, 11.5\% of patients had a probability below 0.05, compared with at most 4.1\% in the other groups, and almost no patients (one patient with late MT alone) were below 0.01. Overlap was therefore adequate for estimating effects in the treated; a sensitivity analysis excluded patients with a probability below 0.05.
+The first-stage outcome model predicted a good outcome with an out-of-fold ROC AUC of 0.753 (95\% CI 0.748--0.756, from 30 bootstrap samples) and was well calibrated (calibration intercept 0.00, 95\% CI $-$0.01 to 0.02; slope 0.94, 0.92 to 0.96; Table~\ref{tab:calibration}). The treatment model predicted each treatment group with AUCs of 0.68--0.91 (highest for early MT alone, 0.906, 95\% CI 0.900--0.914, and early combined treatment, 0.886, 0.879--0.891; lowest for late IVT alone, 0.679, 0.671--0.689). Treatment was therefore highly predictable from baseline characteristics and stroke team, which shows how strong the confounding is. To estimate the effect of a strategy in those who received it, there must be untreated patients with similar characteristics. Figure \ref{fig:cf_overlap} shows, for each treatment group, the estimated probability of receiving neither treatment. Among treated patients the median was 0.22 (early combined treatment) to 0.37 (early IVT alone), compared with 0.63 in untreated patients. At most 0.5\% of any treated group (early combined treatment) had a probability below 0.05, and no patient was below 0.01. Overlap was therefore good for estimating effects in the treated; a sensitivity analysis excluded patients with a probability below 0.05.
 
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=0.8\textwidth,height=0.6\textheight,keepaspectratio]{images/treatment_effects/non_mild_stroke_early_arrival_good_outcome_causal_forest_overlap.png}
+    \includegraphics[width=0.8\textwidth,height=0.6\textheight,keepaspectratio]{images/causal_forest/non_mild_stroke_early_arrival_good_outcome_causal_forest_overlap.png}
     \caption{Overlap (positivity) in the causal forest analysis. Box plots show the cross-fitted estimated probability of receiving neither treatment, $P(\mathrm{neither} \mid X, W)$, for patients in each treatment group (orange line, median; box, interquartile range; whiskers, range). Treated patients with probabilities close to zero have few comparable untreated patients.}
     \label{fig:cf_overlap}
 \end{figure}
 
 \subsubsection{Heterogeneity of effect}\label{sec:cf_heterogeneity}
 
-Figure \ref{fig:cf_heterogeneity} shows the forest's individual effect estimates averaged within subgroups of treated patients defined by NIHSS, age and pre-stroke mRS (subgroups with fewer than 50 patients are not shown). These subgroup averages have no confidence intervals and show patterns rather than precise subgroup effects. The benefit was smaller in patients aged 80 or over for most strategies (for example, early IVT alone 8.0 percentage points at 80 or over against 10.6--12.0 under 80; early combined treatment 13.5 against 18.6--20.5 at 60--79). Benefit fell as pre-stroke disability rose (early IVT alone, 10.9 percentage points at mRS 0 and 7.6 at mRS 3--5). For IVT alone and early combined treatment, the benefit was largest at NIHSS 11--15, and for early MT alone it was lowest at NIHSS $\leq$10. Estimates for late combined treatment varied erratically between subgroups, reflecting very small numbers.
+Figure \ref{fig:cf_heterogeneity} shows the forest's individual effect estimates averaged within subgroups of treated patients defined by NIHSS, age and pre-stroke mRS (subgroups with fewer than 50 patients are not shown). These subgroup averages have no confidence intervals and show patterns rather than precise subgroup effects. The benefit was smaller in patients aged 80 or over for most strategies (for example, early IVT alone 9.8 percentage points at 80 or over against 13.9--15.3 under 80; early combined treatment 16.6 against 24.1--24.7 at 60--79). Benefit fell as pre-stroke disability rose (early IVT alone, 14.5 percentage points at mRS 0 and 8.7 at mRS 3--5). For IVT alone and early combined treatment, the benefit was largest at NIHSS 11--15, and for early MT alone it was lowest at NIHSS $\leq$10. Estimates for late combined treatment varied erratically between subgroups, reflecting very small numbers.
 
-To test whether the forest detects real differences in benefit, rather than noise, we used a best linear predictor test (Table~\ref{tab:cf_blp}). For early IVT alone the slope was 0.25 (95\% CI 0.08 to 0.43; $p=0.003$): the forest detects real heterogeneity, but a slope well below 1 means that it overstates how much benefit varies. For early combined treatment the evidence was borderline (slope 0.24, $p=0.055$), and for the other strategies there was no evidence of heterogeneity beyond noise; the result for late combined treatment rests on 23 treated patients and is not interpretable. The subgroup patterns in Figure~\ref{fig:cf_heterogeneity} should therefore be read as exploratory.
+To test whether the forest detects real differences in benefit, rather than noise, we used a best linear predictor test (Table~\ref{tab:cf_blp}). The slope was clearly above zero for early IVT alone (0.48, 95\% CI 0.32 to 0.63; $p<0.001$) and early combined treatment (0.35, 0.10 to 0.59; $p=0.003$), and borderline for early MT alone (0.40, $-$0.02 to 0.81; $p=0.030$). The forest therefore detects real, though modest, variation in benefit for these strategies; slopes below 1 suggest that the individual estimates overstate how much benefit varies. For the other strategies there was no evidence that the forest detected heterogeneity ($p$ 0.12 to 0.84), and only 15 patients treated late with both IVT and MT were in the overlap region. The subgroup patterns in Figure~\ref{fig:cf_heterogeneity} should therefore be read as exploratory.
 
 \begin{table}[htbp]
 \centering
@@ -936,31 +973,31 @@ To test whether the forest detects real differences in benefit, rather than nois
 \toprule
 Treatment strategy & Patients in overlap & Treated in overlap & Slope (95\% CI) & $p$ \\
 \midrule
-Early IVT only & 49,133 & 27,458 & 0.25 (0.08 to 0.43) & 0.003 \\
-Late IVT only & 5,055 & 842 & $-$0.01 ($-$0.34 to 0.31) & 0.53 \\
-Early MT only & 3,276 & 896 & $-$0.76 ($-$2.85 to 1.33) & 0.76 \\
-Late MT only & 8,056 & 1,405 & $-$0.17 ($-$0.51 to 0.17) & 0.84 \\
-Early IVT + early MT & 5,330 & 2,085 & 0.24 ($-$0.05 to 0.52) & 0.055 \\
-Early IVT + late MT & 8,866 & 2,474 & 0.01 ($-$0.33 to 0.36) & 0.47 \\
-Late IVT + late MT & 175 & 23 & 0.88 (0.67 to 1.08) & $<$0.001 \\
+Early IVT only & 59,542 & 27,456 & 0.48 (0.32 to 0.63) & $<$0.001 \\
+Late IVT only & 7,332 & 621 & 0.17 ($-$0.12 to 0.46) & 0.12 \\
+Early MT only & 4,049 & 816 & 0.40 ($-$0.02 to 0.81) & 0.030 \\
+Late MT only & 8,925 & 1,435 & 0.09 ($-$0.25 to 0.43) & 0.29 \\
+Early IVT + early MT & 7,668 & 2,016 & 0.35 (0.10 to 0.59) & 0.003 \\
+Early IVT + late MT & 10,627 & 2,343 & 0.09 ($-$0.25 to 0.43) & 0.29 \\
+Late IVT + late MT & 239 & 15 & $-$0.47 ($-$1.38 to 0.44) & 0.84 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=\textwidth,height=0.5\textheight,keepaspectratio]{images/treatment_effects/non_mild_stroke_early_arrival_good_outcome_causal_forest_heterogeneity.png}
+    \includegraphics[width=\textwidth,height=0.5\textheight,keepaspectratio]{images/causal_forest/non_mild_stroke_early_arrival_good_outcome_causal_forest_heterogeneity.png}
     \caption{Mean causal forest conditional average treatment effect (CATE; percentage points) in treated patients by NIHSS band, age band and pre-stroke mRS, for each treatment strategy compared with no reperfusion treatment. Subgroups with fewer than 50 patients are not shown. No confidence intervals are given, so the figure shows patterns rather than precise subgroup estimates.}
     \label{fig:cf_heterogeneity}
 \end{figure}
 
 \subsubsection{Comparison with target trial emulation}
 
-The causal forest ATT and the matched target trial emulation estimate the same quantity, the effect in the treated, by different methods (Figure \ref{fig:cf_vs_tte}). They agreed closely for the late strategies (differences, causal forest minus target trial emulation: late IVT alone $+$3.2, late MT alone $+$1.1, early IVT with late MT $-$1.7, late combined treatment $-$1.6 percentage points). The causal forest gave smaller effects for the early strategies (early IVT alone $-$2.5, early MT alone $-$5.0, early combined treatment $-$8.3 percentage points). The sensitivity analyses (Section~\ref{sec:sensitivity}) show that adjustment for onset-to-scan time explains almost all of this difference.
+The causal forest ATT and the matched target trial emulation estimate the same quantity, the effect in the treated, by different methods (Figure \ref{fig:cf_vs_tte}). They agreed closely for every strategy (differences, causal forest minus target trial emulation: early IVT alone $+$0.7, late IVT alone $+$2.2, early MT alone $+$0.4, late MT alone $+$0.2, early combined treatment $+$0.2, early IVT with late MT $+$1.0, late combined treatment $-$2.1 percentage points). When the causal forest was additionally adjusted for onset-to-scan time, its estimates for the strategies that included early treatment fell below those from matching (Section~\ref{sec:sens_cf}).
 
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=0.8\textwidth,height=0.6\textheight,keepaspectratio]{images/treatment_effects/non_mild_stroke_early_arrival_good_outcome_causal_forest_vs_target_trial.png}
+    \includegraphics[width=0.8\textwidth,height=0.6\textheight,keepaspectratio]{images/causal_forest/non_mild_stroke_early_arrival_good_outcome_causal_forest_vs_target_trial.png}
     \caption{Comparison of the causal forest average treatment effect in the treated (ATT; blue circles) with the matched target trial emulation (TTE; red squares) for each treatment strategy. Effects are absolute differences in the probability of a good outcome (discharge mRS 0--2, or no worse than the pre-stroke mRS) in percentage points, with 95\% confidence intervals.}
     \label{fig:cf_vs_tte}
 \end{figure}
@@ -971,7 +1008,7 @@ The causal forest ATT and the matched target trial emulation estimate the same q
 
 \section{Causal forest estimation}\label{sec:cf_estimation}
 
-The causal forest was estimated within a double machine learning framework (CausalForestDML in EconML) \citesupp{chernozhukov2018double,oprescu2019orthogonal}, combining three tree-based models. First, two LightGBM models \citesupp{ke2017lightgbm} were fitted with five-fold cross-fitting, so that each patient's predictions came from models trained on other patients: an outcome model, predicting the probability of a good outcome from baseline characteristics without knowledge of the treatment given, and a treatment model, predicting the probability of each of the eight treatment groups. The features were prior disability, stroke severity, age, congestive heart failure, hypertension, diabetes, AF anticoagulant use, AF diagnosis and ethnicity, which were also used by the forest as potential modifiers of the treatment effect, together with stroke team, year of admission and onset-to-scan time, which were adjusted for but not used for splitting. Stroke team and ethnicity were handled as categorical features. Second, the residual variation in outcome and treatment remaining after these predictions was passed to a forest of 2,000 honest trees (at least 25 patients per leaf), in which each tree used half its sample to choose splits and the other half to estimate effects. Removing the predictable part of both treatment and outcome adjusts for measured confounding, including confounding by indication, and small errors in either first-stage model have only a second-order effect on the final estimates. Because it combines an outcome model with a treatment-assignment model, the estimator is \textit{doubly robust}: under the usual causal assumptions, the estimated treatment effect remains consistent if \textit{either} the outcome model or the treatment-assignment model is correctly specified. The ATT for each strategy was calculated by AIPW from the cross-fitted predictions and the forest, as described above. The estimates assume that there is no important unmeasured confounding and that comparable untreated patients exist for treated patients (positivity).
+The causal forest was estimated within a double machine learning framework (CausalForestDML in EconML) \citesupp{chernozhukov2018double,oprescu2019orthogonal}, combining three tree-based models. First, two LightGBM models \citesupp{ke2017lightgbm} were fitted with five-fold cross-fitting, so that each patient's predictions came from models trained on other patients: an outcome model, predicting the probability of a good outcome from baseline characteristics without knowledge of the treatment given, and a treatment model, predicting the probability of each of the eight treatment groups. The features were prior disability, stroke severity, age, congestive heart failure, hypertension, diabetes, AF anticoagulant use, AF diagnosis and ethnicity, which were also used by the forest as potential modifiers of the treatment effect, together with stroke team and year of admission, which were adjusted for but not used for splitting (onset-to-scan time was added to these in a sensitivity analysis). Stroke team and ethnicity were handled as categorical features. Second, the residual variation in outcome and treatment remaining after these predictions was passed to a forest of 2,000 honest trees (at least 25 patients per leaf), in which each tree used half its sample to choose splits and the other half to estimate effects. Removing the predictable part of both treatment and outcome adjusts for measured confounding, including confounding by indication, and small errors in either first-stage model have only a second-order effect on the final estimates. Because it combines an outcome model with a treatment-assignment model, the estimator is \textit{doubly robust}: under the usual causal assumptions, the estimated treatment effect remains consistent if \textit{either} the outcome model or the treatment-assignment model is correctly specified. The ATT for each strategy was calculated by AIPW from the cross-fitted predictions and the forest, as described above. The estimates assume that there is no important unmeasured confounding and that comparable untreated patients exist for treated patients (positivity).
 
 % ====================================================================================
 
@@ -1050,7 +1087,7 @@ Outcome: mRS 0--3 or no worse & 11.7 (10.9 to 12.5) & 5.9 (2.0 to 9.9) & 21.1 (1
 
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=\textwidth,height=0.85\textheight,keepaspectratio]{images/treatment_effects/non_mild_stroke_early_arrival_good_outcome_target_trial_sensitivity.png}
+    \includegraphics[width=\textwidth,height=0.85\textheight,keepaspectratio]{images/target_trial_emulation/non_mild_stroke_early_arrival_good_outcome_target_trial_sensitivity.png}
     \caption{Sensitivity analyses for the target trial emulation. Each panel is one treatment strategy. Points are the difference in the proportion with a good outcome (treated minus matched controls, percentage points) with 95\% confidence intervals, coloured by category of analysis. The dashed line is the primary estimate and the grey line no difference.}
     \label{fig:sens_tte}
 \end{figure}
@@ -1108,7 +1145,7 @@ Logistic regression S-learner & A parametric model with main effects only, assum
 
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=0.7\textwidth,height=0.5\textheight,keepaspectratio]{images/treatment_effects/non_mild_stroke_early_arrival_good_outcome_s_learner_sensitivity_propensity_overlap.png}
+    \includegraphics[width=0.7\textwidth,height=0.5\textheight,keepaspectratio]{images/s_learner/non_mild_stroke_early_arrival_good_outcome_s_learner_sensitivity_propensity_overlap.png}
     \caption{Overlap for the S-learner: distribution of the out-of-fold predicted probability of receiving any reperfusion treatment (IVT and/or MT) in untreated (blue) and treated (orange) patients. Dashed lines show the 0.05 and 0.95 limits used in the propensity-trimmed sensitivity analysis.}
     \label{fig:sl_overlap}
 \end{figure}
@@ -1182,7 +1219,7 @@ Logistic regression S-learner & 0.55 (0.55 to 0.55) & 0.36 (0.35 to 0.36) & 0.75
 
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=\textwidth,height=0.85\textheight,keepaspectratio]{images/treatment_effects/non_mild_stroke_early_arrival_good_outcome_s_learner_sensitivity_prob.png}
+    \includegraphics[width=\textwidth,height=0.85\textheight,keepaspectratio]{images/s_learner/non_mild_stroke_early_arrival_good_outcome_s_learner_sensitivity_prob.png}
     \caption{Sensitivity analyses for the S-learner, probability scale. Each panel is one treatment strategy. Points are the mean difference in predicted probability of a good outcome (treated vs.\ untreated) with 95\% confidence intervals for each scenario; the dotted line is the base case.}
     \label{fig:sens_sl}
 \end{figure}
@@ -1202,7 +1239,7 @@ Category & Analysis & Reason \\
 \midrule
 Model specification & Original (incorrect) categorical feature indices & An earlier version passed stroke team to LightGBM as a numeric code; shows the effect of correcting this. \\
 Confounders & Without stroke team & How much adjustment for hospital practice matters. \\
-Confounders & Without onset-to-scan time and year & Onset-to-scan time strongly predicts early versus late treatment, and may reduce overlap. \\
+Confounders & Also adjust for onset-to-scan time & Onset-to-scan time strongly predicts early versus late treatment; tests whether treating it as a confounder changes the estimates. \\
 Confounders & Also adjust for LVO (missing as its own category) & LVO strongly influences both MT and outcome. \\
 Overlap & Exclude patients with $P(\mathrm{neither}) < 0.05$ & Reduces reliance on patients with no comparable untreated patients. \\
 First stage & Smaller LightGBM models (200 trees, 15 leaves) & Sensitivity to first-stage model complexity. \\
@@ -1215,9 +1252,9 @@ Random seed & Three other seeds & Variation from random cross-fitting splits, su
 \end{tabular}
 \end{table}
 
-\textit{Little effect on the results.} Correcting the categorical features changed most ATTs by 1.5 percentage points or less. Other random seeds, a larger minimum leaf size, smaller first-stage models and exclusion of patients with poor overlap changed the estimates for the larger groups by about 2 percentage points or less (early IVT alone 9.8--10.0, early combined treatment 15.2--17.2 percentage points); early MT alone varied more (9.9--13.9) and late combined treatment more again (14.0--22.3). Changing the early/late cut-off changed most strategies by 2 percentage points or less.
+\textit{Little effect on the results.} Correcting the categorical features changed every ATT by 0.7 percentage points or less. Other random seeds, a larger minimum leaf size, smaller first-stage models and exclusion of patients with poor overlap changed the estimates for every strategy except late combined treatment by 0.7 percentage points or less (early IVT alone 13.0--13.1, early combined treatment 23.6--23.9 percentage points); late combined treatment varied more (10.2--15.5), and its confidence interval included zero with two of the three other seeds. Changing the early/late cut-off to 240 or 300 minutes changed most strategies by 2.3 percentage points or less (late combined treatment 10.6 and 28.9). Without stroke team, most ATTs fell by 0.6--1.8 percentage points (late MT alone 6.7, early combined treatment 22.2).
 
-\textit{Larger effect on the results.} Without onset-to-scan time and year in the adjustment, the early strategies rose by 3--9 percentage points (early IVT alone 13.2, early MT alone 18.6, early combined treatment 24.0, early IVT with late MT 12.4), to within 1.5 percentage points of the target trial emulation, while the late strategies changed little. Whether onset-to-scan time should be adjusted for is a judgement. It may capture confounders, such as how a patient presents or the reasons for delay. It also largely determines whether early treatment is possible, so adjusting for it compares early-treated patients with untreated patients who were also scanned early, many of whom may have had a specific reason not to be treated. The primary estimates (with it) and the sensitivity estimates (without it) can be regarded as plausible lower and upper values. Additionally adjusting for LVO increased the MT estimates (early MT alone 19.9, late MT alone 11.6, early IVT with late MT 11.5, early combined treatment 18.2 percentage points), consistent with untreated LVO patients doing badly. With cross-fitting folds grouped by stroke team, most effects fell by up to 3 percentage points, and late combined treatment became $-$5.1 (95\% CI $-$14.6 to 4.3); in this analysis team-specific practice cannot be adjusted for, so it is a stricter but noisier test. Without stroke team, late MT alone fell from 9.4 to 6.6 percentage points, and other changes were 1.5 percentage points or less, apart from late combined treatment. As in the target trial emulation, the stricter mRS 0--1 outcome roughly halved the effects of MT-based strategies.
+\textit{Larger effect on the results.} Additionally adjusting for onset-to-scan time reduced the estimates for the strategies that included early treatment by 2.7--8.5 percentage points (early IVT alone 9.9, early MT alone 12.1, early combined treatment 15.2, early IVT with late MT 9.3), while the late strategies changed by 1 percentage point or less (late IVT alone 9.5, late MT alone 9.4, late combined treatment 15.4). Whether onset-to-scan time should be adjusted for is a judgement. It largely determines whether early treatment is possible, so adjusting for it compares early-treated patients with untreated patients who were also scanned early, many of whom may have had a specific reason not to be treated; for this reason it was not adjusted for in the primary analysis. It may, however, also capture confounders, such as how a patient presents or the reasons for delay, in which case the primary estimates for early treatment are too high. The primary estimates (without it) and the sensitivity estimates (with it) can be regarded as plausible upper and lower values. Additionally adjusting for LVO increased the MT estimates (early MT alone 22.0, late MT alone 10.3, early IVT with late MT 14.5, early combined treatment 26.1 percentage points), while the IVT-alone estimates changed by less than 1 percentage point, consistent with untreated LVO patients doing badly. With cross-fitting folds grouped by stroke team, most effects fell by 1.3--2.5 percentage points (early IVT alone 10.6), and late combined treatment became $-$7.7 (95\% CI $-$16.9 to 1.5); in this analysis team-specific practice cannot be adjusted for, so it is a stricter but noisier test. As in the target trial emulation, the stricter mRS 0--1 outcome roughly halved most effects of MT-based strategies (early combined treatment 12.1, early IVT with late MT 5.8, late MT alone 4.8), whereas mRS 0--3 increased the effects of the combined strategies (early combined treatment 25.2). Every strategy except late combined treatment had a 95\% confidence interval excluding zero in every analysis.
 
 \begin{landscape}
 {
@@ -1235,30 +1272,30 @@ Analysis & \makecell[l]{Early IVT\\only} & \makecell[l]{Late IVT\\only} & \makec
 \endhead
 \bottomrule
 \endlastfoot
-Primary & 9.9 (8.8 to 11.0) & 9.5 (6.5 to 12.5) & 12.1 (7.4 to 16.8) & 9.4 (7.1 to 11.7) & 15.2 (10.9 to 19.6) & 9.3 (6.8 to 11.7) & 15.4 (6.6 to 24.2) \\
-Original categorical indices & 9.8 (8.8 to 10.8) & 9.7 (6.8 to 12.6) & 11.3 (6.6 to 15.9) & 8.1 (5.9 to 10.3) & 16.7 (13.8 to 19.6) & 9.2 (7.1 to 11.3) & 18.1 (9.3 to 26.9) \\
-Without stroke team & 9.3 (8.3 to 10.4) & 9.7 (6.7 to 12.6) & 12.7 (9.1 to 16.3) & 6.6 (4.4 to 8.8) & 16.7 (13.8 to 19.5) & 8.1 (6.0 to 10.3) & 20.8 (4.8 to 36.8) \\
-Without onset-to-scan time and year & 13.2 (12.4 to 14.1) & 8.8 (6.0 to 11.5) & 18.6 (15.3 to 21.8) & 9.4 (7.2 to 11.7) & 24.0 (21.6 to 26.5) & 12.4 (10.4 to 14.4) & 17.5 (9.3 to 25.8) \\
-Also adjust for LVO & 9.9 (8.8 to 11.1) & 10.7 (6.9 to 14.6) & 19.9 (12.1 to 27.6) & 11.6 (9.1 to 14.2) & 18.2 (13.4 to 23.0) & 11.5 (8.8 to 14.3) & 18.9 (9.8 to 28.1) \\
-Exclude $P(\mathrm{neither}) < 0.05$ & 9.8 (8.7 to 10.9) & 9.3 (6.2 to 12.3) & 12.8 (8.7 to 16.8) & 8.7 (6.4 to 11.0) & 17.1 (13.7 to 20.4) & 9.1 (6.7 to 11.4) & 14.0 (3.9 to 24.2) \\
-Smaller LightGBM (200 trees, 15 leaves) & 10.0 (9.0 to 11.1) & 9.3 (6.4 to 12.3) & 13.9 (10.0 to 17.8) & 9.0 (6.8 to 11.2) & 17.2 (14.0 to 20.4) & 9.6 (7.4 to 11.8) & 14.8 (4.1 to 25.4) \\
-Minimum leaf size 50 & 9.9 (8.8 to 11.0) & 9.5 (6.5 to 12.5) & 12.0 (7.2 to 16.7) & 9.4 (7.1 to 11.7) & 15.2 (10.8 to 19.6) & 9.2 (6.8 to 11.7) & 16.3 (7.4 to 25.3) \\
-Folds grouped by stroke team & 7.2 (5.9 to 8.5) & 7.7 (4.7 to 10.7) & 12.2 (9.4 to 14.9) & 6.6 (4.4 to 8.8) & 16.9 (14.7 to 19.0) & 7.0 (4.8 to 9.2) & $-$5.1 ($-$14.6 to 4.3) \\
-Early/late cut-off 240 min & 10.1 (8.9 to 11.3) & 8.8 (6.8 to 10.7) & 13.3 (6.5 to 20.2) & 8.0 (4.6 to 11.4) & 14.2 (8.8 to 19.7) & 11.3 (8.9 to 13.6) & 12.6 (7.4 to 17.9) \\
-Early/late cut-off 300 min & 9.8 (8.8 to 10.9) & 9.3 (4.5 to 14.1) & 12.3 (8.1 to 16.4) & 8.6 (6.1 to 11.1) & 14.1 (10.7 to 17.4) & 9.1 (6.6 to 11.7) & 23.5 (10.1 to 36.9) \\
-Outcome: mRS 0--2 only & 8.8 (7.7 to 9.8) & 8.7 (5.8 to 11.6) & 10.8 (5.3 to 16.4) & 9.0 (6.6 to 11.3) & 15.1 (11.0 to 19.2) & 8.7 (6.3 to 11.1) & 16.5 (8.2 to 24.7) \\
-Outcome: mRS 0--1 or no worse & 8.0 (7.0 to 9.1) & 8.1 (5.3 to 10.9) & 8.1 (4.7 to 11.5) & 5.2 (3.3 to 7.0) & 7.9 (4.7 to 11.0) & 3.6 (1.5 to 5.6) & 6.2 ($-$2.0 to 14.4) \\
-Outcome: mRS 0--3 or no worse & 10.0 (8.9 to 11.0) & 7.3 (4.5 to 10.2) & 14.6 (9.9 to 19.3) & 7.8 (5.1 to 10.4) & 20.9 (16.9 to 24.9) & 13.1 (10.5 to 15.6) & 16.8 (7.4 to 26.3) \\
-Seed 1 & 9.9 (8.8 to 11.0) & 8.5 (5.5 to 11.6) & 9.9 (3.3 to 16.6) & 9.0 (6.7 to 11.3) & 15.6 (11.6 to 19.7) & 8.8 (6.3 to 11.3) & 14.4 (5.5 to 23.4) \\
-Seed 2 & 9.8 (8.7 to 10.9) & 9.2 (6.2 to 12.3) & 10.7 (6.0 to 15.5) & 8.7 (6.4 to 11.1) & 15.6 (11.6 to 19.7) & 9.3 (6.9 to 11.7) & 17.6 (8.9 to 26.3) \\
-Seed 3 & 9.9 (8.9 to 11.0) & 9.1 (6.0 to 12.2) & 12.7 (8.1 to 17.2) & 8.4 (5.9 to 10.9) & 15.3 (11.0 to 19.6) & 9.5 (7.1 to 11.9) & 22.3 (4.1 to 40.5) \\
+Primary & 13.1 (12.2 to 13.9) & 8.5 (5.7 to 11.2) & 17.6 (14.1 to 21.1) & 8.5 (6.3 to 10.8) & 23.7 (21.2 to 26.2) & 12.0 (9.8 to 14.1) & 14.9 (5.7 to 24.1) \\
+Original categorical indices & 13.0 (12.2 to 13.8) & 8.8 (6.1 to 11.5) & 17.3 (14.1 to 20.6) & 8.1 (5.9 to 10.3) & 23.0 (20.7 to 25.4) & 11.7 (9.7 to 13.6) & 14.8 (5.4 to 24.1) \\
+Without stroke team & 12.5 (11.7 to 13.3) & 9.1 (6.4 to 11.8) & 16.2 (13.1 to 19.3) & 6.7 (4.5 to 8.9) & 22.2 (20.0 to 24.4) & 10.5 (8.5 to 12.4) & 12.8 (2.1 to 23.4) \\
+Also adjust for onset-to-scan time & 9.9 (8.8 to 11.0) & 9.5 (6.5 to 12.5) & 12.1 (7.4 to 16.8) & 9.4 (7.1 to 11.7) & 15.2 (10.9 to 19.6) & 9.3 (6.8 to 11.7) & 15.4 (6.6 to 24.2) \\
+Also adjust for LVO & 13.2 (12.4 to 14.1) & 9.2 (6.4 to 11.9) & 22.0 (18.3 to 25.7) & 10.3 (7.8 to 12.8) & 26.1 (23.3 to 29.0) & 14.5 (12.1 to 16.9) & 19.1 (9.1 to 29.1) \\
+Exclude $P(\mathrm{neither}) < 0.05$ & 13.0 (12.2 to 13.9) & 8.5 (5.8 to 11.2) & 18.1 (14.7 to 21.5) & 8.1 (5.8 to 10.4) & 23.7 (21.2 to 26.1) & 11.9 (9.8 to 14.1) & 12.2 (2.5 to 21.9) \\
+Smaller LightGBM (200 trees, 15 leaves) & 13.0 (12.2 to 13.8) & 8.6 (5.9 to 11.2) & 17.7 (14.5 to 21.0) & 8.4 (6.1 to 10.6) & 23.7 (21.4 to 26.1) & 12.0 (10.0 to 14.0) & 15.5 (7.3 to 23.6) \\
+Minimum leaf size 50 & 13.1 (12.2 to 13.9) & 8.5 (5.8 to 11.2) & 17.6 (14.1 to 21.1) & 8.5 (6.3 to 10.8) & 23.8 (21.3 to 26.3) & 12.0 (9.9 to 14.1) & 15.2 (6.1 to 24.2) \\
+Folds grouped by stroke team & 10.6 (9.6 to 11.5) & 6.6 (3.8 to 9.4) & 15.8 (13.0 to 18.6) & 6.4 (4.3 to 8.6) & 22.4 (20.4 to 24.4) & 9.8 (7.9 to 11.8) & $-$7.7 ($-$16.9 to 1.5) \\
+Early/late cut-off 240 min & 13.4 (12.5 to 14.3) & 8.7 (7.1 to 10.3) & 19.7 (15.8 to 23.6) & 8.4 (6.2 to 10.6) & 24.8 (21.9 to 27.7) & 14.3 (12.3 to 16.3) & 10.6 (5.8 to 15.5) \\
+Early/late cut-off 300 min & 12.9 (12.0 to 13.7) & 9.6 (4.8 to 14.4) & 16.7 (13.6 to 19.7) & 7.7 (5.2 to 10.1) & 22.1 (19.8 to 24.3) & 11.1 (8.8 to 13.4) & 28.9 (12.4 to 45.5) \\
+Outcome: mRS 0--2 only & 12.0 (11.2 to 12.8) & 8.2 (5.6 to 10.7) & 17.5 (14.1 to 20.9) & 8.2 (6.0 to 10.5) & 23.7 (21.2 to 26.2) & 12.1 (10.0 to 14.2) & 11.6 (1.9 to 21.4) \\
+Outcome: mRS 0--1 or no worse & 10.6 (9.8 to 11.3) & 7.0 (4.4 to 9.5) & 11.2 (8.5 to 14.0) & 4.8 (2.9 to 6.7) & 12.1 (9.9 to 14.2) & 5.8 (4.1 to 7.5) & 2.7 ($-$6.7 to 12.1) \\
+Outcome: mRS 0--3 or no worse & 11.7 (10.9 to 12.5) & 7.3 (4.8 to 9.9) & 17.3 (13.4 to 21.2) & 7.2 (4.6 to 9.7) & 25.2 (22.4 to 27.9) & 15.3 (13.0 to 17.6) & 12.9 (4.4 to 21.3) \\
+Seed 1 & 13.0 (12.1 to 13.8) & 8.4 (5.7 to 11.1) & 18.0 (14.6 to 21.5) & 8.4 (6.1 to 10.7) & 23.9 (21.4 to 26.3) & 11.9 (9.8 to 14.0) & 11.7 ($-$1.3 to 24.7) \\
+Seed 2 & 13.0 (12.2 to 13.9) & 8.8 (6.1 to 11.5) & 17.0 (13.4 to 20.6) & 8.6 (6.3 to 10.9) & 23.9 (21.3 to 26.4) & 12.1 (10.0 to 14.2) & 14.2 (5.1 to 23.3) \\
+Seed 3 & 13.0 (12.2 to 13.9) & 8.6 (5.9 to 11.4) & 17.8 (14.4 to 21.1) & 7.9 (5.5 to 10.2) & 23.6 (21.2 to 26.1) & 12.1 (10.0 to 14.2) & 10.2 ($-$0.9 to 21.4) \\
 \end{longtable}
 }
 \end{landscape}
 
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=\textwidth,height=0.85\textheight,keepaspectratio]{images/treatment_effects/non_mild_stroke_early_arrival_good_outcome_causal_forest_sensitivity.png}
+    \includegraphics[width=\textwidth,height=0.85\textheight,keepaspectratio]{images/causal_forest/non_mild_stroke_early_arrival_good_outcome_causal_forest_sensitivity.png}
     \caption{Sensitivity analyses for the causal forest. Each panel is one treatment strategy. Points are the average treatment effect in the treated (percentage points) with 95\% confidence intervals, coloured by category of analysis. The dashed line is the primary estimate and the grey line no effect.}
     \label{fig:sens_cf}
 \end{figure}
@@ -1267,7 +1304,7 @@ Seed 3 & 9.9 (8.9 to 11.0) & 9.1 (6.0 to 12.2) & 12.7 (8.1 to 17.2) & 8.4 (5.9 t
 
 The E-value is the minimum strength of association, on the risk-ratio scale, that an unmeasured confounder would need to have with both the treatment and the outcome, beyond the measured covariates, to fully explain away an observed effect \citesupp{vanderweele2017evalue}. A second E-value is given for the confidence limit closest to no effect. Table \ref{tab:evalues} gives E-values for each method. For the target trial emulation, risk ratios are the treated proportion divided by the control proportion. For the S-learner, the odds ratio is the exponential of the mean individual log odds ratio, converted to an approximate risk ratio as the square root of the odds ratio because a good outcome is common. For the causal forest, the ATT was converted to a risk ratio by comparing the observed proportion with a good outcome among treated patients ($p_1$) with their estimated proportion without treatment ($p_1 - \mathrm{ATT}$). These conversions are approximate, and the S-learner confidence intervals do not include model uncertainty, so its E-values for the confidence limit are optimistic.
 
-For the target trial emulation, point-estimate E-values ranged from 1.58 (late IVT alone) to 3.46 (early combined treatment); to move the confidence interval for early combined treatment to include no effect, an unmeasured confounder would need a risk ratio of at least 3.1 with both treatment and good outcome, given that the main prognostic factors (age, severity and pre-stroke disability) are already matched. For late IVT alone, the confidence-limit E-value was 1.29, so quite modest unmeasured confounding could explain that result. For the causal forest, E-values were 1.81--2.45 for the point estimates and 1.59--1.94 for the confidence limits. These E-values are moderate: plausible unmeasured factors, such as clinicians' judgement of frailty or imaging findings, could be of similar strength.
+For the target trial emulation, point-estimate E-values ranged from 1.58 (late IVT alone) to 3.46 (early combined treatment); to move the confidence interval for early combined treatment to include no effect, an unmeasured confounder would need a risk ratio of at least 3.1 with both treatment and good outcome, given that the main prognostic factors (age, severity and pre-stroke disability) are already matched. For late IVT alone, the confidence-limit E-value was 1.29, so quite modest unmeasured confounding could explain that result. For the causal forest, E-values were 1.73 (late IVT alone) to 3.51 (early combined treatment) for the point estimates and 1.54--3.09 for the confidence limits, similar to those for the target trial emulation. Except for early combined treatment and early MT alone, these E-values are moderate: plausible unmeasured factors, such as clinicians' judgement of frailty or imaging findings, could be of similar strength.
 
 \begin{table}[htbp]
 \centering
@@ -1281,13 +1318,13 @@ For the target trial emulation, point-estimate E-values ranged from 1.58 (late I
 \cmidrule(lr){2-4} \cmidrule(lr){5-7} \cmidrule(lr){8-10}
 Treatment strategy & RR (95\% CI) & E & E (CI) & OR (95\% CI) & E & E (CI) & RR & E & E (CI) \\
 \midrule
-Early IVT only & 1.34 (1.31--1.37) & 2.01 & 1.95 & 1.90 (1.90--1.90) & 2.10 & 2.10 & 1.25 & 1.82 & 1.74 \\
-Late IVT only & 1.15 (1.05--1.27) & 1.58 & 1.29 & 1.51 (1.50--1.52) & 1.76 & 1.75 & 1.25 & 1.81 & 1.59 \\
-Early MT only & 1.78 (1.56--2.04) & 2.97 & 2.49 & 2.71 (2.68--2.75) & 2.68 & 2.66 & 1.45 & 2.27 & 1.78 \\
-Late MT only & 1.33 (1.20--1.47) & 1.99 & 1.69 & 1.60 (1.59--1.62) & 1.85 & 1.84 & 1.39 & 2.12 & 1.85 \\
-Early IVT + early MT & 2.02 (1.85--2.21) & 3.46 & 3.11 & 3.18 (3.15--3.21) & 2.96 & 2.95 & 1.49 & 2.35 & 1.94 \\
-Early IVT + late MT & 1.42 (1.31--1.54) & 2.19 & 1.95 & 1.83 (1.82--1.84) & 2.04 & 2.03 & 1.33 & 2.00 & 1.75 \\
-Late IVT + late MT & 1.63 (1.17--2.27) & 2.65 & 1.62 & 1.98 (1.91--2.06) & 2.17 & 2.11 & 1.54 & 2.45 & 1.63 \\
+Early IVT only & 1.34 (1.31--1.37) & 2.01 & 1.95 & 1.90 (1.90--1.90) & 2.10 & 2.10 & 1.36 & 2.07 & 2.00 \\
+Late IVT only & 1.15 (1.05--1.27) & 1.58 & 1.29 & 1.51 (1.50--1.52) & 1.76 & 1.75 & 1.22 & 1.73 & 1.54 \\
+Early MT only & 1.78 (1.56--2.04) & 2.97 & 2.49 & 2.71 (2.68--2.75) & 2.68 & 2.66 & 1.83 & 3.06 & 2.52 \\
+Late MT only & 1.33 (1.20--1.47) & 1.99 & 1.69 & 1.60 (1.59--1.62) & 1.85 & 1.84 & 1.34 & 2.02 & 1.76 \\
+Early IVT + early MT & 2.02 (1.85--2.21) & 3.46 & 3.11 & 3.18 (3.15--3.21) & 2.96 & 2.95 & 2.05 & 3.51 & 3.09 \\
+Early IVT + late MT & 1.42 (1.31--1.54) & 2.19 & 1.95 & 1.83 (1.82--1.84) & 2.04 & 2.03 & 1.47 & 2.31 & 2.06 \\
+Late IVT + late MT & 1.63 (1.17--2.27) & 2.65 & 1.62 & 1.98 (1.91--2.06) & 2.17 & 2.11 & 1.51 & 2.39 & 1.56 \\
 \bottomrule
 \end{tabular}%
 }
@@ -1295,11 +1332,11 @@ Late IVT + late MT & 1.63 (1.17--2.27) & 2.65 & 1.62 & 1.98 (1.91--2.06) & 2.17 
 
 \subsection{Unmeasured confounding: sensemakr}\label{sec:sensemakr}
 
-We also applied the omitted variable bias framework of Cinelli and Hazlett \citesupp{cinelli2020sensemakr}, which describes the strength of an unmeasured confounder by its partial $R^2$: the proportion of the residual variance of treatment, and of outcome, that it explains. The robustness value $RV_q$ ($q=1$) is the minimum partial $R^2$ that a confounder would need with both treatment and outcome to reduce the estimate to zero, and $RV_{q,\alpha}$ is the minimum needed to make the 95\% confidence interval include zero. Benchmark bounds give the adjusted estimate if a confounder were one, two or three times as strongly associated with treatment and with outcome as an observed covariate. The framework applies to linear regression, so for each method we fitted a linear probability model of good outcome on treatment and the method's covariates, separately for each treatment strategy: in the matched sample for the target trial emulation (adjusting for the matching features and comorbidities), and in each treatment group with all untreated patients for the S-learner (adjusting for its features, stroke team and ethnicity) and the causal forest (adjusting for its first-stage confounders, including stroke team, year and onset-to-scan time). These linear models are simpler than the S-learner and causal forest: each covariate has a single, additive linear effect, with no non-linear relationships or interactions, and predicted probabilities are not constrained to lie between 0 and 1, so contours far from the observed estimate (for example, effects below $-$50 percentage points) are extrapolations with no meaning on the probability scale. They are therefore linear stand-ins for the S-learner and causal forest, not sensitivity analyses of those models themselves, and they complement the E-values (Section~\ref{sec:evalues}), which can be calculated from any estimate. We include the sensemakr analyses for completeness, because the framework is widely used, its robustness values have a direct interpretation, and benchmarking against observed covariates shows how strong an unmeasured confounder would need to be relative to known determinants of treatment and outcome. The formulas of the sensemakr package were implemented directly, because the Python package was not compatible with the version of pandas used; the implementation reproduces the package's published worked example.
+We also applied the omitted variable bias framework of Cinelli and Hazlett \citesupp{cinelli2020sensemakr}, which describes the strength of an unmeasured confounder by its partial $R^2$: the proportion of the residual variance of treatment, and of outcome, that it explains. The robustness value $RV_q$ ($q=1$) is the minimum partial $R^2$ that a confounder would need with both treatment and outcome to reduce the estimate to zero, and $RV_{q,\alpha}$ is the minimum needed to make the 95\% confidence interval include zero. Benchmark bounds give the adjusted estimate if a confounder were one, two or three times as strongly associated with treatment and with outcome as an observed covariate. The framework applies to linear regression, so for each method we fitted a linear probability model of good outcome on treatment and the method's covariates, separately for each treatment strategy: in the matched sample for the target trial emulation (adjusting for the matching features and comorbidities), and in each treatment group with all untreated patients for the S-learner (adjusting for its features, stroke team and ethnicity) and the causal forest (adjusting for its first-stage confounders, including stroke team and year). These linear models are simpler than the S-learner and causal forest: each covariate has a single, additive linear effect, with no non-linear relationships or interactions, and predicted probabilities are not constrained to lie between 0 and 1, so contours far from the observed estimate (for example, effects below $-$50 percentage points) are extrapolations with no meaning on the probability scale. They are therefore linear stand-ins for the S-learner and causal forest, not sensitivity analyses of those models themselves, and they complement the E-values (Section~\ref{sec:evalues}), which can be calculated from any estimate. We include the sensemakr analyses for completeness, because the framework is widely used, its robustness values have a direct interpretation, and benchmarking against observed covariates shows how strong an unmeasured confounder would need to be relative to known determinants of treatment and outcome. The formulas of the sensemakr package were implemented directly, because the Python package was not compatible with the version of pandas used; the implementation reproduces the package's published worked example.
 
-The linear models gave estimates close to the target trial emulation and the S-learner (Table \ref{tab:sensemakr_rv}). They were larger than the causal forest ATT for the early strategies (for example, 20.9 against 15.2 percentage points for early combined treatment), because onset-to-scan time adjusted for linearly removed little confounding, unlike the causal forest's non-linear first stage. In the matched samples, robustness values were 6.8--23.8\%: for early combined treatment, an unmeasured confounder would need to explain 23.8\% of the residual variance of both treatment and outcome to remove the effect. In the whole cohort, where each treatment group is compared with all untreated patients and treatment therefore explains little of the variance, robustness values were lower (1.7--10.4\%), and lowest for late MT alone and late combined treatment.
+The linear models gave estimates close to the target trial emulation and the S-learner (Table \ref{tab:sensemakr_rv}). With the causal forest's confounders they were 1.8--2.6 percentage points below the causal forest ATT for every strategy except late IVT alone (for example, 21.1 against 23.7 percentage points for early combined treatment), so the linear and causal forest models agree on the pattern of effects. In the matched samples, robustness values were 6.8--23.8\%: for early combined treatment, an unmeasured confounder would need to explain 23.8\% of the residual variance of both treatment and outcome to remove the effect. In the whole cohort, where each treatment group is compared with all untreated patients and treatment therefore explains little of the variance, robustness values were lower (1.7--10.4\%), and lowest for late MT alone and late combined treatment.
 
-Benchmarking against observed covariates (Table \ref{tab:sensemakr_bounds} and Figures \ref{fig:sensemakr_tte}--\ref{fig:sensemakr_cf}) separated the IVT-only and MT-based strategies. Every effect except that of late MT alone remained positive for an unmeasured confounder three times as strong as age or as onset-to-scan time. The effects of IVT alone also survived a confounder as strong as NIHSS, even three times as strong, because NIHSS is only weakly related to receiving IVT alone. In contrast, a confounder as strong as NIHSS would remove most of the effect of MT-based strategies (early MT alone 1.2, early combined treatment 6.3 percentage points), and one as strong as pre-stroke disability would roughly halve the effects of early MT alone and early combined treatment and remove those of late MT. Stroke severity and pre-stroke disability are the strongest measured determinants of both MT and outcome, and are already adjusted for; an unmeasured confounder would have to be of similar strength beyond them to overturn the MT results. LVO status, imaging findings and frailty are the most plausible candidates. Within the matched samples, benchmark bounds were uninformative, because matching makes pre-stroke mRS, age and NIHSS band almost unrelated to treatment (adjusted estimates changed by at most 1.3 percentage points).
+Benchmarking against observed covariates (Table \ref{tab:sensemakr_bounds} and Figures \ref{fig:sensemakr_tte}--\ref{fig:sensemakr_cf}) separated the IVT-only and MT-based strategies. Every effect except that of late MT alone remained positive for an unmeasured confounder three times as strong as age. The effects of IVT alone also survived a confounder as strong as NIHSS, even three times as strong, because NIHSS is only weakly related to receiving IVT alone. In contrast, a confounder as strong as NIHSS would remove most of the effect of MT-based strategies (early MT alone 1.3, early combined treatment 6.4 percentage points), and one as strong as pre-stroke disability would roughly halve the effects of early MT alone and early combined treatment and remove those of late MT. Stroke severity and pre-stroke disability are the strongest measured determinants of both MT and outcome, and are already adjusted for; an unmeasured confounder would have to be of similar strength beyond them to overturn the MT results. LVO status, imaging findings and frailty are the most plausible candidates. Within the matched samples, benchmark bounds were uninformative, because matching makes pre-stroke mRS, age and NIHSS band almost unrelated to treatment (adjusted estimates changed by at most 1.3 percentage points).
 
 \begin{table}[htbp]
 \centering
@@ -1313,13 +1350,13 @@ Benchmarking against observed covariates (Table \ref{tab:sensemakr_bounds} and F
 \cmidrule(lr){2-4} \cmidrule(lr){5-7} \cmidrule(lr){8-10}
 Treatment strategy & Estimate (95\% CI) & $RV_q$ & $RV_{q,\alpha}$ & Estimate (95\% CI) & $RV_q$ & $RV_{q,\alpha}$ & Estimate (95\% CI) & $RV_q$ & $RV_{q,\alpha}$ \\
 \midrule
-Early IVT only & 12.4 (11.6--13.2) & 12.7 & 12.0 & 11.2 (10.4--12.0) & 10.4 & 9.7 & 11.0 (10.2--11.8) & 10.2 & 9.5 \\
-Late IVT only & 6.5 (2.8--10.3) & 6.8 & 2.9 & 8.9 (6.3--11.6) & 3.3 & 2.4 & 8.9 (6.2--11.5) & 3.3 & 2.3 \\
-Early MT only & 17.0 (13.4--20.7) & 18.0 & 14.5 & 15.6 (12.8--18.4) & 5.4 & 4.4 & 15.4 (12.6--18.2) & 5.3 & 4.3 \\
-Late MT only & 8.5 (5.7--11.2) & 9.5 & 6.5 & 6.6 (4.4--8.7) & 3.0 & 2.0 & 6.4 (4.3--8.6) & 2.9 & 1.9 \\
-Early IVT + early MT & 23.5 (21.0--26.0) & 23.8 & 21.5 & 21.1 (19.1--23.2) & 9.6 & 8.7 & 20.9 (18.9--23.0) & 9.5 & 8.6 \\
-Early IVT + late MT & 11.1 (8.8--13.5) & 12.1 & 9.7 & 10.3 (8.4--12.1) & 5.2 & 4.3 & 10.1 (8.2--11.9) & 5.1 & 4.2 \\
-Late IVT + late MT & 17.4 (6.9--27.9) & 17.9 & 7.5 & 12.9 (5.5--20.4) & 1.7 & 0.7 & 12.8 (5.3--20.2) & 1.7 & 0.7 \\
+Early IVT only & 12.4 (11.6--13.2) & 12.7 & 12.0 & 11.2 (10.4--12.0) & 10.4 & 9.7 & 11.2 (10.4--11.9) & 10.4 & 9.7 \\
+Late IVT only & 6.5 (2.8--10.3) & 6.8 & 2.9 & 8.9 (6.3--11.6) & 3.3 & 2.4 & 8.9 (6.3--11.5) & 3.3 & 2.3 \\
+Early MT only & 17.0 (13.4--20.7) & 18.0 & 14.5 & 15.6 (12.8--18.4) & 5.4 & 4.4 & 15.5 (12.7--18.3) & 5.3 & 4.4 \\
+Late MT only & 8.5 (5.7--11.2) & 9.5 & 6.5 & 6.6 (4.4--8.7) & 3.0 & 2.0 & 6.5 (4.3--8.7) & 2.9 & 2.0 \\
+Early IVT + early MT & 23.5 (21.0--26.0) & 23.8 & 21.5 & 21.1 (19.1--23.2) & 9.6 & 8.7 & 21.1 (19.0--23.1) & 9.5 & 8.7 \\
+Early IVT + late MT & 11.1 (8.8--13.5) & 12.1 & 9.7 & 10.3 (8.4--12.1) & 5.2 & 4.3 & 10.2 (8.3--12.1) & 5.1 & 4.2 \\
+Late IVT + late MT & 17.4 (6.9--27.9) & 17.9 & 7.5 & 12.9 (5.5--20.4) & 1.7 & 0.7 & 12.8 (5.3--20.3) & 1.7 & 0.7 \\
 \bottomrule
 \end{tabular}%
 }
@@ -1330,41 +1367,41 @@ Late IVT + late MT & 17.4 (6.9--27.9) & 17.9 & 7.5 & 12.9 (5.5--20.4) & 1.7 & 0.
 \footnotesize
 \caption{Sensemakr benchmark bounds for the linear model with the causal forest's confounders. Values are the adjusted estimate (percentage points) if an unmeasured confounder were one or three times as strongly associated with treatment and with outcome as each observed covariate; the unadjusted estimate is shown for comparison. Results for the S-learner covariates were very similar; confidence intervals are given in the notebooks.}
 \label{tab:sensemakr_bounds}
-\begin{tabular}{@{}lrrrrrrrrr@{}}
+\begin{tabular}{@{}lrrrrrrr@{}}
 \toprule
-& & \multicolumn{2}{c}{Pre-stroke mRS} & \multicolumn{2}{c}{NIHSS} & \multicolumn{2}{c}{Age} & \multicolumn{2}{c}{Onset-to-scan time} \\
-\cmidrule(lr){3-4} \cmidrule(lr){5-6} \cmidrule(lr){7-8} \cmidrule(lr){9-10}
-Treatment strategy & Unadjusted & 1$\times$ & 3$\times$ & 1$\times$ & 3$\times$ & 1$\times$ & 3$\times$ & 1$\times$ & 3$\times$ \\
+& & \multicolumn{2}{c}{Pre-stroke mRS} & \multicolumn{2}{c}{NIHSS} & \multicolumn{2}{c}{Age} \\
+\cmidrule(lr){3-4} \cmidrule(lr){5-6} \cmidrule(lr){7-8}
+Treatment strategy & Unadjusted & 1$\times$ & 3$\times$ & 1$\times$ & 3$\times$ & 1$\times$ & 3$\times$ \\
 \midrule
-Early IVT only & 11.0 & 7.6 & 0.1 & 9.2 & 5.4 & 10.4 & 9.2 & 10.9 & 10.6 \\
-Late IVT only & 8.9 & 5.0 & $-$2.7 & 8.1 & 6.6 & 8.0 & 6.3 & 8.8 & 8.8 \\
-Early MT only & 15.4 & 8.3 & $-$6.3 & 1.2 & $-$28.3 & 13.1 & 8.6 & 15.3 & 15.0 \\
-Late MT only & 6.4 & $-$0.3 & $-$14.4 & $-$3.9 & $-$25.3 & 4.1 & $-$0.7 & 6.4 & 6.3 \\
-Early IVT + early MT & 20.9 & 12.5 & $-$5.8 & 6.3 & $-$25.3 & 18.1 & 12.5 & 20.8 & 20.5 \\
-Early IVT + late MT & 10.1 & 2.3 & $-$14.5 & $-$1.9 & $-$27.3 & 7.3 & 1.8 & 9.9 & 9.7 \\
-Late IVT + late MT & 12.8 & 5.7 & $-$8.6 & 3.8 & $-$14.3 & 10.7 & 6.4 & 12.8 & 12.7 \\
+Early IVT only & 11.2 & 7.8 & 0.2 & 9.3 & 5.5 & 10.6 & 9.4 \\
+Late IVT only & 8.9 & 5.1 & $-$2.7 & 8.2 & 6.7 & 8.1 & 6.3 \\
+Early MT only & 15.5 & 8.4 & $-$6.2 & 1.3 & $-$28.2 & 13.2 & 8.7 \\
+Late MT only & 6.5 & $-$0.3 & $-$14.4 & $-$3.8 & $-$25.2 & 4.1 & $-$0.7 \\
+Early IVT + early MT & 21.1 & 12.6 & $-$5.7 & 6.4 & $-$25.2 & 18.3 & 12.6 \\
+Early IVT + late MT & 10.2 & 2.4 & $-$14.4 & $-$1.8 & $-$27.2 & 7.4 & 1.9 \\
+Late IVT + late MT & 12.8 & 5.7 & $-$8.6 & 3.8 & $-$14.3 & 10.7 & 6.4 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=\textwidth,height=0.6\textheight,keepaspectratio]{images/treatment_effects/non_mild_stroke_early_arrival_good_outcome_target_trial_sensemakr_contours.png}
+    \includegraphics[width=\textwidth,height=0.6\textheight,keepaspectratio]{images/target_trial_emulation/non_mild_stroke_early_arrival_good_outcome_target_trial_sensemakr_contours.png}
     \caption{Sensemakr sensitivity contours: target trial emulation (linear probability model in each matched sample). Each panel is one treatment strategy. Contour lines show the adjusted effect (percentage points) of each strategy on a good outcome if an unmeasured confounder had the partial $R^2$ with treatment shown on the horizontal axis and with outcome shown on the vertical axis. The red dashed line is where the adjusted effect would fall to zero, and the blue star is the unadjusted estimate. Solid grey lines (where present) show smaller positive effects, and grey dashed lines show negative effects, where the strategy would reduce the chance of a good outcome. Black markers show confounders one, two and three times (increasing marker size) as strongly associated with treatment and outcome as pre-stroke mRS (circles), NIHSS (squares), age (triangles). Because matching balances these covariates, the benchmark markers lie close to the vertical axis.}
     \label{fig:sensemakr_tte}
 \end{figure}
 
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=\textwidth,height=0.6\textheight,keepaspectratio]{images/treatment_effects/non_mild_stroke_early_arrival_good_outcome_s_learner_sensemakr_contours.png}
+    \includegraphics[width=\textwidth,height=0.6\textheight,keepaspectratio]{images/s_learner/non_mild_stroke_early_arrival_good_outcome_s_learner_sensemakr_contours.png}
     \caption{Sensemakr sensitivity contours: linear probability model with the S-learner covariates (each treatment group compared with all untreated patients). Each panel is one treatment strategy. Contour lines show the adjusted effect (percentage points) of each strategy on a good outcome if an unmeasured confounder had the partial $R^2$ with treatment shown on the horizontal axis and with outcome shown on the vertical axis. The red dashed line is where the adjusted effect would fall to zero, and the blue star is the unadjusted estimate. Solid grey lines (where present) show smaller positive effects, and grey dashed lines show negative effects, where the strategy would reduce the chance of a good outcome. Black markers show confounders one, two and three times (increasing marker size) as strongly associated with treatment and outcome as pre-stroke mRS (circles), NIHSS (squares), age (triangles).}
     \label{fig:sensemakr_sl}
 \end{figure}
 
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=\textwidth,height=0.6\textheight,keepaspectratio]{images/treatment_effects/non_mild_stroke_early_arrival_good_outcome_causal_forest_sensemakr_contours.png}
-    \caption{Sensemakr sensitivity contours: linear probability model with the causal forest's confounders (each treatment group compared with all untreated patients). Each panel is one treatment strategy. Contour lines show the adjusted effect (percentage points) of each strategy on a good outcome if an unmeasured confounder had the partial $R^2$ with treatment shown on the horizontal axis and with outcome shown on the vertical axis. The red dashed line is where the adjusted effect would fall to zero, and the blue star is the unadjusted estimate. Solid grey lines (where present) show smaller positive effects, and grey dashed lines show negative effects, where the strategy would reduce the chance of a good outcome. Black markers show confounders one, two and three times (increasing marker size) as strongly associated with treatment and outcome as pre-stroke mRS (circles), NIHSS (squares), age (triangles) and onset-to-scan time (diamonds).}
+    \includegraphics[width=\textwidth,height=0.6\textheight,keepaspectratio]{images/causal_forest/non_mild_stroke_early_arrival_good_outcome_causal_forest_sensemakr_contours.png}
+    \caption{Sensemakr sensitivity contours: linear probability model with the causal forest's confounders (each treatment group compared with all untreated patients). Each panel is one treatment strategy. Contour lines show the adjusted effect (percentage points) of each strategy on a good outcome if an unmeasured confounder had the partial $R^2$ with treatment shown on the horizontal axis and with outcome shown on the vertical axis. The red dashed line is where the adjusted effect would fall to zero, and the blue star is the unadjusted estimate. Solid grey lines (where present) show smaller positive effects, and grey dashed lines show negative effects, where the strategy would reduce the chance of a good outcome. Black markers show confounders one, two and three times (increasing marker size) as strongly associated with treatment and outcome as pre-stroke mRS (circles), NIHSS (squares) and age (triangles).}
     \label{fig:sensemakr_cf}
 \end{figure}
 
@@ -1372,7 +1409,7 @@ Late IVT + late MT & 12.8 & 5.7 & $-$8.6 & 3.8 & $-$14.3 & 10.7 & 6.4 & 12.8 & 1
 
 To show how much each estimate depends on adjustment for the strongest measured confounders, we repeated each analysis leaving out stroke severity, age or pre-stroke disability in turn (Table~\ref{tab:loo}). For the target trial emulation, the confounder was removed from the exact matching features (for stroke severity, the NIHSS band) and matching was repeated. For the S-learner, it was removed from the model features and the model refitted with the same tuned hyperparameters and cross-validation folds; estimates are the mean counterfactual difference in the probability of a good outcome in the treated, rather than the log odds ratio of Table~\ref{tab:effects}. For the causal forest, it was removed from both the effect modifiers and the first-stage confounders, and the doubly robust ATT re-estimated. Leaving out a confounder that is measured is a deliberate misspecification, not a plausible alternative analysis: the change in the estimate indicates how much bias an unmeasured confounder of similar strength, acting in the same direction, could cause. This complements the sensemakr benchmarks (Section~\ref{sec:sensemakr}), using the S-learner and causal forest themselves rather than linear stand-ins.
 
-The three methods agreed closely. Leaving out age changed the estimates little ($-$1.2 to $+$6.1 percentage points; the largest changes were for late IVT + late MT, the smallest group). Leaving out pre-stroke disability reduced every estimate, by 0.7--3.3 percentage points for IVT alone and 1.9--11.3 percentage points for the MT-based strategies. Leaving out stroke severity changed the estimates for IVT alone by $-$2.3 to $+$4.0 percentage points, because stroke severity is only weakly related to receiving IVT alone in this cohort of non-mild strokes. In contrast, it reduced the estimates for every MT-based strategy by 10.4--18.6 percentage points, to between $-$6.0 and $+$5.1 percentage points: patients selected for MT had more severe strokes, and so a worse prognosis, than untreated patients. The MT results therefore depend heavily on adjustment for stroke severity, consistent with the sensemakr benchmarks; a residual unmeasured confounder could remove the benefit of MT only if it were comparable in strength to stroke severity itself, after stroke severity, age and pre-stroke disability have been adjusted for.
+The three methods agreed closely. Leaving out age changed the estimates little ($-$1.2 to $+$5.0 percentage points; the largest changes were for late IVT + late MT, the smallest group). Leaving out pre-stroke disability reduced every estimate, by 0.7--3.5 percentage points for IVT alone and 4.4--11.3 percentage points for the MT-based strategies. Leaving out stroke severity changed the estimates for IVT alone by $-$2.9 to $+$4.0 percentage points, because stroke severity is only weakly related to receiving IVT alone in this cohort of non-mild strokes. In contrast, it reduced the estimates for every MT-based strategy by 10.3--19.5 percentage points, to between $-$5.7 and $+$5.1 percentage points: patients selected for MT had more severe strokes, and so a worse prognosis, than untreated patients. The MT results therefore depend heavily on adjustment for stroke severity, consistent with the sensemakr benchmarks; a residual unmeasured confounder could remove the benefit of MT only if it were comparable in strength to stroke severity itself, after stroke severity, age and pre-stroke disability have been adjusted for.
 
 \begin{table}[htbp]
 \centering
@@ -1388,13 +1425,13 @@ The three methods agreed closely. Leaving out age changed the estimates little (
 \cmidrule(lr){3-5} \cmidrule(lr){7-9} \cmidrule(lr){11-13}
 Treatment strategy & Primary & NIHSS & Age & mRS & Primary & NIHSS & Age & mRS & Primary & NIHSS & Age & mRS \\
 \midrule
-Early IVT only & 12.4 & 10.7 & 13.1 & 9.2 & 12.5 & 10.1 & 13.1 & 9.2 & 9.9 & 8.2 & 10.1 & 7.3 \\
-Late IVT only & 6.3 & 10.3 & 9.7 & 5.6 & 8.1 & 7.2 & 8.9 & 5.3 & 9.5 & 7.2 & 9.7 & 6.2 \\
-Early MT only & 17.2 & 2.9 & 16.0 & 10.9 & 17.2 & 1.3 & 18.9 & 10.9 & 12.1 & $-$3.5 & 14.7 & 8.3 \\
-Late MT only & 8.3 & $-$5.0 & 7.5 & 1.8 & 7.8 & $-$4.4 & 9.6 & 2.3 & 9.4 & $-$4.8 & 11.3 & 2.9 \\
-Early IVT + early MT & 23.5 & 4.9 & 24.4 & 16.5 & 21.7 & 5.1 & 23.4 & 16.0 & 15.2 & $-$1.3 & 18.0 & 13.3 \\
-Early IVT + late MT & 11.0 & $-$2.3 & 12.1 & 4.3 & 10.6 & $-$3.2 & 12.5 & 5.4 & 9.3 & $-$6.0 & 11.3 & 4.6 \\
-Late IVT + late MT & 17.0 & $-$1.4 & 22.0 & 5.7 & 12.9 & 2.6 & 14.8 & 8.2 & 15.4 & $-$2.1 & 21.5 & 10.4 \\
+Early IVT only & 12.4 & 10.7 & 13.1 & 9.2 & 12.5 & 10.1 & 13.1 & 9.2 & 13.1 & 10.2 & 13.5 & 9.6 \\
+Late IVT only & 6.3 & 10.3 & 9.7 & 5.6 & 8.1 & 7.2 & 8.9 & 5.3 & 8.5 & 7.1 & 9.1 & 5.5 \\
+Early MT only & 17.2 & 2.9 & 16.0 & 10.9 & 17.2 & 1.3 & 18.9 & 10.9 & 17.6 & $-$0.6 & 19.3 & 11.6 \\
+Late MT only & 8.3 & $-$5.0 & 7.5 & 1.8 & 7.8 & $-$4.4 & 9.6 & 2.3 & 8.5 & $-$5.7 & 10.3 & 3.2 \\
+Early IVT + early MT & 23.5 & 4.9 & 24.4 & 16.5 & 21.7 & 5.1 & 23.4 & 16.0 & 23.7 & 4.2 & 25.3 & 17.5 \\
+Early IVT + late MT & 11.0 & $-$2.3 & 12.1 & 4.3 & 10.6 & $-$3.2 & 12.5 & 5.4 & 12.0 & $-$4.0 & 14.1 & 6.5 \\
+Late IVT + late MT & 17.0 & $-$1.4 & 22.0 & 5.7 & 12.9 & 2.6 & 14.8 & 8.2 & 14.9 & $-$1.2 & 15.9 & 10.5 \\
 \bottomrule
 \end{tabular}%
 }
@@ -1428,9 +1465,11 @@ Third, when IVT was given later, it appeared to add more when MT was delayed fur
 
 The benefits of the two treatments were less than additive. The log odds ratio for early combined treatment (1.16) was well below the sum of those for early IVT alone and early MT alone (0.64 and 1.00). This is expected of two treatments that act through the same mechanism, reperfusion of the same tissue, and it means that neither the IVT trials nor the MT trials can be used on their own to predict the value of a combined strategy at a given pair of treatment times.
 
+The same predictions can be arranged to ask a question that clinicians face directly: once IVT has been given early, how much does MT add, and for how long? Section~\ref{sec:te_sl_mt_time_by_ivt} (Figure~\ref{fig:s_learner_mt_time_by_ivt}) compares MT without IVT and MT after IVT within two hours, across MT times of 2--10 hours. Two findings stand out. First, early IVT reduced the additional benefit of MT by a roughly constant amount (about 0.7 log odds units) at every time to MT, so the curves were close to parallel: early IVT did not change how quickly the value of MT decays, but it started that decay from a lower point. Second, because of this offset, the additional effect of MT after early IVT reached zero at about 4.5 hours from onset, compared with about 10 hours without IVT. Both findings are consistent with the mechanisms and evidence discussed in this section. Early IVT recanalises some occlusions and limits infarct growth before MT, so that by the time MT is performed part of the salvageable tissue has already been saved \citesupp{seners2016,seners2018}. In patients treated with both, a longer interval between IVT and MT was associated with worse outcome \citesupp{wagner2022}, and the decline we estimate for MT without IVT (steep over the first four hours and flatter thereafter) has the same shape as that reported in the Get With The Guidelines-Stroke registry \citesupp{jahan2019}. In the HERMES pooled analysis, in which most patients had received alteplase, the benefit of MT was estimated to be lost at about 7.3 hours from onset to arterial puncture \citesupp{saver2016}; the trials, however, selected patients by imaging for a large-vessel occlusion and salvageable tissue, whereas our population is unselected. Observational comparisons that classify patients by whether IVT was given and by the time of MT, but not by the time of IVT, have reported benefit from MT after IVT in both early and late windows \citesupp{chalos2019,chacon2026}; our results suggest that the time of IVT, and the interval between IVT and MT, should be considered when interpreting these. These estimates do not imply that MT should be withheld after early IVT: patients with persisting large-vessel occlusion and salvageable tissue on imaging benefit from MT up to 24 hours after onset \citesupp{nogueira2018,albers2018}, and our data could not identify those patients. What they do suggest is that, at the population level, delay to MT after early IVT erodes its additional value quickly, which strengthens the case for minimising transfer and door-to-puncture times rather than relying on IVT to hold the benefit of MT.
+
 \subsection{Comparison with randomised trials of IVT}
 
-Our estimates for IVT alone agree closely with the randomised evidence in absolute terms and in their dependence on time. In the individual patient data meta-analysis of Emberson et al., alteplase increased the proportion of patients with an excellent outcome by about 10 percentage points when given within 3 hours and about 5 percentage points at 3--4.5 hours \citesupp{emberson_effect_2014}. The causal forest estimated an absolute gain in good outcome at discharge of 9.9 percentage points for IVT within 4.5 hours and 9.5 percentage points after 4.5 hours; the S-learner gave 12.5 and 8.1, and the matched analysis 12.4 and 6.3 percentage points. Emberson et al.\ estimated that the benefit of alteplase reached zero at 6.3 hours after onset (95\% CI 5.0--13.8) \citesupp{emberson_effect_2014}; our linear model placed this point at 6.8 hours. The agreement is notable given that the two estimates come from different designs, eras and outcome definitions, although ours is extrapolated beyond the six hours within which IVT was given in our data.
+Our estimates for IVT alone agree closely with the randomised evidence in absolute terms and in their dependence on time. In the individual patient data meta-analysis of Emberson et al., alteplase increased the proportion of patients with an excellent outcome by about 10 percentage points when given within 3 hours and about 5 percentage points at 3--4.5 hours \citesupp{emberson_effect_2014}. The causal forest estimated an absolute gain in good outcome at discharge of 13.1 percentage points for IVT within 4.5 hours and 8.5 percentage points after 4.5 hours; the S-learner gave 12.5 and 8.1, and the matched analysis 12.4 and 6.3 percentage points. Emberson et al.\ estimated that the benefit of alteplase reached zero at 6.3 hours after onset (95\% CI 5.0--13.8) \citesupp{emberson_effect_2014}; our linear model placed this point at 6.8 hours. The agreement is notable given that the two estimates come from different designs, eras and outcome definitions, although ours is extrapolated beyond the six hours within which IVT was given in our data.
 
 Our relative effects were larger than those of the trials. The S-learner odds ratio for early IVT alone was about 1.9, against 1.75 within 3 hours and 1.26 at 3--4.5 hours in the meta-analysis \citesupp{emberson_effect_2014}. Several differences in design may contribute. We restricted the cohort to patients with NIHSS above 5 or a recorded large vessel occlusion, we measured a good outcome at discharge (mRS 0--2, or no worse than before the stroke) and not mRS 0--1 at 3--6 months, and door-to-needle times and stroke unit care have improved since the trials. Residual confounding is also likely to act in this direction: patients who arrive early with a disabling stroke and are not treated with IVT usually have a reason, such as anticoagulation, recent surgery, frailty or a clinical judgement of futility, and not all of these reasons are captured in our covariates.
 
@@ -1442,7 +1481,7 @@ We did not examine intracranial haemorrhage. The trials show that alteplase incr
 
 The time dependence we estimated for MT is very close to that reported from the trials. In the HERMES time-to-treatment analysis, each hour of delay to reperfusion was associated with a common odds ratio of 0.84 for less disability and an odds ratio of 0.81 for functional independence \citesupp{saver2016}. In MR CLEAN, the absolute treatment effect fell by about 6 percentage points per hour of delay to reperfusion \citesupp{fransen_time_2016}. Our estimate for MT alone, a loss of about 0.15 log odds units per hour, corresponds to an odds ratio of 0.86 per hour. In HERMES the benefit of MT was no longer statistically significant when arterial puncture was later than 7 hours 18 minutes after onset, although the point estimate still favoured treatment at 8 hours (common odds ratio 1.57) \citesupp{saver2016}. Our point estimate of the time at which benefit reached zero, 9.5 hours, is compatible with this, and in Figure~\ref{fig:main_s_learner_matrix} the estimated benefit of MT alone was close to zero in each time band beyond 9 hours.
 
-The size of the benefit requires more careful comparison, because the comparator differs. The HERMES trials compared MT plus standard care with standard care alone in patients with a proven anterior circulation large vessel occlusion, most of whom received alteplase in both arms; functional independence at 90 days was achieved by 46.0\% and 26.5\% \citesupp{goyal2016}. Our treated groups are compared with patients who received no reperfusion treatment. On that basis, early MT alone was associated with an absolute gain of 12--17 percentage points and early combined treatment with a gain of 15--24 percentage points, and the proportions with a good outcome in the early combined group and its controls (46.5\% and 23.0\%) are similar to those in the two arms of HERMES, although our outcome also counts patients discharged no worse than their pre-stroke mRS and was measured at discharge rather than at 90 days. The trial contrast, MT added to IVT, is best approximated in our data by the difference between combined treatment and IVT alone at the same time to IVT. For IVT given at 60--180 minutes, MT within 180 minutes was associated with an additional 0.65--0.9 log odds units (odds ratios of about 1.9--2.4), a little below the HERMES common odds ratio of 2.49 \citesupp{goyal2016} and the 2.79 estimated at 3 hours \citesupp{saver2016}. At later MT times the increment in our data fell faster than in the trials: to about 0.2--0.4 log odds units at 3--5 hours and about 0.05 at 5--6 hours, against a common odds ratio of 1.98 at 6 hours in HERMES \citesupp{saver2016}.
+The size of the benefit requires more careful comparison, because the comparator differs. The HERMES trials compared MT plus standard care with standard care alone in patients with a proven anterior circulation large vessel occlusion, most of whom received alteplase in both arms; functional independence at 90 days was achieved by 46.0\% and 26.5\% \citesupp{goyal2016}. Our treated groups are compared with patients who received no reperfusion treatment. On that basis, early MT alone was associated with an absolute gain of 17--18 percentage points and early combined treatment with a gain of 22--24 percentage points, and the proportions with a good outcome in the early combined group and its controls (46.5\% and 23.0\%) are similar to those in the two arms of HERMES, although our outcome also counts patients discharged no worse than their pre-stroke mRS and was measured at discharge rather than at 90 days. The trial contrast, MT added to IVT, is best approximated in our data by the difference between combined treatment and IVT alone at the same time to IVT. For IVT given at 60--180 minutes, MT within 180 minutes was associated with an additional 0.65--0.9 log odds units (odds ratios of about 1.9--2.4), a little below the HERMES common odds ratio of 2.49 \citesupp{goyal2016} and the 2.79 estimated at 3 hours \citesupp{saver2016}. At later MT times the increment in our data fell faster than in the trials: to about 0.2--0.4 log odds units at 3--5 hours and about 0.05 at 5--6 hours, against a common odds ratio of 1.98 at 6 hours in HERMES \citesupp{saver2016}.
 
 There are several reasons to expect a smaller increment at later times in routine practice than in trials. Our IVT-only group includes patients without a large vessel occlusion and patients whose occlusion recanalised with IVT, so its outcomes are better than those of a trial control arm in which every patient had a persisting occlusion. Conversely, patients who proceed to MT after IVT are by definition those in whom IVT has not yet succeeded. Several of the HERMES trials selected patients using collateral or perfusion imaging, which enriches for slowly progressing infarcts in whom late reperfusion still helps \citesupp{goyal2016,saver2016}. Finally, disability at discharge may understate the benefit of MT, since patients with severe strokes continue to recover over the following months.
 
@@ -1474,11 +1513,11 @@ Our finding that the benefit of MT declines to nothing by about nine and a half 
 
 Patients in those trials presented late and were chosen because imaging showed that salvageable tissue remained; they are, by selection, patients whose infarcts progress slowly. The patients we studied all arrived within six hours of a known time of onset, and those treated late were, we presume, treated late mainly because of delay, not because imaging had identified them as late-window candidates. Our estimates therefore describe what delay costs the general population of early presenters, in whom fast and slow progressors are mixed. They do not describe the effect of MT in imaging-selected late presenters, and should not be used to argue against late-window treatment. The two bodies of evidence are complementary: the late-window trials show who can still benefit when presentation is late, and our data show how much is lost, on average, when treatment of an early presenter is delayed.
 
-Late MT was nonetheless associated with a clear benefit in our data. MT alone after 270 minutes was associated with an absolute gain in good outcome at discharge of 7.8--9.4 percentage points, and all three methods found this to be significantly greater than zero. The number of patients treated beyond nine hours was small, and estimates in that range are imprecise. The group that received both treatments late contained only 141 patients, and its wide confidence intervals do not allow any conclusion; the randomised evidence for that combination is the TNK-PLUS trial, which found no benefit of IVT before MT at 4.5--24 hours \citesupp{tnkplus2026}.
+Late MT was nonetheless associated with a clear benefit in our data. MT alone after 270 minutes was associated with an absolute gain in good outcome at discharge of 7.8--8.5 percentage points, and all three methods found this to be significantly greater than zero. The number of patients treated beyond nine hours was small, and estimates in that range are imprecise. The group that received both treatments late contained only 141 patients, and its wide confidence intervals do not allow any conclusion; the randomised evidence for that combination is the TNK-PLUS trial, which found no benefit of IVT before MT at 4.5--24 hours \citesupp{tnkplus2026}.
 
 \subsection{Agreement between methods, and who benefits}
 
-The three causal methods agreed on the pattern of benefit. Matching, the S-learner and the causal forest make different modelling assumptions: matching compares like with like on a small set of prognostic features without a model of outcome, the S-learner relies on a flexible outcome model, and the causal forest combines an outcome model with a model of treatment assignment and is consistent if either is correctly specified. All three agreed that early combined treatment gave the largest benefit, followed by early MT alone, and that later treatment gave less, although the order of the smaller late-treatment groups differed between methods. Where the methods estimate the same quantity, the absolute gains from matching and from the causal forest agreed closely for the late strategies (for example 8.3 and 9.4 percentage points for late MT alone), but the causal forest gave smaller gains for the early strategies: 12.4 and 9.9 percentage points for early IVT alone, 17.2 and 12.1 for early MT alone, and 23.5 and 15.2 for early combined treatment. The sensitivity analyses showed that this difference arises almost entirely from the causal forest's adjustment for onset-to-scan time; without it, the causal forest gave 13.2, 18.6 and 24.0 percentage points, within 1.5 percentage points of matching (Section~\ref{sec:sensitivity}). Agreement between methods does not remove bias from confounders that none of them observe, but it makes it unlikely that the findings are an artefact of one model.
+The three causal methods agreed on the pattern of benefit. Matching, the S-learner and the causal forest make different modelling assumptions: matching compares like with like on a small set of prognostic features without a model of outcome, the S-learner relies on a flexible outcome model, and the causal forest combines an outcome model with a model of treatment assignment and is consistent if either is correctly specified. All three agreed that early combined treatment gave the largest benefit, followed by early MT alone, and that later treatment gave less, although the order of the smaller late-treatment groups differed between methods. Where the methods estimate the same quantity, the absolute gains from matching and from the causal forest agreed closely for every strategy, to within 2.2 percentage points: for example, 12.4 and 13.1 percentage points for early IVT alone, 17.2 and 17.6 for early MT alone, 23.5 and 23.7 for early combined treatment, and 8.3 and 8.5 for late MT alone. Neither the matching nor the primary causal forest analysis adjusted for onset-to-scan time. When the causal forest additionally adjusted for it, the estimates for the early strategies fell to 9.9, 12.1 and 15.2 percentage points, while those for the late strategies changed by 1 percentage point or less (Section~\ref{sec:sens_cf}). Onset-to-scan time largely determines whether early treatment is possible, so adjusting for it compares early-treated patients with untreated patients who were also scanned early, many of whom will have had a specific reason not to be treated; but it may also capture confounding, such as how a patient presents or the reasons for delay. The primary and adjusted estimates can be regarded as plausible upper and lower values for the effect of early treatment. Agreement between methods does not remove bias from confounders that none of them observe, but it makes it unlikely that the findings are an artefact of one model.
 
 The agreement with randomised trials, where trials exist, serves as a further check. The emulation recovered the absolute benefit of IVT and the time at which it is exhausted \citesupp{emberson_effect_2014}, the hourly decay of MT benefit \citesupp{fransen_time_2016,saver2016}, and the time dependence of the added value of IVT before MT \citesupp{kaesmacher2024}. Benchmarking an emulated target trial \citesupp{hernan2016} against known trial results is a recognised means of assessing whether observational data can support causal conclusions, and it gives some confidence in the estimates for which no trial exists, namely those for specific combinations of the two treatment times.
 
@@ -1639,13 +1678,13 @@ Item & Requirement & Where reported, or comment & Status \\
 7h.i & Analysis procedures, statistical assumptions, missing data & Main: Methods, Causal forest (67 patients with missing data excluded); Sections~\ref{sec:supp_cf_methods}, \ref{sec:protocol_cf} and~\ref{sec:cf_estimation}. & \stok \\
 7h.ii & Sensitivity analyses & Section~\ref{sec:protocol_cf}; Table~\ref{tab:sens_analyses_cf}; Sections~\ref{sec:evalues} and~\ref{sec:sensemakr}. & \stok \\
 8 & Participant selection and flow & Figure~\ref{fig:flow_cf}. & \stok \\
-9 & Baseline characteristics by strategy & Table~\ref{tab:full_group_stats} (all model features, including ethnicity, year of admission and onset-to-scan time; the caption identifies the 67 patients excluded for missing NIHSS). & \stok \\
+9 & Baseline characteristics by strategy & Table~\ref{tab:full_group_stats} (all model features, including ethnicity and year of admission, and onset-to-scan time, used in a sensitivity analysis; the caption identifies the 67 patients excluded for missing NIHSS). & \stok \\
 10 & Length of follow-up and reasons it ended, by strategy & Table~\ref{tab:observed_outcomes}. & \stok \\
 11 & Missing data, all variables, by strategy & Table~\ref{tab:full_group_stats} (missing values for every model feature) and Figure~\ref{fig:flow_cf}; the 67 excluded patients all lacked NIHSS. & \stok \\
 12 & Outcome frequency by strategy & Table~\ref{tab:observed_outcomes}. & \stok \\
 13 & Effect estimates with precision; absolute and relative & Absolute ATT with 95\% confidence intervals: Main: Table~\ref{tab:effects}; Figure~\ref{fig:causal_forest_benefit}. Relative: risk ratios with 95\% confidence intervals (Table~\ref{tab:cf_relative}). Subgroup effects are descriptive, without confidence intervals (Section~\ref{sec:cf_heterogeneity}). & \stok \\
 14 & Results of all sensitivity analyses & Section~\ref{sec:sens_cf}; Tables~\ref{tab:sens_cf}, \ref{tab:evalues}, \ref{tab:sensemakr_rv} and~\ref{tab:sensemakr_bounds}. & \stok \\
-15--21 & Interpretation; limitations; ethics; protocol; data and code; funding; conflicts of interest & As for the S-learner. Limitations specific to this method (adjustment for onset-to-scan time) are discussed in Main: Discussion, Agreement between methods. & \stok \\
+15--21 & Interpretation; limitations; ethics; protocol; data and code; funding; conflicts of interest & As for the S-learner. Limitations specific to this method (whether to adjust for onset-to-scan time) are discussed in Main: Discussion, Agreement between methods. & \stok \\
 \addlinespace
 \multicolumn{4}{@{}l}{\textbf{TRIPOD (prediction model development), applied to the first-stage models and the forest}}\\
 \addlinespace

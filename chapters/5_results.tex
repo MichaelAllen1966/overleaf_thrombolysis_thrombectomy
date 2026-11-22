@@ -77,7 +77,7 @@ Late IVT + Late MT (n=141) & Pre-stroke mRS & 0.45 (0.70) & 0.45 (0.70) \\
 
 \subsection{Effect of each treatment strategy}
 
-Every treatment strategy was associated with a higher chance of a good outcome (Table~\ref{tab:effects}). All three methods found that early IVT plus early MT gave the largest benefit: 46.5\% of treated patients had a good outcome against 23.0\% of matched controls, the S-learner odds ratio was 3.2 (log odds ratio 1.16), and the causal forest estimated a gain of 15.2 percentage points. Early MT alone gave the next largest benefit, followed by early IVT alone. The causal forest gave smaller gains than matching for the three early strategies, but similar gains for the late strategies. In the S-learner, late treatment gave about half to two thirds of the benefit of early treatment on the log odds scale, and early IVT followed by late MT gave no more than early IVT alone. Only 141 patients received both treatments late, and their estimates were imprecise.
+Every treatment strategy was associated with a higher chance of a good outcome (Table~\ref{tab:effects}). All three methods found that early IVT plus early MT gave the largest benefit: 46.5\% of treated patients had a good outcome against 23.0\% of matched controls, the S-learner odds ratio was 3.2 (log odds ratio 1.16), and the causal forest estimated a gain of 23.7 percentage points. Early MT alone gave the next largest benefit, followed by early IVT alone. The causal forest and matching gave similar gains for every strategy, differing by 2.2 percentage points or less. In the S-learner, late treatment gave about half to two thirds of the benefit of early treatment on the log odds scale, and early IVT followed by late MT gave no more than early IVT alone. Only 141 patients received both treatments late, and their estimates were imprecise.
 
 \begin{table}[htbp]
 \centering
@@ -90,13 +90,13 @@ Every treatment strategy was associated with a higher chance of a good outcome (
 \cmidrule(lr){3-5}
 Treatment strategy & $n$ & Treated (\%) & Control (\%) & Difference & Log odds ratio (95\% CI) & ATT, pp (95\% CI) \\
 \midrule
-Early IVT only & 27,695 & 49.0 (48.5--49.6) & 36.6 (36.1--37.2) & 12.4 (11.6--13.2)$^{**}$ & 0.64 (0.59--0.69)$^{**}$ & 9.9 (8.8--11.0)$^{**}$ \\
-Late IVT only & 1,189 & 47.3 (44.4--50.1) & 40.9 (38.1--43.7) & 6.3 (2.3--10.3)$^{**}$ & 0.41 (0.29--0.53)$^{**}$ & 9.5 (6.5--12.5)$^{**}$ \\
-Early MT only & 1,107 & 39.1 (36.1--42.0) & 21.9 (19.4--24.4) & 17.2 (13.3--21.0)$^{**}$ & 1.00 (0.86--1.14)$^{**}$ & 12.1 (7.4--16.8)$^{**}$ \\
-Late MT only & 1,876 & 33.5 (31.3--35.6) & 25.2 (23.2--27.2) & 8.3 (5.3--11.2)$^{**}$ & 0.47 (0.37--0.58)$^{**}$ & 9.4 (7.1--11.7)$^{**}$ \\
-Early IVT + early MT & 2,309 & 46.5 (44.5--48.5) & 23.0 (21.3--24.7) & 23.5 (20.8--26.2)$^{**}$ & 1.16 (1.05--1.27)$^{**}$ & 15.2 (10.9--19.6)$^{**}$ \\
-Early IVT + late MT & 2,714 & 37.2 (35.4--39.0) & 26.2 (24.6--27.9) & 11.0 (8.5--13.4)$^{**}$ & 0.60 (0.51--0.69)$^{**}$ & 9.3 (6.8--11.7)$^{**}$ \\
-Late IVT + late MT & 141 & 44.0 (35.7--52.3) & 27.0 (19.5--34.4) & 17.0 (5.9--28.1)$^{**}$ & 0.69 (0.38--0.99)$^{**}$ & 15.4 (6.6--24.2)$^{**}$ \\
+Early IVT only & 27,695 & 49.0 (48.5--49.6) & 36.6 (36.1--37.2) & 12.4 (11.6--13.2)$^{**}$ & 0.64 (0.59--0.69)$^{**}$ & 13.1 (12.2--13.9)$^{**}$ \\
+Late IVT only & 1,189 & 47.3 (44.4--50.1) & 40.9 (38.1--43.7) & 6.3 (2.3--10.3)$^{**}$ & 0.41 (0.29--0.53)$^{**}$ & 8.5 (5.7--11.2)$^{**}$ \\
+Early MT only & 1,107 & 39.1 (36.1--42.0) & 21.9 (19.4--24.4) & 17.2 (13.3--21.0)$^{**}$ & 1.00 (0.86--1.14)$^{**}$ & 17.6 (14.1--21.1)$^{**}$ \\
+Late MT only & 1,876 & 33.5 (31.3--35.6) & 25.2 (23.2--27.2) & 8.3 (5.3--11.2)$^{**}$ & 0.47 (0.37--0.58)$^{**}$ & 8.5 (6.3--10.8)$^{**}$ \\
+Early IVT + early MT & 2,309 & 46.5 (44.5--48.5) & 23.0 (21.3--24.7) & 23.5 (20.8--26.2)$^{**}$ & 1.16 (1.05--1.27)$^{**}$ & 23.7 (21.2--26.2)$^{**}$ \\
+Early IVT + late MT & 2,714 & 37.2 (35.4--39.0) & 26.2 (24.6--27.9) & 11.0 (8.5--13.4)$^{**}$ & 0.60 (0.51--0.69)$^{**}$ & 12.0 (9.8--14.1)$^{**}$ \\
+Late IVT + late MT & 141 & 44.0 (35.7--52.3) & 27.0 (19.5--34.4) & 17.0 (5.9--28.1)$^{**}$ & 0.69 (0.38--0.99)$^{**}$ & 14.9 (5.7--24.1)$^{**}$ \\
 \bottomrule
 \end{tabular}%
 }
@@ -108,7 +108,7 @@ Figure~\ref{fig:main_s_learner_matrix} shows the S-learner's estimated benefit b
 
 \begin{figure}
     \centering
-    \includegraphics[width=1\linewidth]{images/treatment_effects/non_mild_stroke_early_arrival_good_outcome_s_learner_heatmap_log_odds.png}
+    \includegraphics[width=1\linewidth]{images/s_learner/non_mild_stroke_early_arrival_good_outcome_s_learner_heatmap_log_odds.png}
     \caption{S-learner estimate of the benefit of treatment (log odds of a good outcome, treated \textit{vs} untreated) by onset-to-IVT time (columns) and onset-to-MT time (rows). Each cell shows the mean $\pm$ the half-width of its 95\% confidence interval (variation between patients only), with the number of patients in parentheses. The last row is IVT without MT and the last column MT without IVT; cells with fewer than 10 patients are blank.}
     \label{fig:main_s_learner_matrix}
 \end{figure}
@@ -120,11 +120,11 @@ The features most associated with the size of benefit were stroke severity, the 
 \begin{figure}
     \centering
     \includegraphics[width=1\linewidth]
-{images/treatment_effects/non_mild_stroke_early_arrival_good_outcome_s_learner_treatment_effect_shap_box_plots.png}
+{images/s_learner/non_mild_stroke_early_arrival_good_outcome_s_learner_treatment_effect_shap_box_plots.png}
     \caption{Patient characteristics associated with the predicted benefit of treatment. Each panel shows box plots of SHAP values (contribution to the log odds of a good outcome, treated \textit{vs} untreated) for each feature value; panels are ordered by average effect.}
     \label{fig:main_s_learner_benefit_shap_mrs_2}
 \end{figure}
 
 \subsection{Sensitivity analyses}
 
-In every sensitivity analysis, each strategy remained associated with more good outcomes, mostly with changes of 3 percentage points or less (Supplementary Section~\ref{sec:sensitivity}). Adding comorbidities to the matching reduced the estimate for early MT alone from 17.2 to 12.6 percentage points, and adjusting for LVO, where recorded, increased the MT estimates. Without adjustment for onset-to-scan time and year of admission, the causal forest estimates for early treatment came within 1.5 percentage points of matching. In the S-learner and causal forest analyses, the effects of IVT alone would survive a hidden confounder three times as strong as stroke severity, age or onset-to-scan time, but one as strong as stroke severity or pre-stroke disability could remove or halve the benefit of MT. Deliberately leaving out a measured confounder gave the same picture in all three methods: without stroke severity, the MT estimates fell by 10--19 percentage points, to between $-$6 and $+$5 percentage points, whereas the IVT-alone estimates changed by 4 percentage points or less; leaving out pre-stroke disability reduced the estimates by up to 11 percentage points, and leaving out age changed them by about 3 percentage points or less (up to 6 in the 141 patients treated late with both) (Supplementary Section~\ref{sec:supp_loo}).
+In every sensitivity analysis, each strategy remained associated with more good outcomes, mostly with changes of 3 percentage points or less (Supplementary Section~\ref{sec:sensitivity}). Adding comorbidities to the matching reduced the estimate for early MT alone from 17.2 to 12.6 percentage points, and adjusting for LVO, where recorded, increased the MT estimates. Additionally adjusting the causal forest for onset-to-scan time reduced the estimates for the four strategies that included early treatment by 2.7 to 8.5 percentage points (early IVT plus early MT from 23.7 to 15.2), but changed those for the late strategies by 1 percentage point or less. In the S-learner and causal forest analyses, the effects of IVT alone would survive a hidden confounder three times as strong as stroke severity or age, but one as strong as stroke severity or pre-stroke disability could remove or halve the benefit of MT. Deliberately leaving out a measured confounder gave the same picture in all three methods: without stroke severity, the MT estimates fell by 10--20 percentage points, to between $-$6 and $+$5 percentage points, whereas the IVT-alone estimates changed by 4 percentage points or less; leaving out pre-stroke disability reduced the estimates by up to 11 percentage points, and leaving out age changed them by about 3 percentage points or less (up to 5 in the 141 patients treated late with both) (Supplementary Section~\ref{sec:supp_loo}).
